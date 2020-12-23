@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:heartry/screens/poems_screen/poems_screen.dart';
+import 'package:flutter_riverpod/all.dart';
+
+import 'screens/poems_screen/poems_screen.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(ProviderScope(child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
