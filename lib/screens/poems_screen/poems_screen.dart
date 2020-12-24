@@ -1,3 +1,4 @@
+import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
@@ -58,9 +59,19 @@ class PoemScreen extends StatelessWidget {
           },
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        child: const Icon(Icons.add),
+      floatingActionButton: OpenContainer(
+        openBuilder: (_, __) => Container(),
+        closedShape: const CircleBorder(),
+        closedColor: Theme.of(context).primaryColor,
+        closedBuilder: (_, __) => const Padding(
+          padding: EdgeInsets.all(14.0),
+          child: IconTheme(
+            data: IconThemeData(
+              color: Colors.white,
+            ),
+            child: Icon(Icons.add),
+          ),
+        ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
       bottomNavigationBar: const CBottomAppBar(),

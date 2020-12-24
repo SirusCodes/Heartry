@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:heartry/providers/list_grid_provider.dart';
+
+import '../../../providers/list_grid_provider.dart';
 
 class CAppBar extends StatelessWidget {
   const CAppBar({Key key}) : super(key: key);
