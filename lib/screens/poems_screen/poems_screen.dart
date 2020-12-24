@@ -1,6 +1,7 @@
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:heartry/screens/writing_screen/writing_screen.dart';
 
 import '../../widgets/c_bottom_app_bar.dart';
 import 'widgets/c_app_bar.dart';
@@ -27,7 +28,7 @@ class PoemScreen extends StatelessWidget {
         ),
       ),
       floatingActionButton: OpenContainer(
-        openBuilder: (_, __) => Container(),
+        openBuilder: (_, __) => const WritingScreen(),
         closedShape: const CircleBorder(),
         closedColor: Theme.of(context).primaryColor,
         closedBuilder: (_, __) => const Padding(

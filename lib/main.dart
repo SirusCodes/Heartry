@@ -37,6 +37,9 @@ class MyApp extends StatelessWidget {
           ),
           headline5: const TextStyle(
             color: Colors.deepPurpleAccent,
+          ),
+          headline6: const TextStyle(
+            color: Colors.deepPurpleAccent,
             fontWeight: FontWeight.w400,
           ),
           subtitle1: TextStyle(
