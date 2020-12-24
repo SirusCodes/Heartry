@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:heartry/widgets/c_bottom_app_bar.dart';
 
 class WritingScreen extends StatefulWidget {
@@ -9,38 +10,58 @@ class WritingScreen extends StatefulWidget {
 }
 
 class _WritingScreenState extends State<WritingScreen> {
+  FocusNode titleNode, poemNode;
+
+  @override
+  void initState() {
+    super.initState();
+    titleNode = FocusNode();
+    poemNode = FocusNode();
+  }
+
+  @override
+  void dispose() {
+    titleNode.dispose();
+    poemNode.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(15.0),
-            child: Column(
-              children: <Widget>[
-                TextFormField(
-                  decoration: InputDecoration(
-                    hintText: "Title",
-                    enabledBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(
-                        color: Theme.of(context).accentColor,
-                      ),
-                    ),
+        child: ListView(
+          padding: const EdgeInsets.all(15.0),
+          children: <Widget>[
+            TextFormField(
+              textInputAction: TextInputAction.next,
+              focusNode: titleNode,
+              decoration: InputDecoration(
+                hintText: "Title",
+                enabledBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(
+                    color: Theme.of(context).accentColor,
                   ),
-                  style: Theme.of(context).accentTextTheme.headline5,
                 ),
-                TextFormField(
-                  maxLines: null,
-                  initialValue: "poem\n" * 100,
-                  decoration: const InputDecoration(
-                    hintText: "Start writing your heart....",
-                    border: InputBorder.none,
-                  ),
-                  style: Theme.of(context).accentTextTheme.headline6,
-                ),
-              ],
+              ),
+              onFieldSubmitted: (value) {
+                titleNode.unfocus();
+                FocusScope.of(context).requestFocus(poemNode);
+              },
+              style: Theme.of(context).accentTextTheme.headline5,
             ),
-          ),
+            TextFormField(
+              focusNode: poemNode,
+              maxLines: null,
+              minLines: 25,
+              initialValue: "poem\n",
+              decoration: const InputDecoration(
+                hintText: "Start writing your heart....",
+                border: InputBorder.none,
+              ),
+              style: Theme.of(context).accentTextTheme.headline6,
+            ),
+          ],
         ),
       ),
       bottomNavigationBar: const CBottomAppBar(),
