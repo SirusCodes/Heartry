@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 
 class PoemCard extends StatelessWidget {
-  const PoemCard({Key key}) : super(key: key);
+  const PoemCard({
+    Key key,
+    @required this.title,
+    @required this.poem,
+  }) : super(key: key);
 
+  final String title, poem;
   @override
   Widget build(BuildContext context) {
     return OutlinedButton(
@@ -11,12 +16,12 @@ class PoemCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
           Text(
-            "Title",
+            title,
             textAlign: TextAlign.start,
             style: Theme.of(context).accentTextTheme.headline5,
           ),
           Text(
-            "Peom\nPoem \nPoem adindwnsafknnafnsNffabankjnjnskn nawfn nawnn awnfnskn\nwands\n bhwabjdbshbaf\n dbahbjBa\n bdhjbhjabhjbdjahb\nbehjsbhj",
+            poem,
             overflow: TextOverflow.ellipsis,
             maxLines: 10,
             textAlign: TextAlign.start,

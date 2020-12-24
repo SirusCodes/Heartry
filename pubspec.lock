@@ -113,6 +113,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.2"
+  extended_list_library:
+    dependency: transitive
+    description:
+      name: extended_list_library
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.0"
   fake_async:
     dependency: transitive
     description:
@@ -144,13 +151,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.12.1"
-  flutter_staggered_grid_view:
-    dependency: "direct main"
-    description:
-      name: flutter_staggered_grid_view
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.3.3"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -416,6 +416,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.9.7+15"
+  waterfall_flow:
+    dependency: "direct main"
+    description:
+      name: waterfall_flow
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.5"
   web_socket_channel:
     dependency: transitive
     description:
