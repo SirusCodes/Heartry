@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-class CBottomAppBar extends StatefulWidget {
-  const CBottomAppBar({Key key}) : super(key: key);
+class PoemBottomAppBar extends StatefulWidget {
+  const PoemBottomAppBar({Key key}) : super(key: key);
 
   @override
-  _CBottomAppBarState createState() => _CBottomAppBarState();
+  _PoemBottomAppBarState createState() => _PoemBottomAppBarState();
 }
 
-class _CBottomAppBarState extends State<CBottomAppBar>
+class _PoemBottomAppBarState extends State<PoemBottomAppBar>
     with SingleTickerProviderStateMixin {
   AnimationController _iconController;
 

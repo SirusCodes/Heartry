@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:heartry/screens/writing_screen/writing_screen.dart';
 
-import '../../widgets/c_bottom_app_bar.dart';
+import 'widgets/poem_bottom_app_bar.dart';
 import 'widgets/c_app_bar.dart';
 import 'widgets/c_body.dart';
 
@@ -42,7 +42,7 @@ class PoemScreen extends StatelessWidget {
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
-      bottomNavigationBar: const CBottomAppBar(),
+      bottomNavigationBar: const PoemBottomAppBar(),
     );
   }
 }
