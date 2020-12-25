@@ -1,5 +1,8 @@
 import 'package:animated_icon_button/animated_icon_button.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+
+import '../../image_screen/image_screen.dart';
 
 class WritingBottomAppBar extends StatefulWidget {
   const WritingBottomAppBar({Key key}) : super(key: key);
@@ -73,7 +76,14 @@ class _WritingBottomAppBarState extends State<WritingBottomAppBar>
                 ListTile(
                   title: const Text("Share as Image"),
                   trailing: const Icon(Icons.image),
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      CupertinoPageRoute(
+                        builder: (_) => const ImageScreen(),
+                      ),
+                    );
+                  },
                 ),
               ],
             ),
