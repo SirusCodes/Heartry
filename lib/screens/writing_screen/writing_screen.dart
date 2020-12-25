@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:heartry/screens/poems_screen/widgets/poem_bottom_app_bar.dart';
+import '../poems_screen/widgets/poem_bottom_app_bar.dart';
+import 'widgets/writing_bottom_app_bar.dart';
 
 class WritingScreen extends StatefulWidget {
   const WritingScreen({Key key}) : super(key: key);
@@ -64,7 +65,7 @@ class _WritingScreenState extends State<WritingScreen> {
           ],
         ),
       ),
-      bottomNavigationBar: const PoemBottomAppBar(),
+      bottomNavigationBar: const WritingBottomAppBar(),
     );
   }
 }
