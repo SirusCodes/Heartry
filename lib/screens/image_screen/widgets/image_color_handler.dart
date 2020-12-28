@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../providers/color_gradient_provider.dart';
@@ -12,6 +13,24 @@ class ImageColorHandler extends ConsumerWidget {
     return SizedBox(
       height: 300,
       child: ReorderableListView(
+        header: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              const Text(
+                "Customize Gradient",
+                style: TextStyle(fontSize: 18),
+              ),
+              IconButton(
+                onPressed: () {
+                  _showColorPicker(context, Colors.white);
+                },
+                icon: const Icon(Icons.add),
+              )
+            ],
+          ),
+        ),
         onReorder: (oldIndex, newIndex) {
           if (oldIndex != newIndex)
             context.read(colorGradientListProvider).reorderColors(
@@ -20,14 +39,75 @@ class ImageColorHandler extends ConsumerWidget {
                 );
         },
         children: [
-          ..._gradientList
-              .map((e) => ListTile(
-                    key: ValueKey(e.value),
-                    tileColor: e,
-                  ))
-              .toList()
+          for (var i = 0; i < _gradientList.length; i++)
+            ListTile(
+              key: ValueKey("${_gradientList[i].hashCode}-$i"),
+              tileColor: _gradientList[i],
+              leading: Icon(
+                Icons.menu,
+                color: useWhiteForeground(_gradientList[i])
+                    ? Colors.white
+                    : Colors.black,
+              ),
+              trailing: _gradientList.length > 2
+                  ? IconButton(
+                      icon: Icon(
+                        Icons.close,
+                        color: useWhiteForeground(_gradientList[i])
+                            ? Colors.white
+                            : Colors.black,
+                      ),
+                      onPressed: () {
+                        context.read(colorGradientListProvider).removeColor(i);
+                      },
+                    )
+                  : null,
+              onTap: () {
+                _showColorPicker(context, _gradientList[i], i);
+              },
+            ),
         ],
       ),
+    );
+  }
+
+  void _showColorPicker(BuildContext context, Color currentColor, [int index]) {
+    Color selected = currentColor;
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          titlePadding: const EdgeInsets.all(0.0),
+          contentPadding: const EdgeInsets.all(0.0),
+          content: SingleChildScrollView(
+            child: ColorPicker(
+              pickerColor: currentColor,
+              onColorChanged: (color) {
+                selected = color;
+              },
+              pickerAreaHeightPercent: 0.7,
+              displayThumbColor: true,
+              pickerAreaBorderRadius: const BorderRadius.vertical(
+                top: Radius.circular(2.0),
+              ),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                index == null
+                    ? context.read(colorGradientListProvider).addColor(selected)
+                    : context
+                        .read(colorGradientListProvider)
+                        .changeColor(selected, index);
+
+                Navigator.pop(context);
+              },
+              child: const Text("Select"),
+            )
+          ],
+        );
+      },
     );
   }
 }

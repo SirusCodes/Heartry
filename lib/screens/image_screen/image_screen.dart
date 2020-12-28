@@ -21,6 +21,9 @@ class ImageScreen extends StatelessWidget {
           showModalBottomSheet(
             context: context,
             isDismissible: true,
+            shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.vertical(top: Radius.circular(15)),
+            ),
             builder: (context) {
               return const ImageColorHandler();
             },

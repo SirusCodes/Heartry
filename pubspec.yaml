@@ -26,6 +26,7 @@ dependencies:
   animated_icon_button: ^0.3.0
   animations: ^1.1.2
   cupertino_icons: ^1.0.1
+  flutter_colorpicker: ^0.3.4
   flutter_riverpod: ^0.12.1
   waterfall_flow: ^2.0.5
 
