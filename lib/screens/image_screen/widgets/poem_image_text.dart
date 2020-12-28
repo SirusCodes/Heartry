@@ -1,36 +1,45 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class PoemImageText extends StatelessWidget {
+import '../../../providers/text_providers.dart';
+
+class PoemImageText extends ConsumerWidget {
   const PoemImageText({Key key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, ScopedReader watch) {
+    final _scale = watch(textSizeProvider).state;
+    final color = watch(textColorProvider).state;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
-        const Text(
+        Text(
           "Title",
           textAlign: TextAlign.center,
+          textScaleFactor: _scale,
           style: TextStyle(
             fontSize: 30,
-            color: Colors.white,
+            color: color,
           ),
         ),
         Text(
-          "${("Poem" * 18)}\n" * 10,
-          style: const TextStyle(
+          "${"Poem" * 18}\n" * 10,
+          textScaleFactor: _scale,
+          style: TextStyle(
             fontSize: 15,
-            color: Colors.white,
+            color: color,
           ),
         ),
-        const Text(
+        Text(
           "~Poet",
           textAlign: TextAlign.end,
+          textScaleFactor: _scale,
           style: TextStyle(
             fontSize: 18,
-            color: Colors.white,
+            color: color,
           ),
         ),
       ],

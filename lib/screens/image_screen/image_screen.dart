@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'widgets/image_bottom_app_bar.dart';
 import 'widgets/image_color_handler.dart';
+import 'widgets/image_text_hander.dart';
 import 'widgets/poem_image_widget.dart';
 
 class ImageScreen extends StatelessWidget {
@@ -16,7 +17,18 @@ class ImageScreen extends StatelessWidget {
         ),
       ),
       bottomNavigationBar: ImageBottomAppBar(
-        onTextPressed: () {},
+        onTextPressed: () {
+          showModalBottomSheet(
+            context: context,
+            isDismissible: true,
+            shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.vertical(top: Radius.circular(15)),
+            ),
+            builder: (context) {
+              return const ImageTextHandler();
+            },
+          );
+        },
         onColorPressed: () {
           showModalBottomSheet(
             context: context,

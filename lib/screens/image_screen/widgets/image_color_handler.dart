@@ -3,6 +3,7 @@ import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../providers/color_gradient_provider.dart';
+import '../../../widgets/color_picker_dialog.dart';
 
 class ImageColorHandler extends ConsumerWidget {
   const ImageColorHandler({Key key}) : super(key: key);
@@ -72,40 +73,18 @@ class ImageColorHandler extends ConsumerWidget {
   }
 
   void _showColorPicker(BuildContext context, Color currentColor, [int index]) {
-    Color selected = currentColor;
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          titlePadding: const EdgeInsets.all(0.0),
-          contentPadding: const EdgeInsets.all(0.0),
-          content: SingleChildScrollView(
-            child: ColorPicker(
-              pickerColor: currentColor,
-              onColorChanged: (color) {
-                selected = color;
-              },
-              pickerAreaHeightPercent: 0.7,
-              displayThumbColor: true,
-              pickerAreaBorderRadius: const BorderRadius.vertical(
-                top: Radius.circular(2.0),
-              ),
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                index == null
-                    ? context.read(colorGradientListProvider).addColor(selected)
-                    : context
-                        .read(colorGradientListProvider)
-                        .changeColor(selected, index);
-
-                Navigator.pop(context);
-              },
-              child: const Text("Select"),
-            )
-          ],
+        return ColorPickerDialog(
+          currentColor: currentColor,
+          selectedColor: (color) {
+            index == null
+                ? context.read(colorGradientListProvider).addColor(color)
+                : context
+                    .read(colorGradientListProvider)
+                    .changeColor(color, index);
+          },
         );
       },
     );
