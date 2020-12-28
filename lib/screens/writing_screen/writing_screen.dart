@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../poems_screen/widgets/poem_bottom_app_bar.dart';
+
 import 'widgets/writing_bottom_app_bar.dart';
 
 class WritingScreen extends StatefulWidget {

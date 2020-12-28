@@ -1,6 +1,7 @@
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
-import 'package:heartry/screens/writing_screen/writing_screen.dart';
+
+import '../../writing_screen/writing_screen.dart';
 
 class PoemCard extends StatelessWidget {
   const PoemCard({
