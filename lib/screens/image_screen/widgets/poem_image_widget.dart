@@ -70,11 +70,7 @@ class PoemImageWidget extends StatelessWidget {
                   radius: 20,
                 ),
               ),
-              const Positioned.fill(
-                top: 30.0,
-                bottom: 30.0,
-                left: 30.0,
-                right: 30.0,
+              const Center(
                 child: PoemImageCard(),
               ),
             ],

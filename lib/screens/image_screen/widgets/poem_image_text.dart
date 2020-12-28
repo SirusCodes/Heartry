@@ -19,7 +19,7 @@ class PoemImageText extends StatelessWidget {
           ),
         ),
         Text(
-          "Poem\n" * 20,
+          "${("Poem" * 18)}\n" * 10,
           style: const TextStyle(
             fontSize: 15,
             color: Colors.white,
