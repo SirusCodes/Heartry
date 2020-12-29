@@ -4,7 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../providers/text_providers.dart';
 
 class PoemImageText extends ConsumerWidget {
-  const PoemImageText({Key key}) : super(key: key);
+  const PoemImageText({Key key, this.poem}) : super(key: key);
+
+  final List<String> poem;
 
   @override
   Widget build(BuildContext context, ScopedReader watch) {
@@ -25,12 +27,14 @@ class PoemImageText extends ConsumerWidget {
             color: color,
           ),
         ),
-        Text(
-          "${"Poem" * 18}\n" * 10,
-          textScaleFactor: _scale,
-          style: TextStyle(
-            fontSize: 15,
-            color: color,
+        ...poem.map(
+          (e) => Text(
+            e,
+            textScaleFactor: _scale,
+            style: TextStyle(
+              fontSize: 15,
+              color: color,
+            ),
           ),
         ),
         Text(

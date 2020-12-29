@@ -5,8 +5,8 @@ import '../../../providers/color_gradient_provider.dart';
 import 'poem_image_card.dart';
 
 class PoemImageWidget extends StatelessWidget {
-  const PoemImageWidget({Key key}) : super(key: key);
-
+  const PoemImageWidget({Key key, this.poem}) : super(key: key);
+  final List<String> poem;
   @override
   Widget build(BuildContext context) {
     return AspectRatio(
@@ -70,8 +70,10 @@ class PoemImageWidget extends StatelessWidget {
                   radius: 20,
                 ),
               ),
-              const Center(
-                child: PoemImageCard(),
+              Center(
+                child: PoemImageCard(
+                  poem: poem,
+                ),
               ),
             ],
           ),

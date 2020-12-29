@@ -80,7 +80,11 @@ class _WritingBottomAppBarState extends State<WritingBottomAppBar>
                     Navigator.push(
                       context,
                       CupertinoPageRoute(
-                        builder: (_) => const ImageScreen(),
+                        builder: (_) => ImageScreen(
+                          title: "Title",
+                          poem: ("${"Poem" * 18}\n" * 10).split("\n"),
+                          poet: "Poet",
+                        ),
                       ),
                     );
                   },
