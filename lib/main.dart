@@ -45,6 +45,12 @@ class MyApp extends StatelessWidget {
           subtitle1: TextStyle(
             color: Colors.deepPurpleAccent.shade100,
           ),
+          bodyText1: TextStyle(
+            color: Colors.deepPurpleAccent.shade100,
+          ),
+          bodyText2: TextStyle(
+            color: Colors.deepPurpleAccent.shade100,
+          ),
         ),
       ),
       home: const PoemScreen(),

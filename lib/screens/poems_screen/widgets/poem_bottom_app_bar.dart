@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../settings_screen/settings_screen.dart';
+
 class PoemBottomAppBar extends StatefulWidget {
   const PoemBottomAppBar({Key key}) : super(key: key);
 
@@ -53,12 +55,12 @@ class _PoemBottomAppBarState extends State<PoemBottomAppBar>
                 ListTile(
                   title: const Text("Settings"),
                   trailing: const Icon(Icons.settings),
-                  onTap: () {},
-                ),
-                ListTile(
-                  title: const Text("About"),
-                  trailing: const Icon(Icons.person),
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const SettingsScreen()),
+                    );
+                  },
                 ),
               ],
             ),
