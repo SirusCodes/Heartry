@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'widgets/contributors.dart';
+import 'widgets/others.dart';
 import 'widgets/support_development.dart';
 
 class AboutScreen extends StatelessWidget {
@@ -23,7 +24,8 @@ class AboutScreen extends StatelessWidget {
               ),
             ),
             const Contributors(),
-            const SupportDevelopment()
+            const SupportDevelopment(),
+            const Others(),
           ],
         ),
       ),

@@ -20,6 +20,31 @@ class SupportDevelopment extends StatelessWidget {
           ),
           onTap: () => _launchURL("https://github.com/SirusCodes/Heartry"),
         ),
+        ListTile(
+          title: const Text("Rate the app"),
+          subtitle: const Text(
+            "Love this app? Let us know in Google Play Store",
+          ),
+          leading: const CircleAvatar(
+            child: Icon(Icons.star),
+          ),
+          onTap: () {},
+        ),
+        ListTile(
+          title: const Text("Donate"),
+          subtitle: const Text(
+            "If you think that we deserve some money for our work," +
+                " you can leave some amount here.",
+          ),
+          leading: const CircleAvatar(child: Icon(Icons.card_giftcard_rounded)),
+          onTap: () {},
+        ),
+        ListTile(
+          title: const Text("Share"),
+          subtitle: const Text("Share it with your friends and family"),
+          leading: const CircleAvatar(child: Icon(Icons.share)),
+          onTap: () {},
+        ),
       ],
     );
   }
