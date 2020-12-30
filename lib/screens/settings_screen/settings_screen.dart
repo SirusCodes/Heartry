@@ -26,7 +26,7 @@ class SettingsScreen extends StatelessWidget {
                 child: Icon(Icons.person),
               ),
               title: const Text("About"),
-              subtitle: const Text("Developers, social links, repository"),
+              subtitle: const Text("Developement, donations, repository, info"),
               onTap: () {
                 Navigator.push(
                   context,
