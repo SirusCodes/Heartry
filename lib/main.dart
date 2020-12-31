@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/all.dart';
 
+import 'init_get_it.dart';
 import 'screens/poems_screen/poems_screen.dart';
 
 void main() {
+  initGetIt();
+
   runApp(ProviderScope(child: MyApp()));
 }
 

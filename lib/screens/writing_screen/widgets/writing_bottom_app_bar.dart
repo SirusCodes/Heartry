@@ -1,7 +1,9 @@
 import 'package:animated_icon_button/animated_icon_button.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../utils/undo_redo.dart';
 import '../../image_screen/image_screen.dart';
 
 class WritingBottomAppBar extends StatefulWidget {
@@ -38,30 +40,35 @@ class _WritingBottomAppBarState extends State<WritingBottomAppBar>
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Row(
-            children: <Widget>[
-              IconButton(
-                icon: const Icon(Icons.arrow_back_ios_rounded),
-                onPressed: () => Navigator.pop(context),
-              ),
-              const Spacer(),
-              IconButton(
-                icon: const Icon(Icons.undo_rounded),
-                onPressed: () {},
-              ),
-              IconButton(
-                icon: const Icon(Icons.redo_rounded),
-                onPressed: () {},
-              ),
-              const Spacer(),
-              AnimatedIconButton(
-                size: 25,
-                animationController: _iconController,
-                startIcon: const Icon(Icons.share),
-                endIcon: const Icon(Icons.close_rounded),
-                onPressed: _changeIcon,
-              ),
-            ],
+          Consumer(
+            builder: (context, watch, child) {
+              final undoRedo = watch(undoRedoProvider);
+              return Row(
+                children: <Widget>[
+                  IconButton(
+                    icon: const Icon(Icons.arrow_back_ios_rounded),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                  const Spacer(),
+                  IconButton(
+                    icon: const Icon(Icons.undo_rounded),
+                    onPressed: undoRedo.canUndo ? undoRedo.undo : null,
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.redo_rounded),
+                    onPressed: undoRedo.canRedo ? undoRedo.redo : null,
+                  ),
+                  const Spacer(),
+                  AnimatedIconButton(
+                    size: 25,
+                    animationController: _iconController,
+                    startIcon: const Icon(Icons.share),
+                    endIcon: const Icon(Icons.close_rounded),
+                    onPressed: _changeIcon,
+                  ),
+                ],
+              );
+            },
           ),
           SizeTransition(
             sizeFactor: _iconController,
