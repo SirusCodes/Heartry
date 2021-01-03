@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 
+import '../../widgets/c_screen_title.dart';
+import '../../widgets/only_back_button_bottom_app_bar.dart';
 import '../about_screen/about_screen.dart';
+import '../profile_screen/profile_screen.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({Key key}) : super(key: key);
@@ -11,19 +14,25 @@ class SettingsScreen extends StatelessWidget {
       body: SafeArea(
         child: ListView(
           children: [
-            Padding(
-              padding: const EdgeInsets.all(15.0),
-              child: Text(
-                "Settings",
-                style: Theme.of(context)
-                    .accentTextTheme
-                    .headline3
-                    .copyWith(fontWeight: FontWeight.w500),
-              ),
+            const CScreenTitle(
+              title: "Settings",
             ),
             ListTile(
               leading: const CircleAvatar(
                 child: Icon(Icons.person),
+              ),
+              title: const Text("Profile"),
+              subtitle: const Text("Name, Profile & other"),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const ProfileScreen()),
+                );
+              },
+            ),
+            ListTile(
+              leading: const CircleAvatar(
+                child: Icon(Icons.info),
               ),
               title: const Text("About"),
               subtitle: const Text("Developement, donations, repository, info"),
@@ -37,16 +46,7 @@ class SettingsScreen extends StatelessWidget {
           ],
         ),
       ),
-      bottomNavigationBar: BottomAppBar(
-        child: Row(
-          children: <Widget>[
-            IconButton(
-              icon: const Icon(Icons.arrow_back_ios),
-              onPressed: () {},
-            )
-          ],
-        ),
-      ),
+      bottomNavigationBar: const OnlyBackButtonBottomAppBar(),
     );
   }
 }

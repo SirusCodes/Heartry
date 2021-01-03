@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../widgets/c_screen_title.dart';
+import '../../widgets/only_back_button_bottom_app_bar.dart';
 import 'widgets/contributors.dart';
 import 'widgets/others.dart';
 import 'widgets/support_development.dart';
@@ -12,35 +14,15 @@ class AboutScreen extends StatelessWidget {
     return Scaffold(
       body: SafeArea(
         child: ListView(
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.all(15.0),
-              child: Text(
-                "About",
-                style: Theme.of(context)
-                    .accentTextTheme
-                    .headline3
-                    .copyWith(fontWeight: FontWeight.w500),
-              ),
-            ),
-            const Contributors(),
-            const SupportDevelopment(),
-            const Others(),
+          children: const <Widget>[
+            CScreenTitle(title: "About"),
+            Contributors(),
+            SupportDevelopment(),
+            Others(),
           ],
         ),
       ),
-      bottomNavigationBar: BottomAppBar(
-        child: Row(
-          children: <Widget>[
-            IconButton(
-              icon: const Icon(Icons.arrow_back_ios),
-              onPressed: () {
-                Navigator.pop(context);
-              },
-            )
-          ],
-        ),
-      ),
+      bottomNavigationBar: const OnlyBackButtonBottomAppBar(),
     );
   }
 }

@@ -1,10 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:heartry/utils/undo_redo.dart';
 
 import '../../init_get_it.dart';
+import '../../utils/undo_redo.dart';
 import 'widgets/writing_bottom_app_bar.dart';
 
 class WritingScreen extends StatefulWidget {

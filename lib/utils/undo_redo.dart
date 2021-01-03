@@ -2,7 +2,8 @@ import 'dart:collection';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:heartry/init_get_it.dart';
+
+import '../init_get_it.dart';
 
 final undoRedoProvider = ChangeNotifierProvider<UndoRedo>(
   (_) => locator<UndoRedo>(),
