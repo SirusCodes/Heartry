@@ -1,12 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:heartry/providers/text_providers.dart';
 
 import '../../../providers/color_gradient_provider.dart';
 import 'poem_image_card.dart';
 
 class PoemImageWidget extends StatelessWidget {
-  const PoemImageWidget({Key key, this.poem}) : super(key: key);
+  const PoemImageWidget({
+    Key key,
+    this.poem,
+    this.page,
+    this.total,
+  }) : super(key: key);
   final List<String> poem;
+  final int page, total;
+
   @override
   Widget build(BuildContext context) {
     return AspectRatio(
@@ -34,6 +42,25 @@ class PoemImageWidget extends StatelessWidget {
                     ),
                   );
                 },
+              ),
+              Positioned(
+                top: 20,
+                right: 20,
+                child: Consumer(
+                  builder: (context, watch, child) {
+                    final _scale = watch(textSizeProvider).state;
+                    final color = watch(textColorProvider).state;
+
+                    return Text(
+                      "${page + 1}/$total",
+                      textScaleFactor: _scale,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: color,
+                      ),
+                    );
+                  },
+                ),
               ),
               const Positioned(
                 top: -30,

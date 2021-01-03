@@ -39,6 +39,8 @@ class ImageScreen extends StatelessWidget {
                     itemCount: poemLines.length,
                     itemBuilder: (context, index) => PoemImageWidget(
                       poem: poemLines[index],
+                      page: index,
+                      total: poemLines.length,
                     ),
                   );
                 },
@@ -102,13 +104,15 @@ class ImageScreen extends StatelessWidget {
 
     // subtracting poem height
     for (final line in poem) {
-      _height -=
+      final double _heightToSub =
           _calcTextSize(context, constraints, line, 15, _textScale).height;
+
+      _height -= _heightToSub;
 
       if (_height <= 0) {
         poemLines.add([...poemLine]);
         poemLine.clear();
-        _height = _availableHeight;
+        _height = _availableHeight - _heightToSub;
       }
 
       poemLine.add(line);
