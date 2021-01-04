@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:heartry/providers/text_providers.dart';
 
 import '../../../providers/color_gradient_provider.dart';
+import '../../../providers/text_providers.dart';
 import 'poem_image_card.dart';
 
 class PoemImageWidget extends StatelessWidget {
