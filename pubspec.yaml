@@ -33,14 +33,26 @@ dependencies:
   url_launcher: ^5.7.10
   waterfall_flow: ^2.0.5
 
+  # Database dependencies
+  moor: ^3.4.0
+  path: ^1.7.0
+  path_provider: ^1.6.24
+  sqlite3_flutter_libs: ^0.3.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
   integration_test:
     sdk: flutter
-  builders: null
+  build_runner:
   json_serializable: ^3.5.1
   lint: ^1.5.1
+
+  # Database dependencies
+  moor_generator: ^3.4.0
+
+dependency_overrides:
+  cli_util: ^0.2.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
