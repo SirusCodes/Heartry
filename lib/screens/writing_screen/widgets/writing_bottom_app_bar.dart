@@ -1,13 +1,16 @@
 import 'package:animated_icon_button/animated_icon_button.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../utils/undo_redo.dart';
-import '../../image_screen/image_screen.dart';
 
 class WritingBottomAppBar extends StatefulWidget {
-  const WritingBottomAppBar({Key key}) : super(key: key);
+  const WritingBottomAppBar({
+    Key key,
+    @required this.onShareAsImage,
+  }) : super(key: key);
+
+  final VoidCallback onShareAsImage;
 
   @override
   _WritingBottomAppBarState createState() => _WritingBottomAppBarState();
@@ -36,7 +39,6 @@ class _WritingBottomAppBarState extends State<WritingBottomAppBar>
   @override
   Widget build(BuildContext context) {
     return BottomAppBar(
-      shape: const CircularNotchedRectangle(),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -83,18 +85,7 @@ class _WritingBottomAppBarState extends State<WritingBottomAppBar>
                 ListTile(
                   title: const Text("Share as Image"),
                   trailing: const Icon(Icons.image),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      CupertinoPageRoute(
-                        builder: (_) => ImageScreen(
-                          title: "Title",
-                          poem: ("${"Poem" * 18}\n" * 10).split("\n"),
-                          poet: "Poet",
-                        ),
-                      ),
-                    );
-                  },
+                  onTap: () => widget.onShareAsImage(),
                 ),
               ],
             ),

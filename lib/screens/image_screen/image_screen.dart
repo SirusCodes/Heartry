@@ -38,6 +38,7 @@ class ImageScreen extends StatelessWidget {
                   return PageView.builder(
                     itemCount: poemLines.length,
                     itemBuilder: (context, index) => PoemImageWidget(
+                      title: title,
                       poem: poemLines[index],
                       page: index,
                       total: poemLines.length,

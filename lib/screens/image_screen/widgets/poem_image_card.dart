@@ -5,9 +5,10 @@ import 'package:flutter/material.dart';
 import 'poem_image_text.dart';
 
 class PoemImageCard extends StatelessWidget {
-  const PoemImageCard({Key key, this.poem}) : super(key: key);
+  const PoemImageCard({Key key, this.poem, this.title}) : super(key: key);
 
   final List<String> poem;
+  final String title;
 
   @override
   Widget build(BuildContext context) {
@@ -32,6 +33,7 @@ class PoemImageCard extends StatelessWidget {
             padding: const EdgeInsets.all(30),
             child: PoemImageText(
               poem: poem,
+              title: title,
             ),
           ),
         ),

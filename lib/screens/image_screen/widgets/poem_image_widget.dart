@@ -8,12 +8,14 @@ import 'poem_image_card.dart';
 class PoemImageWidget extends StatelessWidget {
   const PoemImageWidget({
     Key key,
+    this.title,
     this.poem,
     this.page,
     this.total,
   }) : super(key: key);
   final List<String> poem;
   final int page, total;
+  final String title;
 
   @override
   Widget build(BuildContext context) {
@@ -100,6 +102,7 @@ class PoemImageWidget extends StatelessWidget {
               Center(
                 child: PoemImageCard(
                   poem: poem,
+                  title: title,
                 ),
               ),
             ],

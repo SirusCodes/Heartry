@@ -1,10 +1,12 @@
 import 'dart:async';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../../database/database.dart';
 import '../../init_get_it.dart';
 import '../../utils/undo_redo.dart';
+import '../image_screen/image_screen.dart';
 import 'widgets/writing_bottom_app_bar.dart';
 
 class WritingScreen extends StatefulWidget {
@@ -35,7 +37,13 @@ class _WritingScreenState extends State<WritingScreen>
     titleNode = FocusNode();
     poemNode = FocusNode();
 
-    _poemModel = widget.model;
+    _poemModel = widget.model ??
+        PoemModel(
+          id: null,
+          lastEdit: null,
+          title: null,
+          poem: null,
+        );
 
     _titleTextController = TextEditingController(text: _poemModel?.title);
     undoRedo.textEditingController =
@@ -97,11 +105,11 @@ class _WritingScreenState extends State<WritingScreen>
                     focusNode: poemNode,
                     maxLines: null,
                     minLines: 25,
-                    onChanged: _onChangeHandler,
                     decoration: const InputDecoration(
                       hintText: "Start writing your heart....",
                       border: InputBorder.none,
                     ),
+                    onChanged: _onChangeHandler,
                     style: Theme.of(context).accentTextTheme.headline6,
                   ),
                   const SizedBox(height: kBottomNavigationBarHeight)
@@ -111,7 +119,21 @@ class _WritingScreenState extends State<WritingScreen>
             Positioned(
               bottom: 0,
               width: MediaQuery.of(context).size.width,
-              child: const WritingBottomAppBar(),
+              child: WritingBottomAppBar(
+                onShareAsImage: () {
+                  _handleDBChanges();
+                  Navigator.push(
+                    context,
+                    CupertinoPageRoute(
+                      builder: (_) => ImageScreen(
+                        title: _titleTextController.text,
+                        poem: undoRedo.textEditingController.text.split("\n"),
+                        poet: "Poet",
+                      ),
+                    ),
+                  );
+                },
+              ),
             )
           ],
         ),
@@ -131,10 +153,14 @@ class _WritingScreenState extends State<WritingScreen>
     );
   }
 
+  bool get _hasChanged {
+    return _poemModel.title != _titleTextController.text ||
+        _poemModel.poem != undoRedo.textEditingController.text;
+  }
+
   void _handleDBChanges() {
-    if (_poemModel.title != _titleTextController.text ||
-        _poemModel.poem != undoRedo.textEditingController.text) {
-      if (_poemModel == null) {
+    if (_hasChanged) {
+      if (_poemModel.id == null) {
         _save();
         print("save");
       } else {
@@ -148,8 +174,8 @@ class _WritingScreenState extends State<WritingScreen>
     _poemModel = PoemModel(
       id: null,
       lastEdit: DateTime.now(),
-      title: _titleTextController.text,
-      poem: undoRedo.textEditingController.text,
+      title: _titleTextController.text.trim(),
+      poem: undoRedo.textEditingController.text.trim(),
     );
     poemDB.insertPoem(_poemModel);
   }
@@ -157,8 +183,8 @@ class _WritingScreenState extends State<WritingScreen>
   void _update() {
     _poemModel = _poemModel.copyWith(
       lastEdit: DateTime.now(),
-      title: _titleTextController.text,
-      poem: undoRedo.textEditingController.text,
+      title: _titleTextController.text.trim(),
+      poem: undoRedo.textEditingController.text.trim(),
     );
     poemDB.updatePoem(_poemModel);
   }
