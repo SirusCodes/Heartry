@@ -19,8 +19,13 @@ class UndoRedo extends ChangeNotifier {
 
   ListQueue<String> undoStack, redoStack;
 
-  bool get canUndo => undoStack.isNotEmpty;
-  bool get canRedo => redoStack.isNotEmpty;
+  bool get canUndo {
+    return undoStack.isNotEmpty && undoStack.last != textEditingController.text;
+  }
+
+  bool get canRedo {
+    return redoStack.isNotEmpty && redoStack.last != textEditingController.text;
+  }
 
   void clearAllStack() {
     undoStack.clear();
@@ -36,13 +41,25 @@ class UndoRedo extends ChangeNotifier {
   void undo() {
     if (!canUndo) return;
 
-    String result;
+    final result = undoStack.removeFirst();
+    redoStack.addFirst(result);
 
-    do {
-      result = undoStack.removeFirst();
-      if (redoStack.isEmpty || result != redoStack.first)
-        redoStack.addFirst(result);
-    } while (result == textEditingController.text);
+    printStacks();
+
+    notifyListeners();
+    textEditingController.text = undoStack.first;
+    textEditingController.selection = TextSelection.fromPosition(
+      TextPosition(offset: undoStack.first.length),
+    );
+  }
+
+  void redo() {
+    if (!canRedo) return;
+
+    final result = redoStack.removeFirst();
+    undoStack.addFirst(result);
+
+    printStacks();
 
     notifyListeners();
     textEditingController.text = result;
@@ -51,20 +68,8 @@ class UndoRedo extends ChangeNotifier {
     );
   }
 
-  void redo() {
-    if (!canRedo) return;
-
-    String result;
-    do {
-      result = redoStack.removeFirst();
-      if (undoStack.isEmpty || result != undoStack.first)
-        undoStack.addFirst(result);
-    } while (result == textEditingController.text);
-
-    notifyListeners();
-    textEditingController.text = result;
-    textEditingController.selection = TextSelection.fromPosition(
-      TextPosition(offset: result.length),
-    );
+  void printStacks() {
+    debugPrint("Undo $undoStack");
+    debugPrint("Redo $redoStack");
   }
 }

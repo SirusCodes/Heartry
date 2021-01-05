@@ -49,6 +49,8 @@ class _WritingScreenState extends State<WritingScreen>
     undoRedo.textEditingController =
         TextEditingController(text: _poemModel?.poem);
 
+    undoRedo.registerChange(undoRedo.textEditingController.text);
+
     WidgetsBinding.instance.addObserver(this);
   }
 
