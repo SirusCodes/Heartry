@@ -12,24 +12,36 @@ class PoemCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return OpenContainer(
+      closedShape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+      ),
       openBuilder: (_, __) => WritingScreen(model: model),
-      closedBuilder: (_, __) => OutlinedButton(
-        onPressed: null,
+      closedBuilder: (_, __) => Container(
+        padding: const EdgeInsets.all(10.0),
+        decoration: BoxDecoration(
+          color: Colors.deepPurple.shade50,
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(
+            color: Colors.deepPurple.shade100,
+          ),
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            Text(
-              model.title,
-              textAlign: TextAlign.start,
-              style: Theme.of(context).accentTextTheme.headline5,
-            ),
-            Text(
-              model.poem,
-              overflow: TextOverflow.ellipsis,
-              maxLines: 10,
-              textAlign: TextAlign.start,
-              style: Theme.of(context).accentTextTheme.subtitle1,
-            )
+            if (model.title.isNotEmpty)
+              Text(
+                model.title,
+                textAlign: TextAlign.start,
+                style: Theme.of(context).accentTextTheme.headline5,
+              ),
+            if (model.poem.isNotEmpty)
+              Text(
+                model.poem,
+                overflow: TextOverflow.ellipsis,
+                maxLines: 10,
+                textAlign: TextAlign.start,
+                style: Theme.of(context).accentTextTheme.subtitle1,
+              )
           ],
         ),
       ),

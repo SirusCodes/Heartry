@@ -20,7 +20,6 @@ class CBody extends ConsumerWidget {
                 padding: const EdgeInsets.all(10.0),
                 sliver: SliverWaterfallFlow(
                   gridDelegate:
-                      // ignore: lines_longer_than_80_chars
                       const SliverWaterfallFlowDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
                     mainAxisSpacing: 10,
