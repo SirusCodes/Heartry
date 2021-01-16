@@ -27,7 +27,11 @@ class CBody extends ConsumerWidget {
                   ),
                   delegate: SliverChildBuilderDelegate(
                     (context, index) {
-                      return PoemCard(model: poems[index]);
+                      final poem = poems[index];
+                      return PoemCard(
+                        model: poem,
+                        key: ValueKey("${poem.lastEdit}-${poem.id}"),
+                      );
                     },
                     childCount: poems.length,
                   ),

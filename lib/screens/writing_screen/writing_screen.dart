@@ -162,8 +162,12 @@ class _WritingScreenState extends State<WritingScreen>
         _poemModel.poem != undoRedo.textEditingController.text;
   }
 
+  bool get _isNotEmpty =>
+      (_titleTextController.text).isNotEmpty ||
+      (undoRedo.textEditingController.text).isNotEmpty;
+
   void _handleDBChanges() {
-    if (_hasChanged) {
+    if (_hasChanged && _isNotEmpty) {
       if (_poemModel.id == null) {
         _save();
         print("save");
