@@ -20,7 +20,7 @@ void main() {
   );
 
   Catcher(
-    debugConfig: releaseCatcher,
+    releaseConfig: releaseCatcher,
     rootWidget: ProviderScope(child: MyApp()),
   );
 }
