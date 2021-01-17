@@ -1,3 +1,4 @@
+import 'package:catcher/catcher.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/all.dart';
 
@@ -7,7 +8,21 @@ import 'screens/poems_screen/poems_screen.dart';
 void main() {
   initGetIt();
 
-  runApp(ProviderScope(child: MyApp()));
+  final releaseCatcher = CatcherOptions(
+    DialogReportMode(),
+    [
+      EmailManualHandler(
+        ["heartrypeoms@gmail.com"],
+        emailTitle: "Heartry crash report",
+        printLogs: true,
+      ),
+    ],
+  );
+
+  Catcher(
+    debugConfig: releaseCatcher,
+    rootWidget: ProviderScope(child: MyApp()),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -15,6 +30,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: "Heartry",
+      navigatorKey: Catcher.navigatorKey,
       theme: ThemeData(
         primarySwatch: Colors.deepPurple,
         outlinedButtonTheme: OutlinedButtonThemeData(

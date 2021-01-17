@@ -25,26 +25,25 @@ dependencies:
     sdk: flutter
   animated_icon_button: ^0.3.0
   animations: ^1.1.2
+  catcher: ^0.4.0
   cupertino_icons: ^1.0.1
   flutter_colorpicker: ^0.3.4
   flutter_riverpod: ^0.12.1
   get_it: ^5.0.3
   json_annotation: ^3.1.1
-  url_launcher: ^5.7.10
-  waterfall_flow: ^2.0.5
-
-  # Database dependencies
   moor: ^3.4.0
   path: ^1.7.0
   path_provider: ^1.6.24
   sqlite3_flutter_libs: ^0.3.0
+  url_launcher: ^5.7.10
+  waterfall_flow: ^2.0.5
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   integration_test:
     sdk: flutter
-  build_runner:
+  build_runner: null
   json_serializable: ^3.5.1
   lint: ^1.5.1
 
