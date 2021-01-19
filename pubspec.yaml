@@ -33,7 +33,9 @@ dependencies:
   json_annotation: ^3.1.1
   moor: ^3.4.0
   path: ^1.7.0
-  path_provider: ^1.6.24
+  path_provider: ^1.6.27
+  screenshot: ^0.2.0
+  share: ^0.6.5+4
   sqlite3_flutter_libs: ^0.3.0
   url_launcher: ^5.7.10
   waterfall_flow: ^2.0.5
