@@ -8,6 +8,7 @@ import 'package:screenshot/screenshot.dart';
 import 'package:share/share.dart';
 
 import '../../providers/text_providers.dart';
+import '../share_images_screen/share_images_screen.dart';
 import 'widgets/image_bottom_app_bar.dart';
 import 'widgets/image_color_handler.dart';
 import 'widgets/image_text_hander.dart';
@@ -40,7 +41,7 @@ class _ImageScreenState extends State<ImageScreen> {
     super.dispose();
   }
 
-  List<List<String>> poemLines;
+  List<List<String>> poemLines = [];
 
   @override
   Widget build(BuildContext context) {
@@ -103,44 +104,86 @@ class _ImageScreenState extends State<ImageScreen> {
           );
         },
         onDonePressed: () async {
+          imageCache.clear();
+
           final List<String> images = [];
 
-          showDialog(
-            context: context,
-            barrierDismissible: false,
-            builder: (context) {
-              return const Dialog(
-                child: Material(
-                  child: Center(
-                    heightFactor: 3,
-                    child: CircularProgressIndicator(),
-                  ),
-                ),
-              );
-            },
-          );
+          _showProgressDialog(context);
 
           for (int pageIndex = 0; pageIndex < poemLines.length; pageIndex++) {
             _pageController.jumpToPage(pageIndex);
-            final path = await _getImage();
+            final path = await _getImage(pageIndex);
             images.add(path);
-
-            print("Print: $path");
           }
 
           Navigator.pop(context);
-          Share.shareFiles(images);
+
+          _showShareTypeDialog(context, images);
         },
       ),
     );
   }
 
-  Future<String> _getImage() async {
+  Future _showShareTypeDialog(BuildContext context, List<String> images) {
+    return showDialog(
+      context: context,
+      builder: (context) => SimpleDialog(
+        title: const Text("How would you like to share?"),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 24.0,
+          vertical: 10,
+        ),
+        children: [
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context);
+              Share.shareFiles(
+                images,
+                mimeTypes: List.generate(
+                  poemLines.length,
+                  (index) => "image/png",
+                ),
+              );
+            },
+            child: const Text("Share all"),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => ShareImagesScreen(imagePaths: images),
+              ),
+            ),
+            child: const Text("Share in parts"),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showProgressDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        return const Dialog(
+          child: Material(
+            child: Center(
+              heightFactor: 3,
+              child: CircularProgressIndicator(),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Future<String> _getImage(int index) async {
     final externalStorage = await getExternalStorageDirectory();
 
     final path = join(
       externalStorage.path,
-      "${DateTime.now().toIso8601String()}.png",
+      "${widget.title}-$index.png",
     );
 
     final File imgFile = await _screenshot.capture(
