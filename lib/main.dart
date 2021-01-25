@@ -6,12 +6,12 @@ import 'package:heartry/database/config.dart';
 import 'init_get_it.dart';
 import 'screens/poems_screen/poems_screen.dart';
 
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   initGetIt();
 
-  locator<Config>().init();
+  await locator<Config>().init();
 
   final releaseCatcher = CatcherOptions(
     DialogReportMode(),
