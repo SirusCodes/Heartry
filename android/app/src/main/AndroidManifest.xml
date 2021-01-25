@@ -2,6 +2,7 @@
     package="com.example.heartry">
    <application
         android:label="heartry"
+        android:requestLegacyExternalStorage="true"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"
