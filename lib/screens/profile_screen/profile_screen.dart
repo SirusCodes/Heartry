@@ -45,9 +45,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: ListView(
+        child: Column(
           children: <Widget>[
-            const CScreenTitle(title: "Profile"),
+            const Align(
+              alignment: Alignment.centerLeft,
+              child: CScreenTitle(title: "Profile"),
+            ),
             GestureDetector(
               onTap: () => _setImage(context),
               child: Consumer(
