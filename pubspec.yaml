@@ -48,10 +48,9 @@ dev_dependencies:
   integration_test:
     sdk: flutter
   build_runner: null
+  flutter_launcher_icons: ^0.8.1
   json_serializable: ^3.5.1
   lint: ^1.5.1
-
-  # Database dependencies
   moor_generator: ^3.4.0
 
 dependency_overrides:
@@ -69,7 +68,6 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/logos/
-    - assets/images/
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
   # An image asset can refer to one or more resolution-specific "variants", see
