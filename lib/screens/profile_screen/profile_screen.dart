@@ -5,6 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../database/config.dart';
 import '../../init_get_it.dart';
@@ -21,7 +22,6 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   TextEditingController _nameController;
 
-  String _imagePath;
   String _name;
 
   final _config = locator<Config>();
@@ -29,7 +29,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   void initState() {
     super.initState();
-    _imagePath = _config.profile;
     _name = _config.name;
     _nameController = TextEditingController(text: _name);
   }
@@ -50,18 +49,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
           children: <Widget>[
             const CScreenTitle(title: "Profile"),
             GestureDetector(
-              onTap: () => _setImage(),
-              child: CircleAvatar(
-                maxRadius: 100,
-                minRadius: 80,
-                backgroundImage:
-                    _imagePath != null ? FileImage(File(_imagePath)) : null,
-                child: _imagePath == null
-                    ? const Icon(
-                        Icons.person_add,
-                        size: 100,
-                      )
-                    : null,
+              onTap: () => _setImage(context),
+              child: Consumer(
+                builder: (context, watch, child) {
+                  final _imagePath = watch(configProvider).profile;
+                  return CircleAvatar(
+                    maxRadius: 100,
+                    minRadius: 80,
+                    backgroundImage:
+                        _imagePath != null ? FileImage(File(_imagePath)) : null,
+                    child: _imagePath == null
+                        ? const Icon(
+                            Icons.person_add,
+                            size: 100,
+                          )
+                        : null,
+                  );
+                },
               ),
             ),
             const SizedBox(height: 10),
@@ -83,24 +87,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Future<void> _setImage() async {
+  Future<void> _setImage(BuildContext context) async {
     final picker = ImagePicker();
     final pickedImage = await picker.getImage(source: ImageSource.gallery);
 
     if (pickedImage == null) return;
 
-    final directory = await getApplicationDocumentsDirectory();
-    final fileExtension = p.extension(pickedImage.path);
+    imageCache.clear();
 
-    final imageSaved = join(directory.path, "profile-picture$fileExtension");
+    final directory = await getApplicationDocumentsDirectory();
+    final file = p.basename(pickedImage.path);
+
+    final imageSaved = join(directory.path, file);
     final image = await File(imageSaved).writeAsBytes(
       await pickedImage.readAsBytes(),
     );
 
-    setState(() {
-      _imagePath = image.path;
-    });
-
-    _config.profile = _imagePath;
+    context.read(configProvider).profile = image.path;
   }
 }
