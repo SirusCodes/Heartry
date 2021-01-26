@@ -49,6 +49,7 @@ dev_dependencies:
     sdk: flutter
   build_runner: null
   flutter_launcher_icons: ^0.8.1
+  flutter_native_splash: ^0.2.8
   json_serializable: ^3.5.1
   lint: ^1.5.1
   moor_generator: ^3.4.0
