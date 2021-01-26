@@ -1,12 +1,16 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:heartry/database/config.dart';
+import 'package:heartry/init_get_it.dart';
 
 import '../../../providers/color_gradient_provider.dart';
 import '../../../providers/text_providers.dart';
 import 'poem_image_card.dart';
 
 class PoemImageWidget extends StatelessWidget {
-  const PoemImageWidget({
+  PoemImageWidget({
     Key key,
     @required this.title,
     @required this.poem,
@@ -17,6 +21,8 @@ class PoemImageWidget extends StatelessWidget {
   final List<String> poem;
   final int page, total;
   final String title, poet;
+
+  final _imagePath = locator<Config>().profile;
 
   @override
   Widget build(BuildContext context) {
@@ -46,25 +52,24 @@ class PoemImageWidget extends StatelessWidget {
                   );
                 },
               ),
-              Positioned(
-                top: 20,
-                right: 20,
-                child: Consumer(
-                  builder: (context, watch, child) {
-                    final _scale = watch(textSizeProvider).state;
-                    final color = watch(textColorProvider).state;
+              if (total > 1)
+                Positioned(
+                  top: 20,
+                  right: 20,
+                  child: Consumer(
+                    builder: (context, watch, child) {
+                      final color = watch(textColorProvider).state;
 
-                    return Text(
-                      "${page + 1}/$total",
-                      textScaleFactor: _scale,
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: color,
-                      ),
-                    );
-                  },
+                      return Text(
+                        "${page + 1}/$total",
+                        style: TextStyle(
+                          fontSize: 17,
+                          color: color,
+                        ),
+                      );
+                    },
+                  ),
                 ),
-              ),
               const Positioned(
                 top: -30,
                 left: -30,
@@ -100,6 +105,15 @@ class PoemImageWidget extends StatelessWidget {
                   radius: 20,
                 ),
               ),
+              if (_imagePath != null)
+                Positioned(
+                  bottom: 20,
+                  right: 20,
+                  child: CircleAvatar(
+                    radius: 30,
+                    backgroundImage: FileImage(File(_imagePath)),
+                  ),
+                ),
               Center(
                 child: PoemImageCard(
                   poem: poem,

@@ -101,11 +101,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
         children: [
           _buildDialogButton(
             context,
-            onPressed: () {
-              context.read(configProvider).profile = null;
+            onPressed: () async {
+              final picker = ImagePicker();
+              final pickedImage =
+                  await picker.getImage(source: ImageSource.gallery);
+              await _setImage(context, pickedImage);
+              Navigator.pop(context);
             },
             icon: const Icon(Icons.photo_library),
-            text: "Remove profile",
+            text: "Add from gallery",
           ),
           _buildDialogButton(
             context,
@@ -113,18 +117,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
               final picker = ImagePicker();
               final pickedImage =
                   await picker.getImage(source: ImageSource.camera);
-              _setImage(context, pickedImage);
+              await _setImage(context, pickedImage);
+              Navigator.pop(context);
             },
             icon: const Icon(Icons.camera_alt),
             text: "Capture from camera",
           ),
           _buildDialogButton(
             context,
-            onPressed: () async {
-              final picker = ImagePicker();
-              final pickedImage =
-                  await picker.getImage(source: ImageSource.gallery);
-              _setImage(context, pickedImage);
+            onPressed: () {
+              context.read(configProvider).profile = null;
+              Navigator.pop(context);
             },
             icon: const Icon(Icons.remove_circle),
             text: "Remove profile",
@@ -141,10 +144,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     @required String text,
   }) {
     return ElevatedButton(
-      onPressed: () {
-        onPressed();
-        Navigator.pop(context);
-      },
+      onPressed: onPressed,
       child: Row(
         children: <Widget>[
           icon,
