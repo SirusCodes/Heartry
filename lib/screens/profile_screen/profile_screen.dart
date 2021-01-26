@@ -1,11 +1,11 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:path_provider/path_provider.dart';
 
 import '../../database/config.dart';
 import '../../init_get_it.dart';
@@ -52,7 +52,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               child: CScreenTitle(title: "Profile"),
             ),
             GestureDetector(
-              onTap: () => _setImage(context),
+              onTap: () => _showChangeProfileDialog(context),
               child: Consumer(
                 builder: (context, watch, child) {
                   final _imagePath = watch(configProvider).profile;
@@ -90,10 +90,73 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Future<void> _setImage(BuildContext context) async {
-    final picker = ImagePicker();
-    final pickedImage = await picker.getImage(source: ImageSource.gallery);
+  Future _showChangeProfileDialog(BuildContext context) {
+    return showDialog(
+      context: context,
+      builder: (context) => SimpleDialog(
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 24.0,
+          vertical: 10,
+        ),
+        children: [
+          _buildDialogButton(
+            context,
+            onPressed: () {
+              context.read(configProvider).profile = null;
+            },
+            icon: const Icon(Icons.photo_library),
+            text: "Remove profile",
+          ),
+          _buildDialogButton(
+            context,
+            onPressed: () async {
+              final picker = ImagePicker();
+              final pickedImage =
+                  await picker.getImage(source: ImageSource.camera);
+              _setImage(context, pickedImage);
+            },
+            icon: const Icon(Icons.camera_alt),
+            text: "Capture from camera",
+          ),
+          _buildDialogButton(
+            context,
+            onPressed: () async {
+              final picker = ImagePicker();
+              final pickedImage =
+                  await picker.getImage(source: ImageSource.gallery);
+              _setImage(context, pickedImage);
+            },
+            icon: const Icon(Icons.remove_circle),
+            text: "Remove profile",
+          ),
+        ],
+      ),
+    );
+  }
 
+  ElevatedButton _buildDialogButton(
+    BuildContext context, {
+    @required VoidCallback onPressed,
+    @required Icon icon,
+    @required String text,
+  }) {
+    return ElevatedButton(
+      onPressed: () {
+        onPressed();
+        Navigator.pop(context);
+      },
+      child: Row(
+        children: <Widget>[
+          icon,
+          const Spacer(),
+          Text(text),
+          const Spacer(),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _setImage(BuildContext context, PickedFile pickedImage) async {
     if (pickedImage == null) return;
 
     imageCache.clear();
