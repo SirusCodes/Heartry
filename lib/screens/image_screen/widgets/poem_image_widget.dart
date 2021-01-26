@@ -2,9 +2,9 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:heartry/database/config.dart';
-import 'package:heartry/init_get_it.dart';
 
+import '../../../database/config.dart';
+import '../../../init_get_it.dart';
 import '../../../providers/color_gradient_provider.dart';
 import '../../../providers/text_providers.dart';
 import 'poem_image_card.dart';

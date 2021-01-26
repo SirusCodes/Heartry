@@ -1,8 +1,8 @@
 import 'package:catcher/catcher.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/all.dart';
-import 'package:heartry/database/config.dart';
 
+import 'database/config.dart';
 import 'init_get_it.dart';
 import 'screens/poems_screen/poems_screen.dart';
 
