@@ -10,7 +10,7 @@ class Others extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BaseInfoWidget(
-      title: "SUPPORT DEVELOPMENT",
+      title: "OTHERS",
       children: [
         ListTile(
           title: const Text("Change log"),

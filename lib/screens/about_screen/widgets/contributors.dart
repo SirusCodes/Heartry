@@ -3,6 +3,9 @@ import 'package:url_launcher/url_launcher.dart';
 
 import 'base_info_widget.dart';
 
+const _profileURL =
+    "https://media-exp1.licdn.com/dms/image/C5103AQEtWUqi83pq-g/profile-displayphoto-shrink_400_400/0/1569059140972?e=1617235200&v=beta&t=h7NoI5ygZs_IQeDepkfbBpqtWuQjljYu44eGPQHNYSk";
+
 class Contributors extends StatelessWidget {
   const Contributors({Key key}) : super(key: key);
 
@@ -41,9 +44,7 @@ class Contributors extends StatelessWidget {
         const CircleAvatar(
           minRadius: 50,
           maxRadius: 60,
-          backgroundImage: AssetImage(
-            "assets/images/darshan_small.jpg",
-          ),
+          backgroundImage: NetworkImage(_profileURL),
         ),
         const SizedBox(height: 10),
         Text(
