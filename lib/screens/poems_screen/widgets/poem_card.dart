@@ -2,10 +2,10 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:heartry/providers/list_grid_provider.dart';
 
 import '../../../database/database.dart';
 import '../../../init_get_it.dart';
+import '../../../providers/list_grid_provider.dart';
 import '../../reader_screen/reader_screen.dart';
 import '../../writing_screen/writing_screen.dart';
 
@@ -98,6 +98,7 @@ class _PoemCardState extends State<PoemCard>
                           textAlign: TextAlign.start,
                           style: Theme.of(context).accentTextTheme.headline5,
                         ),
+                      if (widget.model.title.isEmpty) const SizedBox(height: 5),
                       if (widget.model.poem.isNotEmpty)
                         Text(
                           widget.model.poem,
@@ -105,7 +106,8 @@ class _PoemCardState extends State<PoemCard>
                           maxLines: 10,
                           textAlign: TextAlign.start,
                           style: Theme.of(context).accentTextTheme.subtitle1,
-                        )
+                        ),
+                      if (widget.model.title.isEmpty) const SizedBox(height: 5),
                     ],
                   ),
                 )
@@ -120,6 +122,7 @@ class _PoemCardState extends State<PoemCard>
                             ? GridView.count(
                                 crossAxisCount: 2,
                                 shrinkWrap: true,
+                                physics: const NeverScrollableScrollPhysics(),
                                 children: _iconList,
                               )
                             : Row(
