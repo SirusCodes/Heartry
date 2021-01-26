@@ -1,6 +1,8 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:heartry/providers/list_grid_provider.dart';
 
 import '../../../database/database.dart';
 import '../../../init_get_it.dart';
@@ -37,85 +39,100 @@ class _PoemCardState extends State<PoemCard>
 
   @override
   Widget build(BuildContext context) {
+    final _iconList = [
+      IconButton(
+        icon: const Icon(Icons.edit),
+        onPressed: () {
+          _navigateToWritingScreen();
+        },
+      ),
+      IconButton(
+        icon: const Icon(Icons.remove_red_eye_rounded),
+        onPressed: () {
+          _navigateToReaderScreen();
+        },
+      ),
+      IconButton(
+        icon: const Icon(Icons.delete),
+        onPressed: () {
+          _showWarning();
+        },
+      ),
+      IconButton(
+        icon: const Icon(Icons.close_rounded),
+        onPressed: () {
+          _controller.reverse();
+        },
+      ),
+    ];
+
     return AnimatedBuilder(
       animation: _controller,
-      builder: (context, child) => Transform(
-        alignment: FractionalOffset.center,
-        transform: Matrix4.identity()
-          ..setEntry(2, 1, .0003)
-          ..rotateY(2 * math.pi * _controller.value),
-        child: _controller.value < .5
-            ? OutlinedButton(
-                style: ButtonStyle(
-                  shape: MaterialStateProperty.all(
-                    RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10.0),
+      builder: (context, child) {
+        return Transform(
+          alignment: FractionalOffset.center,
+          transform: Matrix4.identity()
+            ..setEntry(2, 1, .0003)
+            ..rotateY(2 * math.pi * _controller.value),
+          child: _controller.value < .5
+              ? OutlinedButton(
+                  style: ButtonStyle(
+                    shape: MaterialStateProperty.all(
+                      RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                    ),
+                  ),
+                  onPressed: () {
+                    _navigateToWritingScreen();
+                  },
+                  onLongPress: () {
+                    _controller.forward();
+                  },
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: <Widget>[
+                      if (widget.model.title.isNotEmpty)
+                        Text(
+                          widget.model.title,
+                          textAlign: TextAlign.start,
+                          style: Theme.of(context).accentTextTheme.headline5,
+                        ),
+                      if (widget.model.poem.isNotEmpty)
+                        Text(
+                          widget.model.poem,
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 10,
+                          textAlign: TextAlign.start,
+                          style: Theme.of(context).accentTextTheme.subtitle1,
+                        )
+                    ],
+                  ),
+                )
+              : Card(
+                  color: Theme.of(context).primaryColor,
+                  child: IconTheme(
+                    data: const IconThemeData(color: Colors.white),
+                    child: Consumer(
+                      builder: (context, watch, child) {
+                        final _listGrid = watch(listGridProvider).state;
+                        return _listGrid
+                            ? GridView.count(
+                                crossAxisCount: 2,
+                                shrinkWrap: true,
+                                children: _iconList,
+                              )
+                            : Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                children: _iconList,
+                              );
+                      },
                     ),
                   ),
                 ),
-                onPressed: () {
-                  _navigateToWritingScreen();
-                },
-                onLongPress: () {
-                  _controller.forward();
-                },
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: <Widget>[
-                    if (widget.model.title.isNotEmpty)
-                      Text(
-                        widget.model.title,
-                        textAlign: TextAlign.start,
-                        style: Theme.of(context).accentTextTheme.headline5,
-                      ),
-                    if (widget.model.poem.isNotEmpty)
-                      Text(
-                        widget.model.poem,
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 10,
-                        textAlign: TextAlign.start,
-                        style: Theme.of(context).accentTextTheme.subtitle1,
-                      )
-                  ],
-                ),
-              )
-            : Card(
-                color: Theme.of(context).primaryColor,
-                child: IconTheme(
-                  data: const IconThemeData(color: Colors.white),
-                  child: GridView.count(
-                    crossAxisCount: 2,
-                    shrinkWrap: true,
-                    children: [
-                      IconButton(
-                        icon: const Icon(Icons.edit),
-                        onPressed: () {
-                          _navigateToWritingScreen();
-                        },
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.remove_red_eye_rounded),
-                        onPressed: () {
-                          _navigateToReaderScreen();
-                        },
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.delete),
-                        onPressed: () {
-                          _showWarning();
-                        },
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.close_rounded),
-                        onPressed: () {
-                          _controller.reverse();
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-      ),
+        );
+      },
     );
   }
 
