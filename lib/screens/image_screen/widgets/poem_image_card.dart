@@ -5,10 +5,15 @@ import 'package:flutter/material.dart';
 import 'poem_image_text.dart';
 
 class PoemImageCard extends StatelessWidget {
-  const PoemImageCard({Key key, this.poem, this.title}) : super(key: key);
+  const PoemImageCard({
+    Key key,
+    @required this.poem,
+    @required this.title,
+    @required this.poet,
+  }) : super(key: key);
 
   final List<String> poem;
-  final String title;
+  final String title, poet;
 
   @override
   Widget build(BuildContext context) {
@@ -34,6 +39,7 @@ class PoemImageCard extends StatelessWidget {
             child: PoemImageText(
               poem: poem,
               title: title,
+              poet: poet,
             ),
           ),
         ),

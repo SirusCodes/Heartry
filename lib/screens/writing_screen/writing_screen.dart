@@ -2,7 +2,9 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:share/share.dart';
 
+import '../../database/config.dart';
 import '../../database/database.dart';
 import '../../init_get_it.dart';
 import '../../utils/undo_redo.dart';
@@ -49,7 +51,7 @@ class _WritingScreenState extends State<WritingScreen>
     undoRedo.textEditingController =
         TextEditingController(text: _poemModel?.poem);
 
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       undoRedo.registerChange(undoRedo.textEditingController.text);
     });
 
@@ -62,6 +64,9 @@ class _WritingScreenState extends State<WritingScreen>
     poemNode.dispose();
     searchOnStoppedTyping?.cancel();
     undoRedo.clearAllStack();
+
+    _titleTextController.dispose();
+    undoRedo.textEditingController.dispose();
 
     _handleDBChanges();
     WidgetsBinding.instance.removeObserver(this);
@@ -124,6 +129,36 @@ class _WritingScreenState extends State<WritingScreen>
               bottom: 0,
               width: MediaQuery.of(context).size.width,
               child: WritingBottomAppBar(
+                showSharePanel: () {
+                  if (undoRedo.textEditingController.text.isNotEmpty)
+                    return true;
+
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: const Text("Please write something!"),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15.0),
+                      ),
+                      behavior: SnackBarBehavior.floating,
+                      margin: const EdgeInsets.all(8.0),
+                    ),
+                  );
+
+                  return false;
+                },
+                onShareAsText: () {
+                  _handleDBChanges();
+                  String msg = "";
+
+                  if (_titleTextController.text != null &&
+                      _titleTextController.text.isNotEmpty)
+                    msg += "${_titleTextController.text}\n\n";
+
+                  msg += undoRedo.textEditingController.text;
+                  msg += "\n\n-${locator<Config>().name}";
+
+                  Share.share(msg);
+                },
                 onShareAsImage: () {
                   _handleDBChanges();
                   Navigator.push(
@@ -132,7 +167,7 @@ class _WritingScreenState extends State<WritingScreen>
                       builder: (_) => ImageScreen(
                         title: _titleTextController.text,
                         poem: undoRedo.textEditingController.text.split("\n"),
-                        poet: "Poet",
+                        poet: locator<Config>().name,
                       ),
                     ),
                   );

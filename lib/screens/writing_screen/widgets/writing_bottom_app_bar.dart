@@ -4,13 +4,18 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../utils/undo_redo.dart';
 
+typedef BoolCallBack = bool Function();
+
 class WritingBottomAppBar extends StatefulWidget {
   const WritingBottomAppBar({
     Key key,
     @required this.onShareAsImage,
+    @required this.onShareAsText,
+    @required this.showSharePanel,
   }) : super(key: key);
 
-  final VoidCallback onShareAsImage;
+  final VoidCallback onShareAsImage, onShareAsText;
+  final BoolCallBack showSharePanel;
 
   @override
   _WritingBottomAppBarState createState() => _WritingBottomAppBarState();
@@ -80,7 +85,7 @@ class _WritingBottomAppBarState extends State<WritingBottomAppBar>
                 ListTile(
                   title: const Text("Share as Text"),
                   trailing: const Icon(Icons.text_fields),
-                  onTap: () {},
+                  onTap: () => widget.onShareAsText(),
                 ),
                 ListTile(
                   title: const Text("Share as Image"),
@@ -96,6 +101,7 @@ class _WritingBottomAppBarState extends State<WritingBottomAppBar>
   }
 
   void _changeIcon() {
+    if (!widget.showSharePanel()) return;
     if (_iconController.isCompleted)
       _iconController.reverse();
     else

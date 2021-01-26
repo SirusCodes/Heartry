@@ -56,12 +56,7 @@ class CAppBar extends StatelessWidget {
             child: CircleAvatar(
               backgroundImage:
                   _imagePath != null ? FileImage(File(_imagePath)) : null,
-              child: _imagePath == null
-                  ? const Icon(
-                      Icons.person_add,
-                      size: 100,
-                    )
-                  : null,
+              child: _imagePath == null ? const Icon(Icons.person_add) : null,
             ),
           ),
         ],

@@ -69,6 +69,7 @@ class _ImageScreenState extends State<ImageScreen> {
                         poem: poemLines[index],
                         page: index,
                         total: poemLines.length,
+                        poet: widget.poet,
                       ),
                     ),
                   );
@@ -204,12 +205,12 @@ class _ImageScreenState extends State<ImageScreen> {
 
     final _size = MediaQuery.of(context).size;
 
-    // subtracting title height
+    // getting title height
     final _titleHeight =
         _calcTextSize(context, constraints, widget.title, 30, _textScale)
             .height;
 
-    // subtracting poet height
+    // getting poet height
     final _poetHeight =
         _calcTextSize(context, constraints, widget.poet, 18, _textScale).height;
 
@@ -218,7 +219,7 @@ class _ImageScreenState extends State<ImageScreen> {
 
     double _height = _availableHeight;
 
-    // subtracting poem height
+    // creating the size of the poem
     for (final line in widget.poem) {
       final double _heightToSub =
           _calcTextSize(context, constraints, line, 15, _textScale).height;

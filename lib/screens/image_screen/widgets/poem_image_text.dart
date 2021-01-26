@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../database/config.dart';
-import '../../../init_get_it.dart';
 import '../../../providers/text_providers.dart';
 
 class PoemImageText extends ConsumerWidget {
-  PoemImageText({Key key, this.title, this.poem}) : super(key: key);
+  const PoemImageText({
+    Key key,
+    @required this.title,
+    @required this.poem,
+    @required this.poet,
+  }) : super(key: key);
 
   final List<String> poem;
-  final String title;
-
-  final name = locator<Config>().name;
+  final String title, poet;
   @override
   Widget build(BuildContext context, ScopedReader watch) {
     final _scale = watch(textSizeProvider).state;
@@ -43,7 +44,7 @@ class PoemImageText extends ConsumerWidget {
         ),
         const SizedBox(height: 10),
         Text(
-          "-$name",
+          "-$poet",
           textAlign: TextAlign.center,
           textScaleFactor: _scale,
           style: TextStyle(
