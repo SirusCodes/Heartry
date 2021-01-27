@@ -105,6 +105,13 @@ class PoemImageWidget extends StatelessWidget {
                   radius: 20,
                 ),
               ),
+              Center(
+                child: PoemImageCard(
+                  poem: poem,
+                  title: title,
+                  poet: poet,
+                ),
+              ),
               if (_imagePath != null)
                 Positioned(
                   bottom: 20,
@@ -114,13 +121,6 @@ class PoemImageWidget extends StatelessWidget {
                     backgroundImage: FileImage(File(_imagePath)),
                   ),
                 ),
-              Center(
-                child: PoemImageCard(
-                  poem: poem,
-                  title: title,
-                  poet: poet,
-                ),
-              ),
             ],
           ),
         ),
