@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:package_info/package_info.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'base_info_widget.dart';
@@ -21,11 +22,17 @@ class Others extends StatelessWidget {
                 "https://github.com/SirusCodes/Heartry/blob/main/CHANGELOG.md",
               ),
             ),
-            ListTile(
-              title: const Text("Version"),
-              subtitle: const Text("1.0.0"),
-              leading: const CircleAvatar(child: Icon(Icons.info)),
-              onTap: () {},
+            FutureBuilder<PackageInfo>(
+              future: PackageInfo.fromPlatform(),
+              builder: (context, snapshot) => ListTile(
+                title: const Text("Version"),
+                subtitle: snapshot.connectionState == ConnectionState.done &&
+                        snapshot.hasData
+                    ? Text(snapshot.data.version)
+                    : const Text("Can't get version"),
+                leading: const CircleAvatar(child: Icon(Icons.info)),
+                onTap: () {},
+              ),
             ),
           ],
         ),
