@@ -41,6 +41,7 @@ class _IntroScreenState extends State<IntroScreen> {
           });
         },
         enableSlideIcon: _enableSlideIcon,
+        positionSlideIcon: 0,
         slideIconWidget: const Icon(
           Icons.arrow_back_ios,
           color: Colors.white,
@@ -182,7 +183,7 @@ class __NamePageState extends State<_NamePage> {
     await _insertPoem(
       _db,
       title: "Writing",
-      poem: "Everything that you ✍ will be auto saved🤯",
+      poem: "Everything that you ✍ will be auto saved",
     );
 
     await _insertPoem(
@@ -197,9 +198,9 @@ You can access Reader Mode, Delete and Edit from it.""",
       _db,
       title: "Reader Mode",
       poem: """
-Sometimes keyboards can be annoying😣.
-Press and hold on card, and click on eye button😇.
-Now that keyboard will never disturb you😎""",
+Sometimes keyboards can be annoying.
+Press and hold on card, and click on eye button.
+Now that keyboard will never disturb you😇""",
     );
 
     await _insertPoem(
@@ -207,14 +208,15 @@ Now that keyboard will never disturb you😎""",
       title: "Share",
       poem: """
 You can share poem in 2 ways.
-1. As Text (For Messages)
-2. As Photos (For Stories)""",
+1. As Text 🆎(For Messages)
+2. As Photos 📷(For Stories)""",
     );
 
     await _insertPoem(
       _db,
       title: "Share as Image",
-      poem: "Use share in parts only if you want to add it to story.😶",
+      poem: "It will open a new screen, you can select each image and add "
+          "them to your story one by one❤",
     );
 
     await _insertPoem(
@@ -273,7 +275,6 @@ class _ProfilePage extends StatelessWidget {
               final pickedImage =
                   await picker.getImage(source: ImageSource.gallery);
               await _setImage(context, pickedImage);
-              Navigator.pop(context);
             },
             icon: const Icon(Icons.photo_library),
             text: "Add from gallery",
@@ -285,7 +286,6 @@ class _ProfilePage extends StatelessWidget {
               final pickedImage =
                   await picker.getImage(source: ImageSource.camera);
               await _setImage(context, pickedImage);
-              Navigator.pop(context);
             },
             icon: const Icon(Icons.camera_alt),
             text: "Capture from camera",
@@ -308,7 +308,7 @@ class _ProfilePage extends StatelessWidget {
             fontFamily: "Caveat",
           ),
         ),
-        const SizedBox(height: 15),
+        const SizedBox(height: 45),
         Consumer(
           builder: (context, watch, child) {
             final _imagePath = watch(configProvider).profile;
@@ -319,7 +319,7 @@ class _ProfilePage extends StatelessWidget {
                   _imagePath != null ? FileImage(File(_imagePath)) : null,
               child: _imagePath == null
                   ? const Icon(
-                      Icons.person_add,
+                      Icons.person,
                       size: 100,
                     )
                   : null,
@@ -387,14 +387,14 @@ class _WelcomePage extends StatelessWidget {
               fontFamily: "Caveat",
             ),
           ),
-          const SizedBox(height: 95),
+          const SizedBox(height: 100),
           CircleAvatar(
             minRadius: 80,
             maxRadius: 100,
             backgroundColor: Colors.white,
             child: Image.asset("assets/launcher_icon.png"),
           ),
-          const SizedBox(height: 35),
+          const SizedBox(height: 50),
           const Text(
             "Heart + Poetry = Heartry",
             textAlign: TextAlign.center,
@@ -404,15 +404,7 @@ class _WelcomePage extends StatelessWidget {
               fontFamily: "Caveat",
             ),
           ),
-          const SizedBox(height: 80),
-          const Text(
-            "A PRIVACY FOCUSED APP FOR THE WRITERS",
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 15,
-              color: Colors.white,
-            ),
-          ),
+          const SizedBox(height: 50),
         ],
       ),
     );

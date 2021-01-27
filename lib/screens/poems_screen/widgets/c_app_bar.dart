@@ -52,7 +52,7 @@ class CAppBar extends ConsumerWidget {
             child: CircleAvatar(
               backgroundImage:
                   _imagePath != null ? FileImage(File(_imagePath)) : null,
-              child: _imagePath == null ? const Icon(Icons.person_add) : null,
+              child: _imagePath == null ? const Icon(Icons.person) : null,
             ),
           ),
         ],

@@ -81,100 +81,107 @@ class _WritingScreenState extends State<WritingScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Stack(
-          children: [
-            Positioned.fill(
-              child: ListView(
-                padding: const EdgeInsets.all(15.0),
-                children: <Widget>[
-                  TextFormField(
-                    textCapitalization: TextCapitalization.sentences,
-                    textInputAction: TextInputAction.next,
-                    focusNode: titleNode,
-                    controller: _titleTextController,
-                    decoration: InputDecoration(
-                      hintText: "Title",
-                      enabledBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(
-                          color: Theme.of(context).accentColor,
+      body: WillPopScope(
+        onWillPop: () {
+          if (_isEmpty) poemDB.deletePoem(widget.model);
+
+          return Future.value(true);
+        },
+        child: SafeArea(
+          child: Stack(
+            children: [
+              Positioned.fill(
+                child: ListView(
+                  padding: const EdgeInsets.all(15.0),
+                  children: <Widget>[
+                    TextFormField(
+                      textCapitalization: TextCapitalization.sentences,
+                      textInputAction: TextInputAction.next,
+                      focusNode: titleNode,
+                      controller: _titleTextController,
+                      decoration: InputDecoration(
+                        hintText: "Title",
+                        enabledBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Theme.of(context).accentColor,
+                          ),
                         ),
                       ),
+                      onFieldSubmitted: (value) {
+                        titleNode.unfocus();
+                        FocusScope.of(context).requestFocus(poemNode);
+                      },
+                      style: Theme.of(context).accentTextTheme.headline5,
                     ),
-                    onFieldSubmitted: (value) {
-                      titleNode.unfocus();
-                      FocusScope.of(context).requestFocus(poemNode);
-                    },
-                    style: Theme.of(context).accentTextTheme.headline5,
-                  ),
-                  TextFormField(
-                    textCapitalization: TextCapitalization.sentences,
-                    controller: undoRedo.textEditingController,
-                    scrollPadding: const EdgeInsets.only(bottom: 100),
-                    focusNode: poemNode,
-                    maxLines: null,
-                    minLines: 25,
-                    decoration: const InputDecoration(
-                      hintText: "Start writing your heart....",
-                      border: InputBorder.none,
-                    ),
-                    onChanged: _onChangeHandler,
-                    style: Theme.of(context).accentTextTheme.headline6,
-                  ),
-                  const SizedBox(height: kBottomNavigationBarHeight)
-                ],
-              ),
-            ),
-            Positioned(
-              bottom: 0,
-              width: MediaQuery.of(context).size.width,
-              child: WritingBottomAppBar(
-                showSharePanel: () {
-                  if (undoRedo.textEditingController.text.isNotEmpty)
-                    return true;
-
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: const Text("Please write something!"),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15.0),
+                    TextFormField(
+                      textCapitalization: TextCapitalization.sentences,
+                      controller: undoRedo.textEditingController,
+                      scrollPadding: const EdgeInsets.only(bottom: 100),
+                      focusNode: poemNode,
+                      maxLines: null,
+                      minLines: 25,
+                      decoration: const InputDecoration(
+                        hintText: "Start writing your heart....",
+                        border: InputBorder.none,
                       ),
-                      behavior: SnackBarBehavior.floating,
-                      margin: const EdgeInsets.all(8.0),
+                      onChanged: _onChangeHandler,
+                      style: Theme.of(context).accentTextTheme.headline6,
                     ),
-                  );
-
-                  return false;
-                },
-                onShareAsText: () {
-                  _handleDBChanges();
-                  String msg = "";
-
-                  if (_titleTextController.text != null &&
-                      _titleTextController.text.isNotEmpty)
-                    msg += "${_titleTextController.text}\n\n";
-
-                  msg += undoRedo.textEditingController.text;
-                  msg += "\n\n-${locator<Config>().name}";
-
-                  Share.share(msg);
-                },
-                onShareAsImage: () {
-                  _handleDBChanges();
-                  Navigator.push(
-                    context,
-                    CupertinoPageRoute(
-                      builder: (_) => ImageScreen(
-                        title: _titleTextController.text,
-                        poem: undoRedo.textEditingController.text.split("\n"),
-                        poet: locator<Config>().name,
-                      ),
-                    ),
-                  );
-                },
+                    const SizedBox(height: kBottomNavigationBarHeight)
+                  ],
+                ),
               ),
-            )
-          ],
+              Positioned(
+                bottom: 0,
+                width: MediaQuery.of(context).size.width,
+                child: WritingBottomAppBar(
+                  showSharePanel: () {
+                    if (undoRedo.textEditingController.text.isNotEmpty)
+                      return true;
+
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: const Text("Please write something!"),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15.0),
+                        ),
+                        behavior: SnackBarBehavior.floating,
+                        margin: const EdgeInsets.all(8.0),
+                      ),
+                    );
+
+                    return false;
+                  },
+                  onShareAsText: () {
+                    _handleDBChanges();
+                    String msg = "";
+
+                    if (_titleTextController.text != null &&
+                        _titleTextController.text.isNotEmpty)
+                      msg += "${_titleTextController.text}\n\n";
+
+                    msg += undoRedo.textEditingController.text;
+                    msg += "\n\n-${locator<Config>().name}";
+
+                    Share.share(msg);
+                  },
+                  onShareAsImage: () {
+                    _handleDBChanges();
+                    Navigator.push(
+                      context,
+                      CupertinoPageRoute(
+                        builder: (_) => ImageScreen(
+                          title: _titleTextController.text,
+                          poem: undoRedo.textEditingController.text.split("\n"),
+                          poet: locator<Config>().name,
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );
@@ -200,6 +207,8 @@ class _WritingScreenState extends State<WritingScreen>
   bool get _isNotEmpty =>
       (_titleTextController.text).isNotEmpty ||
       (undoRedo.textEditingController.text).isNotEmpty;
+
+  bool get _isEmpty => !_isNotEmpty;
 
   void _handleDBChanges() {
     if (_hasChanged && _isNotEmpty) {
