@@ -1,17 +1,14 @@
 import 'package:catcher/catcher.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/all.dart';
+import 'package:heartry/screens/intro_screen/intro_screen.dart';
 
 import 'database/config.dart';
 import 'init_get_it.dart';
 import 'screens/poems_screen/poems_screen.dart';
 
 Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-
   initGetIt();
-
-  await locator<Config>().init();
 
   final releaseCatcher = CatcherOptions(
     DialogReportMode(),
@@ -30,7 +27,19 @@ Future<void> main() async {
   );
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
+  @override
+  _MyAppState createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  Future<void> _initSharedPrefs;
+  @override
+  void initState() {
+    super.initState();
+    _initSharedPrefs = locator<Config>().init();
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -77,7 +86,24 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ),
-      home: const PoemScreen(),
+      home: FutureBuilder(
+        future: _initSharedPrefs,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            final _name = locator<Config>().name;
+
+            // if (_name != null) return const PoemScreen();
+
+            return const IntroScreen();
+          }
+
+          return const Material(
+            child: Center(
+              child: CircularProgressIndicator(),
+            ),
+          );
+        },
+      ),
     );
   }
 }
