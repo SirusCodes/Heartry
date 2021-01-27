@@ -33,6 +33,7 @@ class _PoemBottomAppBarState extends State<PoemBottomAppBar>
   Widget build(BuildContext context) {
     return BottomAppBar(
       shape: const CircularNotchedRectangle(),
+      notchMargin: 6,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
