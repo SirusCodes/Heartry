@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:heartry/database/database.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:liquid_swipe/liquid_swipe.dart';
 import 'package:path/path.dart' as p;
@@ -58,6 +59,14 @@ class _NamePage extends StatefulWidget {
 
 class __NamePageState extends State<_NamePage> {
   final GlobalKey<FormState> _formKey = GlobalKey();
+  final TextEditingController _nameController = TextEditingController();
+
+  bool _showButton = true;
+  @override
+  void dispose() {
+    _nameController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -83,6 +92,7 @@ class __NamePageState extends State<_NamePage> {
               const SizedBox(height: 35),
               TextFormField(
                 autovalidateMode: AutovalidateMode.onUserInteraction,
+                controller: _nameController,
                 validator: (value) {
                   if (value == null || value.isEmpty)
                     return "Please enter your name";
@@ -129,23 +139,100 @@ class __NamePageState extends State<_NamePage> {
                 ),
               ),
               const SizedBox(height: 15),
-              ElevatedButton(
-                onPressed: () {
-                  if (_formKey.currentState.validate()) {
-                    _formKey.currentState.save();
-                    Navigator.pushReplacement(
-                      context,
-                      CupertinoPageRoute(
-                        builder: (_) => const PoemScreen(),
-                      ),
-                    );
-                  }
-                },
-                child: const Text("Let's Goooooo...."),
-              )
+              _showButton
+                  ? ElevatedButton(
+                      onPressed: () async {
+                        if (_formKey.currentState.validate()) {
+                          _formKey.currentState.save();
+                          setState(() {
+                            _showButton = false;
+                          });
+                          await _addDetailsInDB();
+                          Navigator.pushReplacement(
+                            context,
+                            CupertinoPageRoute(
+                              builder: (_) => const PoemScreen(),
+                            ),
+                          );
+                        }
+                      },
+                      child: const Text("Let's Goooooo...."),
+                    )
+                  : const Center(
+                      child: CircularProgressIndicator(),
+                    ),
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Future<void> _addDetailsInDB() async {
+    final _db = locator<Database>();
+
+    await _insertPoem(
+      _db,
+      title: "Welcome",
+      poem: "Hey ${_nameController.text}, thanks for using Heartry🤗",
+    );
+
+    await _insertPoem(
+      _db,
+      title: "Writing",
+      poem: "Everything that you ✍ will be auto saved🤯",
+    );
+
+    await _insertPoem(
+      _db,
+      title: "Tool bar",
+      poem: """
+Press and hold this card to access toolbar😊
+You can access Reader Mode, Delete and Edit from it.""",
+    );
+
+    await _insertPoem(
+      _db,
+      title: "Reader Mode",
+      poem: """
+Sometimes keyboards can be annoying😣.
+Click on eye button in toolbar😇.
+Now that keyboard will never disturb you😎""",
+    );
+
+    await _insertPoem(
+      _db,
+      title: "Share",
+      poem: """
+You can share poem in 2 ways.
+1. As Text (For Messages)
+2. As Photos (For Stories)""",
+    );
+
+    await _insertPoem(
+      _db,
+      title: "Share as Image",
+      poem: "Use share in parts only if you want to add it to story.😶",
+    );
+
+    await _insertPoem(
+      _db,
+      title: "About",
+      poem: "You can know more about us by going in About in Settings.🙈",
+    );
+  }
+
+  Future<void> _insertPoem(
+    Database db, {
+    @required String title,
+    @required String poem,
+  }) async {
+    await db.insertPoem(
+      PoemModel(
+        id: null,
+        lastEdit: null,
+        title: title,
+        poem: poem,
       ),
     );
   }
