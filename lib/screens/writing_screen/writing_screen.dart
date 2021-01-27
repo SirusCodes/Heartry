@@ -121,7 +121,7 @@ class _WritingScreenState extends State<WritingScreen>
                       maxLines: null,
                       minLines: 25,
                       decoration: const InputDecoration(
-                        hintText: "Start writing your heart....",
+                        hintText: "Start writing your heart out....",
                         border: InputBorder.none,
                       ),
                       onChanged: _onChangeHandler,
@@ -222,14 +222,15 @@ class _WritingScreenState extends State<WritingScreen>
     }
   }
 
-  void _save() {
+  Future<void> _save() async {
     _poemModel = PoemModel(
       id: null,
       lastEdit: DateTime.now(),
       title: _titleTextController.text.trim(),
       poem: undoRedo.textEditingController.text.trim(),
     );
-    poemDB.insertPoem(_poemModel);
+    final id = await poemDB.insertPoem(_poemModel);
+    _poemModel = _poemModel.copyWith(id: id);
   }
 
   void _update() {

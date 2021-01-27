@@ -4,15 +4,15 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:heartry/database/database.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:liquid_swipe/liquid_swipe.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
 import '../../database/config.dart';
+import '../../database/database.dart';
 import '../../init_get_it.dart';
-import '../../widgets/privacy_policies.dart';
+import '../../widgets/privacy_statement.dart';
 import '../poems_screen/poems_screen.dart';
 
 class IntroScreen extends StatefulWidget {
@@ -123,7 +123,7 @@ class __NamePageState extends State<_NamePage> {
                   children: <InlineSpan>[
                     const TextSpan(text: "By continuing you accept our "),
                     TextSpan(
-                      text: "Privacy Policies",
+                      text: "Privacy Statement",
                       style: TextStyle(
                         color: Colors.deepPurple.shade700,
                         fontWeight: FontWeight.bold,
@@ -133,7 +133,7 @@ class __NamePageState extends State<_NamePage> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (_) => const PrivacyPolicies(),
+                              builder: (_) => const PrivacyStatement(),
                             ),
                           );
                         },

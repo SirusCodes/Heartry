@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:package_info/package_info.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../../widgets/privacy_statement.dart';
 import 'base_info_widget.dart';
 
 class Others extends StatelessWidget {
@@ -21,6 +22,17 @@ class Others extends StatelessWidget {
               onTap: () => _launchURL(
                 "https://github.com/SirusCodes/Heartry/blob/main/CHANGELOG.md",
               ),
+            ),
+            ListTile(
+              title: const Text("Privacy Statement"),
+              subtitle: const Text("Your commitment towards privacy"),
+              leading: const CircleAvatar(child: Icon(Icons.book)),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const PrivacyStatement()),
+                );
+              },
             ),
             FutureBuilder<PackageInfo>(
               future: PackageInfo.fromPlatform(),
