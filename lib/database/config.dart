@@ -21,7 +21,7 @@ class Config extends ChangeNotifier {
     notifyListeners();
   }
 
-  String get name => _sharedPrefs.getString(_nameKey) ?? "Name";
+  String get name => _sharedPrefs.getString(_nameKey);
 
   set profile(String value) {
     _sharedPrefs.setString(_profileKey, value);
