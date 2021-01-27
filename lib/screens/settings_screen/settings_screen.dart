@@ -22,7 +22,7 @@ class SettingsScreen extends StatelessWidget {
                 child: Icon(Icons.person),
               ),
               title: const Text("Profile"),
-              subtitle: const Text("Name, Profile & other"),
+              subtitle: const Text("Name and picture"),
               onTap: () {
                 Navigator.push(
                   context,
@@ -35,7 +35,7 @@ class SettingsScreen extends StatelessWidget {
                 child: Icon(Icons.info),
               ),
               title: const Text("About"),
-              subtitle: const Text("Developement, donations, repository, info"),
+              subtitle: const Text("App info and development"),
               onTap: () {
                 Navigator.push(
                   context,

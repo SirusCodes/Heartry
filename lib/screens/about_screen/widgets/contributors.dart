@@ -53,7 +53,7 @@ class Contributors extends StatelessWidget {
           style: Theme.of(context).textTheme.headline6,
         ),
         Text(
-          "Lead Developer & Designer",
+          "Lead Developer",
           textAlign: TextAlign.center,
           style: Theme.of(context).textTheme.bodyText2,
         ),

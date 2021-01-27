@@ -9,35 +9,26 @@ class Others extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BaseInfoWidget(
-      title: "OTHERS",
+    return Column(
       children: [
-        ListTile(
-          title: const Text("Change log"),
-          subtitle: const Text("What changes were made in the versions"),
-          leading: const CircleAvatar(child: Icon(Icons.sticky_note_2)),
-          onTap: () => _launchURL(
-            "https://github.com/SirusCodes/Heartry/blob/main/CHANGELOG.md",
-          ),
-        ),
-        ListTile(
-          title: const Text("Open source licences"),
-          subtitle: const Text("What libraries were used for the development"),
-          leading: const CircleAvatar(child: Icon(Icons.book)),
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => const OpenSourceLibraries(),
+        BaseInfoWidget(
+          title: "OTHERS",
+          children: [
+            ListTile(
+              title: const Text("Change log"),
+              subtitle: const Text("Changes made to the project"),
+              leading: const CircleAvatar(child: Icon(Icons.sticky_note_2)),
+              onTap: () => _launchURL(
+                "https://github.com/SirusCodes/Heartry/blob/main/CHANGELOG.md",
               ),
-            );
-          },
-        ),
-        ListTile(
-          title: const Text("Version"),
-          subtitle: const Text("1.0.0"),
-          leading: const CircleAvatar(child: Icon(Icons.info)),
-          onTap: () {},
+            ),
+            ListTile(
+              title: const Text("Version"),
+              subtitle: const Text("1.0.0"),
+              leading: const CircleAvatar(child: Icon(Icons.info)),
+              onTap: () {},
+            ),
+          ],
         ),
         Text(
           "Made with ❤ in India",

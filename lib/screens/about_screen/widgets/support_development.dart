@@ -13,7 +13,7 @@ class SupportDevelopment extends StatelessWidget {
       children: [
         ListTile(
           title: const Text("GitHub"),
-          subtitle: const Text("Fork the project on GitHub"),
+          subtitle: const Text("Contribute to the project"),
           leading: CircleAvatar(
             backgroundColor: Colors.transparent,
             child: Image.asset("assets/logos/GitHub-Mark.png"),
@@ -23,22 +23,23 @@ class SupportDevelopment extends StatelessWidget {
         ListTile(
           title: const Text("Rate the app"),
           subtitle: const Text(
-            "Love this app? Let us know in Google Play Store",
+            "Love this app? Let us know in the Play Store!",
           ),
           leading: const CircleAvatar(
             child: Icon(Icons.star),
           ),
           onTap: () {},
         ),
-        ListTile(
-          title: const Text("Donate"),
-          subtitle: const Text(
-            "If you think that we deserve some money for our work," +
-                " you can leave some amount here.",
-          ),
-          leading: const CircleAvatar(child: Icon(Icons.card_giftcard_rounded)),
-          onTap: () {},
-        ),
+        // ListTile(
+        //   title: const Text("Donate"),
+        //   subtitle: const Text(
+        //     "If you think that we deserve some money for our work," +
+        //         " you can leave some amount here.",
+        //   ),
+        // ignore: lines_longer_than_80_chars
+        // leading: const CircleAvatar(child: Icon(Icons.card_giftcard_rounded)),
+        //   onTap: () {},
+        // ),
         ListTile(
           title: const Text("Share"),
           subtitle: const Text("Share it with your friends and family"),
