@@ -92,7 +92,7 @@ class _MyAppState extends State<MyApp> {
           if (snapshot.connectionState == ConnectionState.done) {
             final _name = locator<Config>().name;
 
-            // if (_name != null) return const PoemScreen();
+            if (_name != null) return const PoemScreen();
 
             return const IntroScreen();
           }
