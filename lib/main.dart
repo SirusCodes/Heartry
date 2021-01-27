@@ -14,7 +14,7 @@ Future<void> main() async {
     DialogReportMode(),
     [
       EmailManualHandler(
-        ["heartrypeoms@gmail.com"],
+        ["heartryapp@gmail.com"],
         emailTitle: "Heartry crash report",
         printLogs: true,
       ),
