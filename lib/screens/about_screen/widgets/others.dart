@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../screens/open_source_libraries.dart';
 import 'base_info_widget.dart';
 
 class Others extends StatelessWidget {
