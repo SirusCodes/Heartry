@@ -2,6 +2,7 @@ import 'package:catcher/catcher.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/all.dart';
 import 'package:heartry/screens/intro_screen/intro_screen.dart';
+import 'package:heartry/utils/custom_email_report_handler.dart';
 
 import 'database/config.dart';
 import 'init_get_it.dart';
@@ -13,16 +14,14 @@ Future<void> main() async {
   final releaseCatcher = CatcherOptions(
     DialogReportMode(),
     [
-      EmailManualHandler(
-        ["heartryapp@gmail.com"],
-        emailTitle: "Heartry crash report",
-        printLogs: true,
-      ),
+      CustomEmailReportHandler(),
     ],
   );
 
   Catcher(
+    debugConfig: releaseCatcher,
     releaseConfig: releaseCatcher,
+    profileConfig: releaseCatcher,
     rootWidget: ProviderScope(child: MyApp()),
   );
 }
