@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -6,8 +8,15 @@ import 'base_info_widget.dart';
 const _profileURL =
     "https://secure.gravatar.com/avatar/81d9c078a3dfb1cda130020eecfc6e56?s=500";
 
-class Contributors extends StatelessWidget {
+class Contributors extends StatefulWidget {
   const Contributors({Key key}) : super(key: key);
+
+  @override
+  _ContributorsState createState() => _ContributorsState();
+}
+
+class _ContributorsState extends State<Contributors> {
+  bool _profileError = false;
 
   @override
   Widget build(BuildContext context) {
@@ -41,10 +50,26 @@ class Contributors extends StatelessWidget {
   Column darshanInfo(BuildContext context) {
     return Column(
       children: <Widget>[
-        const CircleAvatar(
+        CircleAvatar(
           minRadius: 50,
           maxRadius: 60,
-          backgroundImage: NetworkImage(_profileURL),
+          onBackgroundImageError: (exception, stackTrace) {
+            if (exception is SocketException) {
+              setState(() {
+                _profileError = true;
+              });
+              return;
+            }
+            throw Exception(stackTrace);
+          },
+          backgroundImage:
+              !_profileError ? const NetworkImage(_profileURL) : null,
+          child: _profileError
+              ? const Icon(
+                  Icons.person,
+                  size: 80,
+                )
+              : null,
         ),
         const SizedBox(height: 10),
         Text(
