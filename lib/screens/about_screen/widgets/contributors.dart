@@ -4,7 +4,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'base_info_widget.dart';
 
 const _profileURL =
-    "https://media-exp1.licdn.com/dms/image/C5103AQEtWUqi83pq-g/profile-displayphoto-shrink_400_400/0/1569059140972?e=1617235200&v=beta&t=h7NoI5ygZs_IQeDepkfbBpqtWuQjljYu44eGPQHNYSk";
+    "https://secure.gravatar.com/avatar/81d9c078a3dfb1cda130020eecfc6e56?s=500";
 
 class Contributors extends StatelessWidget {
   const Contributors({Key key}) : super(key: key);
