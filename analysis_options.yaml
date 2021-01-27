@@ -13,3 +13,4 @@ linter:
     curly_braces_in_flow_control_structures: false
     sort_pub_dependencies: false
     prefer_if_elements_to_conditional_expressions: false
+    constant_identifier_names: false

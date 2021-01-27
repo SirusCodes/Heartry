@@ -8,6 +8,7 @@ import 'package:screenshot/screenshot.dart';
 import 'package:share/share.dart';
 
 import '../../providers/text_providers.dart';
+import '../../utils/contants.dart';
 import '../share_images_screen/share_images_screen.dart';
 import 'widgets/image_bottom_app_bar.dart';
 import 'widgets/image_color_handler.dart';
@@ -206,13 +207,22 @@ class _ImageScreenState extends State<ImageScreen> {
     final _size = MediaQuery.of(context).size;
 
     // getting title height
-    final _titleHeight =
-        _calcTextSize(context, constraints, widget.title, 30, _textScale)
-            .height;
+    final _titleHeight = _calcTextSize(
+      context,
+      constraints,
+      widget.title,
+      TITLE_TEXT_SIZE,
+      _textScale,
+    ).height;
 
     // getting poet height
-    final _poetHeight =
-        _calcTextSize(context, constraints, widget.poet, 18, _textScale).height;
+    final _poetHeight = _calcTextSize(
+      context,
+      constraints,
+      widget.poet,
+      POET_TEXT_SIZE,
+      _textScale,
+    ).height;
 
     final double _availableHeight =
         _size.height - 200 - _titleHeight - _poetHeight;
@@ -221,8 +231,13 @@ class _ImageScreenState extends State<ImageScreen> {
 
     // creating the size of the poem
     for (final line in widget.poem) {
-      final double _heightToSub =
-          _calcTextSize(context, constraints, line, 15, _textScale).height;
+      final double _heightToSub = _calcTextSize(
+        context,
+        constraints,
+        line,
+        POEM_TEXT_SIZE,
+        _textScale,
+      ).height;
 
       _height -= _heightToSub;
 
@@ -250,7 +265,10 @@ class _ImageScreenState extends State<ImageScreen> {
     final painter = TextPainter(
       text: TextSpan(
         text: text,
-        style: TextStyle(fontSize: fontSize),
+        style: TextStyle(
+          fontSize: fontSize,
+          fontFamily: "Caveat",
+        ),
       ),
       textScaleFactor: scale,
       textDirection: TextDirection.ltr,

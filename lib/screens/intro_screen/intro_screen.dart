@@ -87,6 +87,8 @@ class __NamePageState extends State<_NamePage> {
                 style: TextStyle(
                   fontSize: 50,
                   color: Colors.deepPurple,
+                  fontWeight: FontWeight.w600,
+                  fontFamily: "Caveat",
                 ),
               ),
               const SizedBox(height: 35),
@@ -104,7 +106,7 @@ class __NamePageState extends State<_NamePage> {
                 },
                 textCapitalization: TextCapitalization.words,
                 decoration: const InputDecoration(
-                  hintText: "Darshan",
+                  hintText: "Your Name",
                   labelText: "Name",
                   border: OutlineInputBorder(),
                 ),
@@ -196,7 +198,7 @@ You can access Reader Mode, Delete and Edit from it.""",
       title: "Reader Mode",
       poem: """
 Sometimes keyboards can be annoying😣.
-Click on eye button in toolbar😇.
+Press and hold on card, and click on eye button😇.
 Now that keyboard will never disturb you😎""",
     );
 
@@ -302,6 +304,8 @@ class _ProfilePage extends StatelessWidget {
           style: TextStyle(
             fontSize: 50,
             color: Colors.white,
+            fontWeight: FontWeight.w600,
+            fontFamily: "Caveat",
           ),
         ),
         const SizedBox(height: 15),
@@ -379,6 +383,8 @@ class _WelcomePage extends StatelessWidget {
             style: TextStyle(
               fontSize: 50,
               color: Colors.white,
+              fontWeight: FontWeight.w600,
+              fontFamily: "Caveat",
             ),
           ),
           const SizedBox(height: 95),
@@ -395,6 +401,7 @@ class _WelcomePage extends StatelessWidget {
             style: TextStyle(
               fontSize: 25,
               color: Colors.white,
+              fontFamily: "Caveat",
             ),
           ),
           const SizedBox(height: 80),

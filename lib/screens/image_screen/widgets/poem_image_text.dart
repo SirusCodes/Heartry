@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../providers/text_providers.dart';
+import '../../../utils/contants.dart';
 
 class PoemImageText extends ConsumerWidget {
   const PoemImageText({
@@ -28,8 +29,9 @@ class PoemImageText extends ConsumerWidget {
           textAlign: TextAlign.center,
           textScaleFactor: _scale,
           style: TextStyle(
-            fontSize: 30,
+            fontSize: TITLE_TEXT_SIZE,
             color: color,
+            fontFamily: "Caveat",
           ),
         ),
         ...poem.map(
@@ -37,8 +39,9 @@ class PoemImageText extends ConsumerWidget {
             e,
             textScaleFactor: _scale,
             style: TextStyle(
-              fontSize: 15,
+              fontSize: POEM_TEXT_SIZE,
               color: color,
+              fontFamily: "Caveat",
             ),
           ),
         ),
@@ -48,8 +51,9 @@ class PoemImageText extends ConsumerWidget {
           textAlign: TextAlign.center,
           textScaleFactor: _scale,
           style: TextStyle(
-            fontSize: 17,
+            fontSize: POET_TEXT_SIZE,
             color: color,
+            fontFamily: "Caveat",
           ),
         ),
       ],

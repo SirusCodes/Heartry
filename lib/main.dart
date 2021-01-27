@@ -61,6 +61,9 @@ class _MyAppState extends State<MyApp> {
           ),
         ),
         accentTextTheme: TextTheme(
+          headline2: const TextStyle(
+            color: Colors.deepPurpleAccent,
+          ),
           headline3: const TextStyle(
             color: Colors.deepPurpleAccent,
           ),

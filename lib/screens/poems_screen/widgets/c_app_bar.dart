@@ -29,7 +29,7 @@ class CAppBar extends ConsumerWidget {
             style: Theme.of(context)
                 .accentTextTheme
                 .headline3
-                .copyWith(fontWeight: FontWeight.w500),
+                .copyWith(fontWeight: FontWeight.w600, fontFamily: "Caveat"),
           ),
           const Spacer(),
           IconButton(
