@@ -177,20 +177,20 @@ class __NamePageState extends State<_NamePage> {
     await _insertPoem(
       _db,
       title: "Welcome",
-      poem: "Hey ${_nameController.text}, thanks for using Heartry🤗",
+      poem: "Hey ${_nameController.text}, thanks for using Heartry. 🤗",
     );
 
     await _insertPoem(
       _db,
       title: "Writing",
-      poem: "Everything that you ✍ will be auto saved",
+      poem: "Everything that you ✍ will be auto saved.",
     );
 
     await _insertPoem(
       _db,
       title: "Tool bar",
       poem: """
-Press and hold this card to access toolbar😊
+Press and hold this card to access toolbar. 😊
 You can access Reader Mode, Delete and Edit from it.""",
     );
 
@@ -200,7 +200,7 @@ You can access Reader Mode, Delete and Edit from it.""",
       poem: """
 Sometimes keyboards can be annoying.
 Press and hold on card, and click on eye button.
-Now that keyboard will never disturb you😇""",
+Now that keyboard will never disturb you. 😇""",
     );
 
     await _insertPoem(
@@ -208,21 +208,21 @@ Now that keyboard will never disturb you😇""",
       title: "Share",
       poem: """
 You can share poem in 2 ways.
-1. As Text 🆎(For Messages)
-2. As Photos 📷(For Stories)""",
+1. As Text 🆎 (For Messages)
+2. As Photos 📷 (For Stories)""",
     );
 
     await _insertPoem(
       _db,
       title: "Share as Image",
       poem: "It will open a new screen, you can select each image and add "
-          "them to your story one by one❤",
+          "them to your story one by one. ❤",
     );
 
     await _insertPoem(
       _db,
       title: "About",
-      poem: "You can know more about us by going in About in Settings.🙈",
+      poem: "You can know more about us by going in About in Settings. 🙈",
     );
   }
 

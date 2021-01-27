@@ -25,7 +25,7 @@ class Others extends StatelessWidget {
             ),
             ListTile(
               title: const Text("Privacy Statement"),
-              subtitle: const Text("Your commitment towards privacy"),
+              subtitle: const Text("Our commitment towards privacy"),
               leading: const CircleAvatar(child: Icon(Icons.book)),
               onTap: () {
                 Navigator.push(

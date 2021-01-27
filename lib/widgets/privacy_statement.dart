@@ -4,12 +4,15 @@ import 'only_back_button_bottom_app_bar.dart';
 
 const data = """
 
-Your privacy is of utmost importance to us.
-Your data will be stored only on your device and will never leave it.
+• Your privacy is of utmost importance to us.
 
-In case the app crashes, you will be given a choice to share the crash details with us, which will include some of your device's specifications, but will NOT be sufficient to uniquely identify you or your device.
-We do not use trackers.
-We do not collect any personal data.""";
+• Your data will be stored only on your device and will never leave it.
+
+• In case the app crashes, you will be given a choice to share the crash details with us, which will include some of your device's specifications, but will NOT be sufficient to uniquely identify you or your device.
+
+• We do not use trackers.
+
+• We do not collect any personal data.""";
 
 class PrivacyStatement extends StatelessWidget {
   const PrivacyStatement({Key key}) : super(key: key);
@@ -22,7 +25,7 @@ class PrivacyStatement extends StatelessWidget {
           padding: const EdgeInsets.all(20.0),
           children: <Widget>[
             Text(
-              "⨕ We don't collect any data!!🥳",
+              "⨕ We don't collect any data! 🥳",
               style: Theme.of(context)
                   .textTheme
                   .headline4
@@ -30,7 +33,7 @@ class PrivacyStatement extends StatelessWidget {
             ),
             Text(
               data,
-              style: Theme.of(context).textTheme.headline6,
+              style: TextStyle(fontSize: 16),
             ),
           ],
         ),
