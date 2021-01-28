@@ -135,6 +135,8 @@ class _WritingScreenState extends State<WritingScreen>
                 bottom: 0,
                 width: MediaQuery.of(context).size.width,
                 child: WritingBottomAppBar(
+                  title: _titleTextController.text,
+                  poem: undoRedo.textEditingController.text,
                   showSharePanel: () {
                     if (undoRedo.textEditingController.text.isNotEmpty)
                       return true;
@@ -154,29 +156,9 @@ class _WritingScreenState extends State<WritingScreen>
                   },
                   onShareAsText: () {
                     _handleDBChanges();
-                    String msg = "";
-
-                    if (_titleTextController.text != null &&
-                        _titleTextController.text.isNotEmpty)
-                      msg += "${_titleTextController.text}\n\n";
-
-                    msg += undoRedo.textEditingController.text;
-                    msg += "\n\n-${locator<Config>().name}";
-
-                    Share.share(msg);
                   },
                   onShareAsImage: () {
                     _handleDBChanges();
-                    Navigator.push(
-                      context,
-                      CupertinoPageRoute(
-                        builder: (_) => ImageScreen(
-                          title: _titleTextController.text,
-                          poem: undoRedo.textEditingController.text.split("\n"),
-                          poet: locator<Config>().name,
-                        ),
-                      ),
-                    );
                   },
                 ),
               )

@@ -1,10 +1,12 @@
 import 'dart:io';
 
 import 'package:animated_icon_button/animated_icon_button.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../utils/undo_redo.dart';
+import '../../../widgets/share_option_list.dart';
 
 typedef BoolCallBack = bool Function();
 
@@ -14,10 +16,13 @@ class WritingBottomAppBar extends StatefulWidget {
     @required this.onShareAsImage,
     @required this.onShareAsText,
     @required this.showSharePanel,
+    @required this.title,
+    @required this.poem,
   }) : super(key: key);
 
   final VoidCallback onShareAsImage, onShareAsText;
   final BoolCallBack showSharePanel;
+  final String title, poem;
 
   @override
   _WritingBottomAppBarState createState() => _WritingBottomAppBarState();
@@ -83,20 +88,11 @@ class _WritingBottomAppBarState extends State<WritingBottomAppBar>
           ),
           SizeTransition(
             sizeFactor: _iconController,
-            child: ListView(
-              shrinkWrap: true,
-              children: [
-                ListTile(
-                  title: const Text("Share as Text"),
-                  trailing: const Icon(Icons.text_fields),
-                  onTap: () => widget.onShareAsText(),
-                ),
-                ListTile(
-                  title: const Text("Share as Image"),
-                  trailing: const Icon(Icons.image),
-                  onTap: () => widget.onShareAsImage(),
-                ),
-              ],
+            child: ShareOptionList(
+              onShareAsImage: () => widget.onShareAsImage(),
+              onShareAsText: () => widget.onShareAsText(),
+              title: widget.title,
+              poem: widget.poem,
             ),
           )
         ],

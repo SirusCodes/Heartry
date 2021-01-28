@@ -4,7 +4,7 @@ import 'package:animated_icon_button/animated_icon_button.dart';
 import 'package:flutter/material.dart';
 
 import '../../../database/database.dart';
-import '../../image_screen/image_screen.dart';
+import '../../../widgets/share_option_list.dart';
 import '../../writing_screen/writing_screen.dart';
 
 class ReaderScreenBottomAppBar extends StatefulWidget {
@@ -76,29 +76,9 @@ class _ReaderScreenBottomAppBarState extends State<ReaderScreenBottomAppBar>
           ),
           SizeTransition(
             sizeFactor: _iconController,
-            child: ListView(
-              shrinkWrap: true,
-              children: [
-                ListTile(
-                  title: const Text("Share as Text"),
-                  trailing: const Icon(Icons.text_fields),
-                  onTap: () {},
-                ),
-                ListTile(
-                  title: const Text("Share as Image"),
-                  trailing: const Icon(Icons.image),
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => ImageScreen(
-                        title: widget.model.title,
-                        poem: widget.model.poem.split("\n"),
-                        poet: "Poet",
-                      ),
-                    ),
-                  ),
-                ),
-              ],
+            child: ShareOptionList(
+              title: widget.model.title,
+              poem: widget.model.poem,
             ),
           )
         ],
