@@ -1,0 +1,93 @@
+update_fastlane
+
+default_platform :android
+
+android_project_dir = "./android"
+
+platform :android do
+	desc "Clean old build artifacts"
+	lane :clean do
+		gradle(task: "clean", project_dir: android_project_dir)
+	end
+
+	desc "Build the Android application"
+	lane :build do
+		gradle(task: "assembleRelease", project_dir: android_project_dir)
+	end
+
+	desc "Clean old artifacts, then build the Android application"
+	lane :clean_build do
+		clean
+		build
+	end
+
+	desc "Build a standalone development .apk file"
+	lane :debug_build do
+		gradle(task: "assembleDebug", project_dir: android_project_dir)
+	end
+
+	desc "Build debug and test apks for screenshots"
+	lane :build_for_screenshots do
+		gradle(task: "assembleDebug assembleAndroidTest", project_dir: android_project_dir)
+	end
+
+	desc "Start local emulator"
+	lane :start_emulator do
+		adb(command: "kill-server")
+		adb(command: "start-server")
+
+		Process.spawn("emulator -avd Pixel2_Android_30_PlayStore_x86 -no-window -no-boot-anim -no-audio")
+		sleep 30
+	end
+
+	desc "Connect to local emulator"
+	lane :connect_to_emulator do
+		adb(command: "wait-for-local-device")
+	end
+
+	desc "Connect to device"
+	lane :connect_to_device do
+		adb(command: "wait-for-usb-device")
+	end
+
+	desc "Disable animations for Instrumentation tests"
+	lane :disable_animations do
+		adb(command: "shell settings put global window_animation_scale 0")
+		adb(command: "shell settings put global transition_animation_scale 0")
+		adb(command: "shell settings put global animator_duration_scale 0")
+	end
+
+	desc "Take screenshots"
+	lane :take_screenshots do
+		screengrab
+	end
+
+	desc "Build debug apks and take screenshots"
+	lane :screenshots do
+		build_for_screenshots
+
+		# start_emulator
+		disable_animations
+		connect_to_emulator
+
+		take_screenshots
+	end
+
+	desc "Submit a new Beta Build to Playstore Beta"
+	lane :beta do
+		clean_build
+		supply(track: "beta", track_promote_to: "beta")
+	end
+
+	desc "Build and deploy a new version to the Google Play Store"
+	lane :deploy_to_store do
+		clean_build
+		upload_to_play_store
+	end
+
+	desc "Build and deploy a new version with screenshots to the Google Play Store"
+	lane :deploy do
+		screenshots
+		deploy_to_store
+	end
+end
