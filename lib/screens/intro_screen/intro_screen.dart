@@ -191,7 +191,7 @@ class __NamePageState extends State<_NamePage> {
       title: "Tool bar",
       poem: """
 Press and hold this card to access toolbar. 😊
-You can access Reader Mode, Delete and Edit from it.""",
+You can access Reader Mode, Share and Edit from it.""",
     );
 
     await _insertPoem(
