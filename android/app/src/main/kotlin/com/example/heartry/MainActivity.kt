@@ -1,4 +1,4 @@
-package com.example.heartry
+package com.darshan.heartry
 
 import io.flutter.embedding.android.FlutterActivity
 
