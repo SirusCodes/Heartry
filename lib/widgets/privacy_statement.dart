@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
 import 'only_back_button_bottom_app_bar.dart';
@@ -31,14 +33,15 @@ class PrivacyStatement extends StatelessWidget {
                   .headline4
                   .copyWith(fontWeight: FontWeight.bold, color: Colors.black),
             ),
-            Text(
+            const Text(
               data,
               style: TextStyle(fontSize: 16),
             ),
           ],
         ),
       ),
-      bottomNavigationBar: const OnlyBackButtonBottomAppBar(),
+      bottomNavigationBar:
+          Platform.isIOS ? const OnlyBackButtonBottomAppBar() : null,
     );
   }
 }

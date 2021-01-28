@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:animated_icon_button/animated_icon_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -52,10 +54,12 @@ class _WritingBottomAppBarState extends State<WritingBottomAppBar>
               final undoRedo = watch(undoRedoProvider);
               return Row(
                 children: <Widget>[
-                  IconButton(
-                    icon: const Icon(Icons.arrow_back_ios_rounded),
-                    onPressed: () => Navigator.pop(context),
-                  ),
+                  if (Platform.isIOS)
+                    IconButton(
+                      icon: const Icon(Icons.arrow_back_ios_rounded),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                  if (!Platform.isIOS) const SizedBox(width: 48),
                   const Spacer(),
                   IconButton(
                     icon: const Icon(Icons.undo_rounded),

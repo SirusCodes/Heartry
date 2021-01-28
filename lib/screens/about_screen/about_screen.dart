@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
 import '../../widgets/c_screen_title.dart';
@@ -22,7 +24,8 @@ class AboutScreen extends StatelessWidget {
           ],
         ),
       ),
-      bottomNavigationBar: const OnlyBackButtonBottomAppBar(),
+      bottomNavigationBar:
+          Platform.isIOS ? const OnlyBackButtonBottomAppBar() : null,
     );
   }
 }

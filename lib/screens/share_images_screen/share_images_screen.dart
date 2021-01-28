@@ -45,7 +45,8 @@ class ShareImagesScreen extends StatelessWidget {
           ],
         ),
       ),
-      bottomNavigationBar: const OnlyBackButtonBottomAppBar(),
+      bottomNavigationBar:
+          Platform.isIOS ? const OnlyBackButtonBottomAppBar() : null,
     );
   }
 }

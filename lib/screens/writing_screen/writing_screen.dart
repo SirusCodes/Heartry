@@ -83,7 +83,7 @@ class _WritingScreenState extends State<WritingScreen>
     return Scaffold(
       body: WillPopScope(
         onWillPop: () {
-          if (_isEmpty) poemDB.deletePoem(widget.model);
+          if (_isEmpty && widget.model != null) poemDB.deletePoem(widget.model);
 
           return Future.value(true);
         },

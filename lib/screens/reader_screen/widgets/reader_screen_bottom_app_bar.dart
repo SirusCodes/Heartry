@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:animated_icon_button/animated_icon_button.dart';
 import 'package:flutter/material.dart';
 
@@ -47,10 +49,11 @@ class _ReaderScreenBottomAppBarState extends State<ReaderScreenBottomAppBar>
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
-              IconButton(
-                icon: const Icon(Icons.arrow_back_ios_rounded),
-                onPressed: () => Navigator.pop(context),
-              ),
+              if (Platform.isIOS)
+                IconButton(
+                  icon: const Icon(Icons.arrow_back_ios_rounded),
+                  onPressed: () => Navigator.pop(context),
+                ),
               IconButton(
                 icon: const Icon(Icons.edit),
                 onPressed: () => Navigator.pushReplacement(
