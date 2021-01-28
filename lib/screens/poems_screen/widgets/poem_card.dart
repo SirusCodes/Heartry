@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../database/database.dart';
 import '../../../init_get_it.dart';
 import '../../../providers/list_grid_provider.dart';
+import '../../../widgets/share_option_list.dart';
 import '../../reader_screen/reader_screen.dart';
 import '../../writing_screen/writing_screen.dart';
 
@@ -41,28 +42,20 @@ class _PoemCardState extends State<PoemCard>
   Widget build(BuildContext context) {
     final _iconList = [
       IconButton(
-        icon: const Icon(Icons.edit),
-        onPressed: () {
-          _navigateToWritingScreen();
-        },
+        icon: const Icon(Icons.share),
+        onPressed: () => _shareClicked(),
       ),
       IconButton(
         icon: const Icon(Icons.remove_red_eye_rounded),
-        onPressed: () {
-          _navigateToReaderScreen();
-        },
+        onPressed: () => _navigateToReaderScreen(),
       ),
       IconButton(
         icon: const Icon(Icons.delete),
-        onPressed: () {
-          _showWarning();
-        },
+        onPressed: () => _showWarning(),
       ),
       IconButton(
         icon: const Icon(Icons.close_rounded),
-        onPressed: () {
-          _controller.reverse();
-        },
+        onPressed: () => _controller.reverse(),
       ),
     ];
 
@@ -84,7 +77,12 @@ class _PoemCardState extends State<PoemCard>
                     ),
                   ),
                   onPressed: () {
-                    _navigateToWritingScreen();
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => WritingScreen(model: widget.model),
+                      ),
+                    );
                   },
                   onLongPress: () {
                     _controller.forward();
@@ -139,11 +137,17 @@ class _PoemCardState extends State<PoemCard>
     );
   }
 
-  void _navigateToWritingScreen() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => WritingScreen(model: widget.model),
+  void _shareClicked() {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(15),
+        ),
+      ),
+      builder: (context) => ShareOptionList(
+        title: widget.model.title,
+        poem: widget.model.poem,
       ),
     );
   }
