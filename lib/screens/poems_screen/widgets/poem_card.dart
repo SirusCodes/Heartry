@@ -66,7 +66,7 @@ class _PoemCardState extends State<PoemCard>
           alignment: FractionalOffset.center,
           transform: Matrix4.identity()
             ..setEntry(2, 1, .0003)
-            ..rotateY(2 * math.pi * _controller.value),
+            ..rotateY(math.pi * _controller.value),
           child: _controller.value < .5
               ? OutlinedButton(
                   style: ButtonStyle(
@@ -109,26 +109,32 @@ class _PoemCardState extends State<PoemCard>
                     ],
                   ),
                 )
-              : Card(
-                  color: Theme.of(context).primaryColor,
-                  child: IconTheme(
-                    data: const IconThemeData(color: Colors.white),
-                    child: Consumer(
-                      builder: (context, watch, child) {
-                        final _listGrid = watch(listGridProvider).state;
-                        return _listGrid
-                            ? GridView.count(
-                                crossAxisCount: 2,
-                                shrinkWrap: true,
-                                physics: const NeverScrollableScrollPhysics(),
-                                children: _iconList,
-                              )
-                            : Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
-                                children: _iconList,
-                              );
-                      },
+              : Transform(
+                  alignment: FractionalOffset.center,
+                  transform: Matrix4.identity()
+                    ..setEntry(2, 1, .0003)
+                    ..rotateY(math.pi),
+                  child: Card(
+                    color: Theme.of(context).primaryColor,
+                    child: IconTheme(
+                      data: const IconThemeData(color: Colors.white),
+                      child: Consumer(
+                        builder: (context, watch, child) {
+                          final _listGrid = watch(listGridProvider).state;
+                          return _listGrid
+                              ? GridView.count(
+                                  crossAxisCount: 2,
+                                  shrinkWrap: true,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  children: _iconList,
+                                )
+                              : Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: _iconList,
+                                );
+                        },
+                      ),
                     ),
                   ),
                 ),

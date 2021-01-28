@@ -28,15 +28,16 @@ class PoemScreen extends StatelessWidget {
         ),
       ),
       floatingActionButton: OpenContainer(
-        closedElevation: 6,
         openBuilder: (_, __) => const WritingScreen(),
         closedShape: const CircleBorder(),
-        closedColor: Theme.of(context).primaryColor,
-        closedBuilder: (_, __) => const Padding(
-          padding: EdgeInsets.all(14.0),
-          child: Icon(
-            Icons.add,
-            color: Colors.white,
+        closedBuilder: (_, __) => AbsorbPointer(
+          child: FloatingActionButton(
+            elevation: 10,
+            onPressed: () {},
+            child: const Icon(
+              Icons.add,
+              color: Colors.white,
+            ),
           ),
         ),
       ),
