@@ -2,7 +2,7 @@
     <img
         src='images/feature_graphics.png'
         style="vertical-align:middle;margin:0px 0px"
-        height=300sp
+        height=450sp
     />
 </div>
 <h1 align='center'>Heartry</h1>
