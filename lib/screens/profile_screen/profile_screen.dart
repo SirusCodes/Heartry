@@ -12,6 +12,8 @@ import '../../init_get_it.dart';
 import '../../widgets/c_screen_title.dart';
 import '../../widgets/only_back_button_bottom_app_bar.dart';
 
+const String noNameError = "Please enter your name...";
+
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({Key key}) : super(key: key);
 
@@ -35,8 +37,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   void dispose() {
-    if (_name != _nameController.text) _config.name = _nameController.text;
-
     _nameController.dispose();
     super.dispose();
   }
@@ -44,46 +44,75 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Column(
-          children: <Widget>[
-            const Align(
-              alignment: Alignment.centerLeft,
-              child: CScreenTitle(title: "Profile"),
-            ),
-            GestureDetector(
-              onTap: () => _showChangeProfileDialog(context),
-              child: Consumer(
-                builder: (context, watch, child) {
-                  final _imagePath = watch(configProvider).profile;
-                  return CircleAvatar(
-                    maxRadius: 100,
-                    minRadius: 80,
-                    backgroundImage:
-                        _imagePath != null ? FileImage(File(_imagePath)) : null,
-                    child: _imagePath == null
-                        ? const Icon(
-                            Icons.person_add,
-                            size: 100,
-                          )
-                        : null,
-                  );
-                },
+      body: WillPopScope(
+        onWillPop: () {
+          final name = _nameController?.text;
+          if (name == null || name.isEmpty) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15.0),
+                ),
+                behavior: SnackBarBehavior.floating,
+                margin: const EdgeInsets.all(8.0),
+                content: const Text(noNameError),
               ),
-            ),
-            const SizedBox(height: 10),
-            Padding(
-              padding: const EdgeInsets.all(15.0),
-              child: TextField(
-                controller: _nameController,
-                textCapitalization: TextCapitalization.words,
-                decoration: const InputDecoration(
-                  labelText: "Name",
-                  border: OutlineInputBorder(),
+            );
+
+            return Future.value(false);
+          }
+          if (_name != _nameController.text)
+            _config.name = _nameController.text;
+
+          return Future.value(true);
+        },
+        child: SafeArea(
+          child: Column(
+            children: <Widget>[
+              const Align(
+                alignment: Alignment.centerLeft,
+                child: CScreenTitle(title: "Profile"),
+              ),
+              GestureDetector(
+                onTap: () => _showChangeProfileDialog(context),
+                child: Consumer(
+                  builder: (context, watch, child) {
+                    final _imagePath = watch(configProvider).profile;
+                    return CircleAvatar(
+                      maxRadius: 100,
+                      minRadius: 80,
+                      backgroundImage: _imagePath != null
+                          ? FileImage(File(_imagePath))
+                          : null,
+                      child: _imagePath == null
+                          ? const Icon(
+                              Icons.person_add,
+                              size: 100,
+                            )
+                          : null,
+                    );
+                  },
                 ),
               ),
-            ),
-          ],
+              const SizedBox(height: 10),
+              Padding(
+                padding: const EdgeInsets.all(15.0),
+                child: TextFormField(
+                  autovalidateMode: AutovalidateMode.always,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) return noNameError;
+                    return null;
+                  },
+                  controller: _nameController,
+                  textCapitalization: TextCapitalization.words,
+                  decoration: const InputDecoration(
+                    labelText: "Name",
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
       bottomNavigationBar:
