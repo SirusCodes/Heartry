@@ -5,7 +5,7 @@
 - Fork the project and `git clone https://github.com/<YourUserName>/Heartry.git`
 - Create another branch `git checkout -b <branch-name>`
 - Add an upstream `git remote add upstream https://github.com/SirusCodes/Heartry.git`
-- Open it on your favourite IDE.
+- Run `flutter pub get & flutter pub run build_runner build`
 - Make required changes
 - Make a [pull request](https://opensource.com/article/19/7/create-pull-request-github)
 
