@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:share/share.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'base_info_widget.dart';
@@ -28,7 +29,9 @@ class SupportDevelopment extends StatelessWidget {
           leading: const CircleAvatar(
             child: Icon(Icons.star),
           ),
-          onTap: () {},
+          onTap: () => _launchURL(
+            "https://play.google.com/store/apps/details?id=com.darshan.heartry",
+          ),
         ),
         // ListTile(
         //   title: const Text("Donate"),
@@ -41,10 +44,34 @@ class SupportDevelopment extends StatelessWidget {
         //   onTap: () {},
         // ),
         ListTile(
+          title: const Text("Send us Feature request"),
+          subtitle: const Text("If you want some new features in the app"),
+          leading: const CircleAvatar(
+            child: Icon(Icons.flare_outlined),
+          ),
+          onTap: () => _launchURL(
+            "mailto:heartryapp@gmail.com?&subject=Feature request",
+          ),
+        ),
+        ListTile(
+          title: const Text("Report a bug"),
+          subtitle: const Text(
+            "App is not working as expected? Send us a bug report",
+          ),
+          leading: const CircleAvatar(
+            child: Icon(Icons.bug_report_rounded),
+          ),
+          onTap: () => _launchURL(
+            "mailto:heartryapp@gmail.com?&subject=Bug report",
+          ),
+        ),
+        ListTile(
           title: const Text("Share"),
           subtitle: const Text("Share it with your friends and family"),
           leading: const CircleAvatar(child: Icon(Icons.share)),
-          onTap: () {},
+          onTap: () => Share.share(
+            "Hey, kindly checkout Heartry - An app for Writers on playstore at https://play.google.com/store/apps/details?id=com.darshan.heartry",
+          ),
         ),
       ],
     );

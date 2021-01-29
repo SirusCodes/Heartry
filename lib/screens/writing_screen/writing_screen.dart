@@ -2,13 +2,10 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:share/share.dart';
 
-import '../../database/config.dart';
 import '../../database/database.dart';
 import '../../init_get_it.dart';
 import '../../utils/undo_redo.dart';
-import '../image_screen/image_screen.dart';
 import 'widgets/writing_bottom_app_bar.dart';
 
 class WritingScreen extends StatefulWidget {
@@ -194,13 +191,10 @@ class _WritingScreenState extends State<WritingScreen>
 
   void _handleDBChanges() {
     if (_hasChanged && _isNotEmpty) {
-      if (_poemModel.id == null) {
+      if (_poemModel.id == null)
         _save();
-        print("save");
-      } else {
+      else
         _update();
-        print("update");
-      }
     }
   }
 
