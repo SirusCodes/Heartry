@@ -18,15 +18,17 @@ jobs:
     - uses: subosito/flutter-action@v1
       with:
         channel: 'beta'
-
+    - run: echo {{ secrets.SIGNING_KEY }} | base64 -id > android/heartry.jks & echo {{ secrets.KEY_PROPERTIES }} | base64 -id > android/key.properties
     - run: flutter pub get
     - run: flutter pub run build_runner build
     - run: flutter format --set-exit-if-changed .
     - run: flutter analyze .
     # - run: flutter test
     - run: flutter build appbundle
+    - run: flutter build apk --split-per-abi
+    - run: zip -r app.zip build/app/outputs/flutter-apk/*.apk build/app/outputs/bundle/release/*.aab
 
     - uses: actions/upload-artifact@v2
       with:
-        name: release-appbundle
-        path: build/app/outputs/bundle/release/app.aab
+        name: release-app
+        path: app.zip
