@@ -1,17 +1,18 @@
-# heartry
+<div align='center'>
+    <img
+        src='images/feature_graphics.png'
+        style="vertical-align:middle;margin:0px 0px"
+        height=300sp
+    />
+</div>
+<h1 align='center'>Heartry</h1>
+<h4 align='center'>Heart + Poetry</h4>
 
-A new Flutter project.
+### Features
 
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
-# Heartry
+- NO ads
+- Privacy focused
+- Beautiful UI and animations
+- Works seamlessly
+- Get your art as image instantly
+- An easy way to add your poems to stories
