@@ -20,13 +20,13 @@ jobs:
         channel: 'beta'
 
     - run: flutter pub get
+    - run: flutter pub run build_runner build
     - run: flutter format --set-exit-if-changed .
     - run: flutter analyze .
     - run: flutter test
     - run: flutter build appbundle
-    - run: flutter build apk --split-per-abi
 
-    - uses: actions/upload-artifact@v1
+    - uses: actions/upload-artifact@v2
       with:
         name: release-appbundle
         path: build/app/outputs/bundle/release/app.aab
