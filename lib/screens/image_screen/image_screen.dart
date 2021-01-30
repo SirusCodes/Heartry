@@ -120,6 +120,10 @@ class _ImageScreenState extends State<ImageScreen> {
 
           Navigator.pop(context);
 
+          if (images.length == 1) {
+            await _shareAll(images);
+            return;
+          }
           _showShareTypeDialog(context, images);
         },
       ),
@@ -137,15 +141,9 @@ class _ImageScreenState extends State<ImageScreen> {
         ),
         children: [
           ElevatedButton(
-            onPressed: () {
+            onPressed: () async {
               Navigator.pop(context);
-              Share.shareFiles(
-                images,
-                mimeTypes: List.generate(
-                  poemLines.length,
-                  (index) => "image/png",
-                ),
-              );
+              await _shareAll(images);
             },
             child: const Text("Share all"),
           ),
@@ -159,6 +157,16 @@ class _ImageScreenState extends State<ImageScreen> {
             child: const Text("Share in parts"),
           ),
         ],
+      ),
+    );
+  }
+
+  Future<void> _shareAll(List<String> images) async {
+    await Share.shareFiles(
+      images,
+      mimeTypes: List.generate(
+        poemLines.length,
+        (index) => "image/png",
       ),
     );
   }
