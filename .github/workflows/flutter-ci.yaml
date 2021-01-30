@@ -46,12 +46,12 @@ jobs:
       run: |
         flutter build apk --debug
 
-        VERSION="v$(grep "flutter.versionName" android/local.properties | cut -d = -f 2)"
-        cp build/app/outputs/flutter-apk/app-release.apk "./Heartry-${VERSION}.apk"
+    #    VERSION="v$(grep "flutter.versionName" android/local.properties | cut -d = -f 2)"
+    #    cp build/app/outputs/flutter-apk/app-release.apk "./Heartry-${VERSION}.apk"
 
-        echo "Built apk for ${VERSION}"
+    #   echo "Built apk for ${VERSION}"
 
-    - uses: actions/upload-artifact@v2
-      with:
-        name: debug-apk
-        path: "*.apk"
+  #  - uses: actions/upload-artifact@v2
+  #    with:
+  #      name: debug-apk
+  #      path: "*.apk"
