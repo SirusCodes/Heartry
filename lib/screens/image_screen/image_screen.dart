@@ -2,8 +2,10 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/all.dart';
+import 'package:gallery_saver/gallery_saver.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:share/share.dart';
 
@@ -106,19 +108,28 @@ class _ImageScreenState extends State<ImageScreen> {
           );
         },
         onDonePressed: () async {
+          await Permission.storage.request();
+
           imageCache.clear();
 
           final List<String> images = [];
 
           _showProgressDialog(context);
 
+          final shouldSaveToGallery = await Permission.storage.isGranted;
+
           for (int pageIndex = 0; pageIndex < poemLines.length; pageIndex++) {
             _pageController.jumpToPage(pageIndex);
-            final path = await _getImage(pageIndex);
+            final path = await _getImage(pageIndex + 1, shouldSaveToGallery);
             images.add(path);
           }
 
           Navigator.pop(context);
+
+          if (images.length == 1) {
+            _shareAll(images);
+            return;
+          }
 
           _showShareTypeDialog(context, images);
         },
@@ -139,13 +150,7 @@ class _ImageScreenState extends State<ImageScreen> {
           ElevatedButton(
             onPressed: () {
               Navigator.pop(context);
-              Share.shareFiles(
-                images,
-                mimeTypes: List.generate(
-                  poemLines.length,
-                  (index) => "image/png",
-                ),
-              );
+              _shareAll(images);
             },
             child: const Text("Share all"),
           ),
@@ -159,6 +164,16 @@ class _ImageScreenState extends State<ImageScreen> {
             child: const Text("Share in parts"),
           ),
         ],
+      ),
+    );
+  }
+
+  void _shareAll(List<String> images) {
+    Share.shareFiles(
+      images,
+      mimeTypes: List.generate(
+        poemLines.length,
+        (index) => "image/png",
       ),
     );
   }
@@ -180,7 +195,7 @@ class _ImageScreenState extends State<ImageScreen> {
     );
   }
 
-  Future<String> _getImage(int index) async {
+  Future<String> _getImage(int index, bool shouldSaveToGallery) async {
     final externalStorage = await getExternalStorageDirectory();
 
     final path = join(
@@ -192,6 +207,9 @@ class _ImageScreenState extends State<ImageScreen> {
       delay: const Duration(milliseconds: 50),
       path: path,
     );
+
+    if (shouldSaveToGallery)
+      await GallerySaver.saveImage(path, albumName: "Heartry");
 
     return imgFile.path;
   }
