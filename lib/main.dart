@@ -20,7 +20,6 @@ Future<void> main() async {
   );
 
   Catcher(
-    debugConfig: releaseCatcher,
     releaseConfig: releaseCatcher,
     profileConfig: releaseCatcher,
     rootWidget: ProviderScope(child: MyApp()),

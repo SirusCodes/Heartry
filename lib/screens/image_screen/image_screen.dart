@@ -2,8 +2,10 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/all.dart';
+import 'package:gallery_saver/gallery_saver.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:share/share.dart';
 
@@ -106,6 +108,8 @@ class _ImageScreenState extends State<ImageScreen> {
           );
         },
         onDonePressed: () async {
+          if (!(await _isPermGranted(context))) return;
+
           imageCache.clear();
 
           final List<String> images = [];
@@ -114,7 +118,7 @@ class _ImageScreenState extends State<ImageScreen> {
 
           for (int pageIndex = 0; pageIndex < poemLines.length; pageIndex++) {
             _pageController.jumpToPage(pageIndex);
-            final path = await _getImage(pageIndex);
+            final path = await _getImage(pageIndex + 1);
             images.add(path);
           }
 
@@ -128,6 +132,29 @@ class _ImageScreenState extends State<ImageScreen> {
         },
       ),
     );
+  }
+
+  Future<bool> _isPermGranted(BuildContext context) async {
+    final status = await Permission.storage.request();
+    if (status.isGranted) return true;
+
+    bool _isSettingsOpened = false;
+
+    if (status.isPermanentlyDenied) _isSettingsOpened = await openAppSettings();
+
+    if (!_isSettingsOpened)
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text("Please allow to store images"),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15.0),
+          ),
+          behavior: SnackBarBehavior.floating,
+          margin: const EdgeInsets.all(8.0),
+        ),
+      );
+
+    return false;
   }
 
   Future _showShareTypeDialog(BuildContext context, List<String> images) {
@@ -189,17 +216,20 @@ class _ImageScreenState extends State<ImageScreen> {
   }
 
   Future<String> _getImage(int index) async {
-    final externalStorage = await getExternalStorageDirectory();
+    final tmpDir = await getTemporaryDirectory();
 
     final path = join(
-      externalStorage.path,
+      tmpDir.path,
       "${widget.title}-$index.png",
     );
 
     final File imgFile = await _screenshot.capture(
+      pixelRatio: 3,
       delay: const Duration(milliseconds: 50),
       path: path,
     );
+
+    await GallerySaver.saveImage(path, albumName: "Heartry");
 
     return imgFile.path;
   }
