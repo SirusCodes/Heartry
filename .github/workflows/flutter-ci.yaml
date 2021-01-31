@@ -52,5 +52,5 @@ jobs:
 
     - uses: actions/upload-artifact@v2
       with:
-        name: "Heartry-v${{ env.APP_VERSION }}.apk"
+        name: "Heartry-nightly-v${{ env.APP_VERSION }}.apk"
         path: build/app/outputs/flutter-apk/app-debug.apk
