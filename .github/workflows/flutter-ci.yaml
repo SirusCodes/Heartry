@@ -3,6 +3,7 @@ name: CI
 on:
   push:
     paths:
+      - ".github/workflows/**"
       - "lib/**"
       - "android/**"
       - "ios/**"
@@ -31,6 +32,8 @@ jobs:
 
     - name: Setup project
       run: |
+        echo "APP_VERSION=$(grep -Po '(?<=version: )(.*)(?=\+)' pubspec.yaml)" >> $GITHUB_ENV
+
         flutter pub get
         flutter pub run build_runner build
 
@@ -45,13 +48,9 @@ jobs:
     - name: Build debug apk
       run: |
         flutter build apk --debug
+        echo "Built apk for version ${APP_VERSION}"
 
-    #    VERSION="v$(grep "flutter.versionName" android/local.properties | cut -d = -f 2)"
-    #    cp build/app/outputs/flutter-apk/app-release.apk "./Heartry-${VERSION}.apk"
-
-    #   echo "Built apk for ${VERSION}"
-
-  #  - uses: actions/upload-artifact@v2
-  #    with:
-  #      name: debug-apk
-  #      path: "*.apk"
+    - uses: actions/upload-artifact@v2
+      with:
+        name: "Heartry-nightly-v${{ env.APP_VERSION }}.apk"
+        path: build/app/outputs/flutter-apk/app-debug.apk
