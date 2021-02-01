@@ -45,7 +45,9 @@ class SupportDevelopment extends StatelessWidget {
         // ),
         ListTile(
           title: const Text("Send us Feature request"),
-          subtitle: const Text("If you want some new features in the app"),
+          subtitle: const Text(
+            "Tell us what new features you want in future updates",
+          ),
           leading: const CircleAvatar(
             child: Icon(Icons.flare_outlined),
           ),

@@ -229,7 +229,7 @@ class _ImageScreenState extends State<ImageScreen> {
       path: path,
     );
 
-    await GallerySaver.saveImage(path, albumName: "Heartry");
+    await GallerySaver.saveImage(path, albumName: "Pictures/Heartry");
 
     return imgFile.path;
   }
