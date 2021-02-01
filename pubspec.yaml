@@ -32,7 +32,6 @@ dependencies:
   gallery_saver: ^2.0.3
   get_it: ^5.0.3
   image_picker: ^0.6.7+21
-  json_annotation: ^3.1.1
   liquid_swipe: ^1.5.0
   moor: ^3.4.0
   package_info: ^0.4.3+2
@@ -52,9 +51,7 @@ dev_dependencies:
   integration_test:
     sdk: flutter
   build_runner: null
-  flutter_launcher_icons: ^0.8.1
   flutter_native_splash: ^0.2.8
-  json_serializable: ^3.5.1
   lint: ^1.5.1
   moor_generator: ^3.4.0
 
