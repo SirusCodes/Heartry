@@ -53,10 +53,7 @@ dev_dependencies:
   build_runner: null
   flutter_native_splash: ^0.2.8
   lint: ^1.5.1
-  moor_generator: ^3.4.0
-
-dependency_overrides:
-  cli_util: ^0.2.0
+  moor_generator: ^3.4.1
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
