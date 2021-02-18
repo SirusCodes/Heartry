@@ -57,7 +57,7 @@ class _PoemBottomAppBarState extends State<PoemBottomAppBar>
                   title: const Text("Settings"),
                   trailing: const Icon(Icons.settings),
                   onTap: () {
-                    Navigator.push(
+                    Navigator.push<void>(
                       context,
                       MaterialPageRoute(builder: (_) => const SettingsScreen()),
                     );

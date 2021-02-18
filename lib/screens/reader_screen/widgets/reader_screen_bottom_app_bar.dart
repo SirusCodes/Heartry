@@ -56,7 +56,7 @@ class _ReaderScreenBottomAppBarState extends State<ReaderScreenBottomAppBar>
                 ),
               IconButton(
                 icon: const Icon(Icons.edit),
-                onPressed: () => Navigator.pushReplacement(
+                onPressed: () => Navigator.pushReplacement<void, void>(
                   context,
                   MaterialPageRoute(
                     builder: (_) => WritingScreen(

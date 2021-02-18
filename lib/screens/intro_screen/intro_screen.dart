@@ -130,7 +130,7 @@ class __NamePageState extends State<_NamePage> {
                       ),
                       recognizer: TapGestureRecognizer()
                         ..onTap = () {
-                          Navigator.push(
+                          Navigator.push<void>(
                             context,
                             MaterialPageRoute(
                               builder: (_) => const PrivacyStatement(),
@@ -151,7 +151,7 @@ class __NamePageState extends State<_NamePage> {
                             _showButton = false;
                           });
                           await _addDetailsInDB();
-                          Navigator.pushReplacement(
+                          Navigator.pushReplacement<void, void>(
                             context,
                             CupertinoPageRoute(
                               builder: (_) => const PoemScreen(),

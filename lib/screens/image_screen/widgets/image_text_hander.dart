@@ -63,7 +63,7 @@ class ImageTextHandler extends ConsumerWidget {
   }
 
   void _showColorPicker(BuildContext context, Color currentColor) {
-    showDialog(
+    showDialog<void>(
       context: context,
       builder: (BuildContext context) {
         return ColorPickerDialog(

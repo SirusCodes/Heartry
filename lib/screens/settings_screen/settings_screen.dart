@@ -26,7 +26,7 @@ class SettingsScreen extends StatelessWidget {
               title: const Text("Profile"),
               subtitle: const Text("Name and picture"),
               onTap: () {
-                Navigator.push(
+                Navigator.push<void>(
                   context,
                   MaterialPageRoute(builder: (_) => const ProfileScreen()),
                 );
@@ -39,7 +39,7 @@ class SettingsScreen extends StatelessWidget {
               title: const Text("About"),
               subtitle: const Text("App info and development"),
               onTap: () {
-                Navigator.push(
+                Navigator.push<void>(
                   context,
                   MaterialPageRoute(builder: (_) => const AboutScreen()),
                 );

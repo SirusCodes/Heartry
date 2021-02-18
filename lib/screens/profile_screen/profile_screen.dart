@@ -121,7 +121,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future _showChangeProfileDialog(BuildContext context) {
-    return showDialog(
+    return showDialog<void>(
       context: context,
       builder: (context) => SimpleDialog(
         contentPadding: const EdgeInsets.symmetric(

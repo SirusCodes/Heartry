@@ -62,7 +62,7 @@ class _ImageScreenState extends State<ImageScreen> {
                     _textScale,
                   );
 
-                  return Screenshot(
+                  return Screenshot<void>(
                     controller: _screenshot,
                     child: PageView.builder(
                       controller: _pageController,
@@ -84,7 +84,7 @@ class _ImageScreenState extends State<ImageScreen> {
       ),
       bottomNavigationBar: ImageBottomAppBar(
         onTextPressed: () {
-          showModalBottomSheet(
+          showModalBottomSheet<void>(
             context: context,
             isDismissible: true,
             shape: const RoundedRectangleBorder(
@@ -96,7 +96,7 @@ class _ImageScreenState extends State<ImageScreen> {
           );
         },
         onColorPressed: () {
-          showModalBottomSheet(
+          showModalBottomSheet<void>(
             context: context,
             isDismissible: true,
             shape: const RoundedRectangleBorder(
@@ -158,7 +158,7 @@ class _ImageScreenState extends State<ImageScreen> {
   }
 
   Future _showShareTypeDialog(BuildContext context, List<String> images) {
-    return showDialog(
+    return showDialog<void>(
       context: context,
       builder: (context) => SimpleDialog(
         title: const Text("How would you like to share?"),
@@ -175,7 +175,7 @@ class _ImageScreenState extends State<ImageScreen> {
             child: const Text("Share all"),
           ),
           ElevatedButton(
-            onPressed: () => Navigator.push(
+            onPressed: () => Navigator.push<void>(
               context,
               MaterialPageRoute(
                 builder: (_) => ShareImagesScreen(imagePaths: images),
@@ -199,7 +199,7 @@ class _ImageScreenState extends State<ImageScreen> {
   }
 
   void _showProgressDialog(BuildContext context) {
-    showDialog(
+    showDialog<void>(
       context: context,
       barrierDismissible: false,
       builder: (context) {

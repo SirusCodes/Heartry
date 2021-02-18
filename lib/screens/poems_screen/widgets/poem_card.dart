@@ -77,7 +77,7 @@ class _PoemCardState extends State<PoemCard>
                     ),
                   ),
                   onPressed: () {
-                    Navigator.push(
+                    Navigator.push<void>(
                       context,
                       MaterialPageRoute(
                         builder: (_) => WritingScreen(model: widget.model),
@@ -144,7 +144,7 @@ class _PoemCardState extends State<PoemCard>
   }
 
   void _shareClicked() {
-    showModalBottomSheet(
+    showModalBottomSheet<void>(
       context: context,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(
@@ -159,7 +159,7 @@ class _PoemCardState extends State<PoemCard>
   }
 
   void _navigateToReaderScreen() {
-    Navigator.push(
+    Navigator.push<void>(
       context,
       MaterialPageRoute(
         builder: (_) => ReaderScreen(
@@ -170,7 +170,7 @@ class _PoemCardState extends State<PoemCard>
   }
 
   void _showWarning() {
-    showDialog(
+    showDialog<void>(
       context: context,
       builder: (_) => AlertDialog(
         title: const Text("Do you really want to delete it?"),

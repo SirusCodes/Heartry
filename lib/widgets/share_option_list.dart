@@ -43,7 +43,7 @@ class ShareOptionList extends StatelessWidget {
           trailing: const Icon(Icons.image),
           onTap: () {
             onShareAsImage?.call();
-            Navigator.push(
+            Navigator.push<void>(
               context,
               CupertinoPageRoute(
                 builder: (_) => ImageScreen(

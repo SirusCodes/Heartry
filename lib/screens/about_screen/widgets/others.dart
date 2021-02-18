@@ -28,7 +28,7 @@ class Others extends StatelessWidget {
               subtitle: const Text("Our commitment towards privacy"),
               leading: const CircleAvatar(child: Icon(Icons.book)),
               onTap: () {
-                Navigator.push(
+                Navigator.push<void>(
                   context,
                   MaterialPageRoute(builder: (_) => const PrivacyStatement()),
                 );

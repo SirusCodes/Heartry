@@ -44,7 +44,7 @@ class CAppBar extends ConsumerWidget {
           const SizedBox(width: 10),
           GestureDetector(
             onTap: () {
-              Navigator.push(
+              Navigator.push<void>(
                 context,
                 MaterialPageRoute(builder: (_) => const ProfileScreen()),
               );
