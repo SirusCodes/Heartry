@@ -2,13 +2,14 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:heartry/providers/theme_provider.dart';
 
+import '../../providers/theme_provider.dart';
 import '../../widgets/c_screen_title.dart';
 import '../../widgets/only_back_button_bottom_app_bar.dart';
+import '../about_screen/widgets/base_info_widget.dart';
 
-class ThemeScreen extends ConsumerWidget {
-  const ThemeScreen({Key key}) : super(key: key);
+class PersonalizeScreen extends ConsumerWidget {
+  const PersonalizeScreen({Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, ScopedReader watch) {
@@ -18,14 +19,20 @@ class ThemeScreen extends ConsumerWidget {
         child: ListView(
           children: <Widget>[
             const CScreenTitle(title: "Personalize"),
-            ListTile(
-              leading: const CircleAvatar(child: Icon(Icons.palette)),
-              title: const Text("Theme"),
-              subtitle: Text(_getThemeName(_theme)),
-              onTap: () async {
-                final theme = await _showThemeDialog(context, _theme);
-                if (theme != null) context.read(themeProvider).state = theme;
-              },
+            BaseInfoWidget(
+              title: "Theme",
+              children: [
+                ListTile(
+                  leading: const CircleAvatar(child: Icon(Icons.palette)),
+                  title: const Text("Theme"),
+                  subtitle: Text(_getThemeName(_theme)),
+                  onTap: () async {
+                    final theme = await _showThemeDialog(context, _theme);
+                    if (theme != null)
+                      context.read(themeProvider).state = theme;
+                  },
+                ),
+              ],
             ),
           ],
         ),

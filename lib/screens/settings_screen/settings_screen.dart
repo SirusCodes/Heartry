@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 import '../../widgets/c_screen_title.dart';
 import '../../widgets/only_back_button_bottom_app_bar.dart';
 import '../about_screen/about_screen.dart';
+import '../personalize_theme/personalize_theme.dart';
 import '../profile_screen/profile_screen.dart';
-import '../theme_screen/theme_screen.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({Key key}) : super(key: key);
@@ -35,7 +35,7 @@ class SettingsScreen extends StatelessWidget {
               subtitle: const Text("Theme and defaults"),
               onTap: () => Navigator.push<void>(
                 context,
-                MaterialPageRoute(builder: (_) => const ThemeScreen()),
+                MaterialPageRoute(builder: (_) => const PersonalizeScreen()),
               ),
             ),
             ListTile(
