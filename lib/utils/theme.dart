@@ -1,5 +1,33 @@
 import 'package:flutter/material.dart';
 
+enum ThemeType { light, dark, black, system }
+
+String themeToString(ThemeType theme) {
+  switch (theme) {
+    case ThemeType.light:
+      return "Light";
+    case ThemeType.dark:
+      return "Dark";
+    case ThemeType.black:
+      return "Black";
+    default:
+      return "System Default";
+  }
+}
+
+ThemeType stringToTheme(String theme) {
+  switch (theme) {
+    case "Light":
+      return ThemeType.light;
+    case "Dark":
+      return ThemeType.dark;
+    case "Black":
+      return ThemeType.black;
+    default:
+      return ThemeType.system;
+  }
+}
+
 final lightTheme = ThemeData(
   primarySwatch: Colors.deepPurple,
   outlinedButtonTheme: OutlinedButtonThemeData(

@@ -4,36 +4,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../providers/theme_provider.dart';
+import '../../utils/theme.dart';
 import '../../widgets/c_screen_title.dart';
 import '../../widgets/only_back_button_bottom_app_bar.dart';
 import '../about_screen/widgets/base_info_widget.dart';
 
-class PersonalizeScreen extends ConsumerWidget {
+class PersonalizeScreen extends StatelessWidget {
   const PersonalizeScreen({Key key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context, ScopedReader watch) {
-    final _theme = watch(themeProvider).state;
+  Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
         child: ListView(
-          children: <Widget>[
-            const CScreenTitle(title: "Personalize"),
-            BaseInfoWidget(
-              title: "Theme",
-              children: [
-                ListTile(
-                  leading: const CircleAvatar(child: Icon(Icons.palette)),
-                  title: const Text("Theme"),
-                  subtitle: Text(_getThemeName(_theme)),
-                  onTap: () async {
-                    final theme = await _showThemeDialog(context, _theme);
-                    if (theme != null)
-                      context.read(themeProvider).state = theme;
-                  },
-                ),
-              ],
-            ),
+          children: const <Widget>[
+            CScreenTitle(title: "Personalize"),
+            _Body(),
           ],
         ),
       ),
@@ -41,18 +27,33 @@ class PersonalizeScreen extends ConsumerWidget {
           Platform.isIOS ? const OnlyBackButtonBottomAppBar() : null,
     );
   }
+}
 
-  String _getThemeName(ThemeType theme) {
-    switch (theme) {
-      case ThemeType.light:
-        return "Light";
-      case ThemeType.dark:
-        return "Dark";
-      case ThemeType.black:
-        return "Black";
-      default:
-        return "System Default";
-    }
+class _Body extends ConsumerWidget {
+  const _Body({Key key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context, ScopedReader watch) {
+    final _theme = watch(themeProvider.state);
+    return _theme.when(
+      data: (theme) => BaseInfoWidget(
+        title: "Theme",
+        children: [
+          ListTile(
+            leading: const CircleAvatar(child: Icon(Icons.palette)),
+            title: const Text("Theme"),
+            subtitle: Text(themeToString(theme)),
+            onTap: () async {
+              final selectedTheme = await _showThemeDialog(context, theme);
+              if (selectedTheme != null)
+                context.read(themeProvider).setTheme(selectedTheme);
+            },
+          ),
+        ],
+      ),
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (err, st) => throw Exception("$err\n${"_" * 25}\nst"),
+    );
   }
 
   Future<ThemeType> _showThemeDialog(BuildContext context, ThemeType selected) {

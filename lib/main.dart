@@ -52,31 +52,41 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return Consumer(
       builder: (context, watch, child) {
-        final _theme = watch(themeProvider).state;
-        return MaterialApp(
-          title: "Heartry",
-          navigatorKey: Catcher.navigatorKey,
-          themeMode: _getThemeMode(_theme),
-          theme: lightTheme,
-          darkTheme: _getDarkTheme(_theme),
-          home: FutureBuilder(
-            future: _initSharedPrefs,
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.done) {
-                final _name = locator<Config>().name;
+        final _theme = watch(themeProvider.state);
+        return _theme.when(
+          data: (theme) => MaterialApp(
+            title: "Heartry",
+            navigatorKey: Catcher.navigatorKey,
+            themeMode: _getThemeMode(theme),
+            theme: lightTheme,
+            darkTheme: _getDarkTheme(theme),
+            home: FutureBuilder(
+              future: _initSharedPrefs,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.done) {
+                  final _name = locator<Config>().name;
 
-                if (_name != null) return const PoemScreen();
+                  if (_name != null) return const PoemScreen();
 
-                return const IntroScreen();
-              }
+                  return const IntroScreen();
+                }
 
-              return const Material(
-                child: Center(
-                  child: CircularProgressIndicator(),
-                ),
-              );
-            },
+                return const Material(
+                  child: Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                );
+              },
+            ),
           ),
+          loading: () => const Material(
+            child: Center(
+              child: CircularProgressIndicator(),
+            ),
+          ),
+          error: (err, st) {
+            throw Exception("$err\n${"_" * 25}\nst");
+          },
         );
       },
     );
