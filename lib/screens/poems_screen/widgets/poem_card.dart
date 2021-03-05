@@ -108,6 +108,9 @@ class _PoemCardState extends State<PoemCard>
                     ..setEntry(2, 1, .0003)
                     ..rotateY(math.pi),
                   child: Card(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15),
+                    ),
                     color: Theme.of(context).primaryColor,
                     child: IconTheme(
                       data: const IconThemeData(color: Colors.white),

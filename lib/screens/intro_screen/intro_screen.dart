@@ -4,15 +4,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:liquid_swipe/liquid_swipe.dart';
-import 'package:path/path.dart' as p;
-import 'package:path_provider/path_provider.dart';
 
 import '../../database/config.dart';
 import '../../database/database.dart';
 import '../../init_get_it.dart';
 import '../../widgets/privacy_statement.dart';
+import '../../widgets/profile_update_dialog.dart';
 import '../poems_screen/poems_screen.dart';
 
 class IntroScreen extends StatefulWidget {
@@ -71,100 +69,103 @@ class __NamePageState extends State<_NamePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Colors.deepPurple.shade100,
-      child: Form(
-        key: _formKey,
-        child: Padding(
-          padding: const EdgeInsets.all(15.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: <Widget>[
-              const Spacer(),
-              const Text(
-                "Write your name",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 50,
-                  color: Colors.deepPurple,
-                  fontWeight: FontWeight.w600,
-                  fontFamily: "Caveat",
-                ),
-              ),
-              const SizedBox(height: 35),
-              TextFormField(
-                autovalidateMode: AutovalidateMode.onUserInteraction,
-                controller: _nameController,
-                validator: (value) {
-                  if (value == null || value.isEmpty)
-                    return "Please enter your name";
-
-                  return null;
-                },
-                onSaved: (newValue) {
-                  locator<Config>().name = newValue;
-                },
-                textCapitalization: TextCapitalization.words,
-                decoration: const InputDecoration(
-                  hintText: "Your Name",
-                  labelText: "Name",
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              const Spacer(),
-              RichText(
-                textAlign: TextAlign.center,
-                text: TextSpan(
+    return Theme(
+      data: ThemeData(primarySwatch: Colors.deepPurple),
+      child: Container(
+        color: Colors.deepPurple.shade100,
+        child: Form(
+          key: _formKey,
+          child: Padding(
+            padding: const EdgeInsets.all(15.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: <Widget>[
+                const Spacer(),
+                const Text(
+                  "Write your name",
+                  textAlign: TextAlign.center,
                   style: TextStyle(
-                    color: Colors.deepPurple.shade400,
-                    fontSize: 10,
+                    fontSize: 50,
+                    color: Colors.deepPurple,
+                    fontWeight: FontWeight.w600,
+                    fontFamily: "Caveat",
                   ),
-                  children: <InlineSpan>[
-                    const TextSpan(text: "By continuing you accept our "),
-                    TextSpan(
-                      text: "Privacy Statement",
-                      style: TextStyle(
-                        color: Colors.deepPurple.shade700,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      recognizer: TapGestureRecognizer()
-                        ..onTap = () {
-                          Navigator.push<void>(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => const PrivacyStatement(),
-                            ),
-                          );
-                        },
-                    )
-                  ],
                 ),
-              ),
-              const SizedBox(height: 15),
-              _showButton
-                  ? ElevatedButton(
-                      onPressed: () async {
-                        if (_formKey.currentState.validate()) {
-                          _formKey.currentState.save();
-                          setState(() {
-                            _showButton = false;
-                          });
-                          await _addDetailsInDB();
-                          Navigator.pushReplacement<void, void>(
-                            context,
-                            CupertinoPageRoute(
-                              builder: (_) => const PoemScreen(),
-                            ),
-                          );
-                        }
-                      },
-                      child: const Text("Let's Goooooo...."),
-                    )
-                  : const Center(
-                      child: CircularProgressIndicator(),
+                const SizedBox(height: 35),
+                TextFormField(
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  controller: _nameController,
+                  validator: (value) {
+                    if (value == null || value.isEmpty)
+                      return "Please enter your name";
+
+                    return null;
+                  },
+                  onSaved: (newValue) {
+                    locator<Config>().name = newValue;
+                  },
+                  textCapitalization: TextCapitalization.words,
+                  decoration: const InputDecoration(
+                    hintText: "Your Name",
+                    labelText: "Name",
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+                const Spacer(),
+                RichText(
+                  textAlign: TextAlign.center,
+                  text: TextSpan(
+                    style: TextStyle(
+                      color: Colors.deepPurple.shade400,
+                      fontSize: 10,
                     ),
-            ],
+                    children: <InlineSpan>[
+                      const TextSpan(text: "By continuing you accept our "),
+                      TextSpan(
+                        text: "Privacy Statement",
+                        style: TextStyle(
+                          color: Colors.deepPurple.shade700,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        recognizer: TapGestureRecognizer()
+                          ..onTap = () {
+                            Navigator.push<void>(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const PrivacyStatement(),
+                              ),
+                            );
+                          },
+                      )
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 15),
+                _showButton
+                    ? ElevatedButton(
+                        onPressed: () async {
+                          if (_formKey.currentState.validate()) {
+                            _formKey.currentState.save();
+                            setState(() {
+                              _showButton = false;
+                            });
+                            await _addDetailsInDB();
+                            Navigator.pushReplacement<void, void>(
+                              context,
+                              CupertinoPageRoute(
+                                builder: (_) => const PoemScreen(),
+                              ),
+                            );
+                          }
+                        },
+                        child: const Text("Let's Go!"),
+                      )
+                    : const Center(
+                        child: CircularProgressIndicator(),
+                      ),
+              ],
+            ),
           ),
         ),
       ),
@@ -249,120 +250,55 @@ class _ProfilePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       color: Colors.deepPurple.shade300,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: <Widget>[
-          const Spacer(),
-          _profileWidget(),
-          const SizedBox(height: 15),
-          const Spacer(),
-          _buttonsWidget(context)
-        ],
-      ),
-    );
-  }
-
-  Padding _buttonsWidget(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(15.0, 0, 15.0, 15.0),
-      child: Column(
-        children: <Widget>[
-          _buildDialogButton(
-            context,
-            onPressed: () async {
-              final picker = ImagePicker();
-              final pickedImage =
-                  await picker.getImage(source: ImageSource.gallery);
-              await _setImage(context, pickedImage);
-            },
-            icon: const Icon(Icons.photo_library),
-            text: "Add from gallery",
-          ),
-          _buildDialogButton(
-            context,
-            onPressed: () async {
-              final picker = ImagePicker();
-              final pickedImage =
-                  await picker.getImage(source: ImageSource.camera);
-              await _setImage(context, pickedImage);
-            },
-            icon: const Icon(Icons.camera_alt),
-            text: "Capture from camera",
-          ),
-        ],
-      ),
-    );
-  }
-
-  Column _profileWidget() {
-    return Column(
-      children: <Widget>[
-        const Text(
-          "Let's update your profile...",
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            fontSize: 50,
-            color: Colors.white,
-            fontWeight: FontWeight.w600,
-            fontFamily: "Caveat",
-          ),
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            const Text(
+              "Let's update your profile...",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 50,
+                color: Colors.white,
+                fontWeight: FontWeight.w600,
+                fontFamily: "Caveat",
+              ),
+            ),
+            const SizedBox(height: 45),
+            GestureDetector(
+              onTap: () => _showChangeProfileDialog(context),
+              child: Consumer(
+                builder: (context, watch, child) {
+                  final _imagePath = watch(configProvider).profile;
+                  return CircleAvatar(
+                    maxRadius: 100,
+                    minRadius: 80,
+                    backgroundColor: Colors.deepPurple,
+                    backgroundImage:
+                        _imagePath != null ? FileImage(File(_imagePath)) : null,
+                    child: _imagePath == null
+                        ? const Icon(
+                            Icons.person,
+                            size: 100,
+                            color: Colors.white,
+                          )
+                        : null,
+                  );
+                },
+              ),
+            ),
+            const SizedBox(height: 125),
+          ],
         ),
-        const SizedBox(height: 45),
-        Consumer(
-          builder: (context, watch, child) {
-            final _imagePath = watch(configProvider).profile;
-            return CircleAvatar(
-              maxRadius: 100,
-              minRadius: 80,
-              backgroundImage:
-                  _imagePath != null ? FileImage(File(_imagePath)) : null,
-              child: _imagePath == null
-                  ? const Icon(
-                      Icons.person,
-                      size: 100,
-                    )
-                  : null,
-            );
-          },
-        ),
-      ],
-    );
-  }
-
-  ElevatedButton _buildDialogButton(
-    BuildContext context, {
-    @required VoidCallback onPressed,
-    @required Icon icon,
-    @required String text,
-  }) {
-    return ElevatedButton(
-      onPressed: onPressed,
-      child: Row(
-        children: <Widget>[
-          icon,
-          const Spacer(),
-          Text(text),
-          const Spacer(),
-        ],
       ),
     );
   }
 
-  Future<void> _setImage(BuildContext context, PickedFile pickedImage) async {
-    if (pickedImage == null) return;
-
-    imageCache.clear();
-
-    final directory = await getApplicationDocumentsDirectory();
-    final file = p.basename(pickedImage.path);
-
-    final imageSaved = p.join(directory.path, file);
-    final image = await File(imageSaved).writeAsBytes(
-      await pickedImage.readAsBytes(),
+  Future _showChangeProfileDialog(BuildContext context) {
+    return showDialog<void>(
+      context: context,
+      builder: (context) => const ProfileUpdateDialog(color: Color(0xFFFBFBFB)),
     );
-
-    context.read(configProvider).profile = image.path;
   }
 }
 

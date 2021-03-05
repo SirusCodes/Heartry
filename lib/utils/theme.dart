@@ -33,6 +33,7 @@ final lightTheme = ThemeData(
   outlinedButtonTheme: OutlinedButtonThemeData(
     style: OutlinedButton.styleFrom(
       padding: const EdgeInsets.all(10.0),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
       backgroundColor: Colors.deepPurple.shade50,
     ),
   ),
@@ -79,6 +80,7 @@ final darkTheme = ThemeData(
   toggleableActiveColor: Colors.deepPurpleAccent,
   outlinedButtonTheme: OutlinedButtonThemeData(
     style: OutlinedButton.styleFrom(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
       padding: const EdgeInsets.all(10.0),
       backgroundColor: Colors.deepPurple.shade50.withOpacity(.7),
     ),
@@ -121,9 +123,7 @@ final blackTheme = ThemeData(
   toggleableActiveColor: Colors.deepPurpleAccent,
   outlinedButtonTheme: OutlinedButtonThemeData(
     style: OutlinedButton.styleFrom(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10.0),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
       side: BorderSide(color: Colors.deepPurple.shade50.withOpacity(.4)),
       padding: const EdgeInsets.all(10.0),
     ),
