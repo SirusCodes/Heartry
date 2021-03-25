@@ -78,6 +78,9 @@ final darkTheme = ThemeData(
   primaryColorBrightness: Brightness.dark,
   primaryColorDark: Colors.deepPurpleAccent.shade100,
   toggleableActiveColor: Colors.deepPurpleAccent,
+  textButtonTheme: TextButtonThemeData(
+    style: TextButton.styleFrom(primary: Colors.white),
+  ),
   outlinedButtonTheme: OutlinedButtonThemeData(
     style: OutlinedButton.styleFrom(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
@@ -121,6 +124,9 @@ final blackTheme = ThemeData(
   primaryColorBrightness: Brightness.dark,
   primaryColorDark: Colors.deepPurpleAccent.shade100,
   toggleableActiveColor: Colors.deepPurpleAccent,
+  textButtonTheme: TextButtonThemeData(
+    style: TextButton.styleFrom(primary: Colors.white),
+  ),
   outlinedButtonTheme: OutlinedButtonThemeData(
     style: OutlinedButton.styleFrom(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
@@ -128,6 +134,7 @@ final blackTheme = ThemeData(
       padding: const EdgeInsets.all(10.0),
     ),
   ),
+  bottomAppBarColor: const Color(0xFF212121),
   scaffoldBackgroundColor: Colors.black,
   floatingActionButtonTheme: FloatingActionButtonThemeData(
     backgroundColor: Colors.deepPurpleAccent.shade100,
