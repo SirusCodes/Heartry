@@ -69,13 +69,6 @@ class _PoemCardState extends State<PoemCard>
             ..rotateY(math.pi * _controller.value),
           child: _controller.value < .5
               ? OutlinedButton(
-                  style: ButtonStyle(
-                    shape: MaterialStateProperty.all(
-                      RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10.0),
-                      ),
-                    ),
-                  ),
                   onPressed: () {
                     Navigator.push<void>(
                       context,
@@ -115,6 +108,9 @@ class _PoemCardState extends State<PoemCard>
                     ..setEntry(2, 1, .0003)
                     ..rotateY(math.pi),
                   child: Card(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15),
+                    ),
                     color: Theme.of(context).primaryColor,
                     child: IconTheme(
                       data: const IconThemeData(color: Colors.white),

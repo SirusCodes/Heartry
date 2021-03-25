@@ -108,7 +108,7 @@ class _WritingScreenState extends State<WritingScreen>
                         titleNode.unfocus();
                         FocusScope.of(context).requestFocus(poemNode);
                       },
-                      style: Theme.of(context).accentTextTheme.headline5,
+                      style: const TextStyle(fontSize: 24),
                     ),
                     TextFormField(
                       textCapitalization: TextCapitalization.sentences,
@@ -122,7 +122,7 @@ class _WritingScreenState extends State<WritingScreen>
                         border: InputBorder.none,
                       ),
                       onChanged: _onChangeHandler,
-                      style: Theme.of(context).accentTextTheme.headline6,
+                      style: const TextStyle(fontSize: 20),
                     ),
                     const SizedBox(height: kBottomNavigationBarHeight)
                   ],
