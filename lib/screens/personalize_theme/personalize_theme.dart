@@ -10,7 +10,7 @@ import '../../widgets/only_back_button_bottom_app_bar.dart';
 import '../about_screen/widgets/base_info_widget.dart';
 
 class PersonalizeScreen extends StatelessWidget {
-  const PersonalizeScreen({Key key}) : super(key: key);
+  const PersonalizeScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +30,7 @@ class PersonalizeScreen extends StatelessWidget {
 }
 
 class _Body extends ConsumerWidget {
-  const _Body({Key key}) : super(key: key);
+  const _Body({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, ScopedReader watch) {
@@ -56,7 +56,8 @@ class _Body extends ConsumerWidget {
     );
   }
 
-  Future<ThemeType> _showThemeDialog(BuildContext context, ThemeType selected) {
+  Future<ThemeType?> _showThemeDialog(
+      BuildContext context, ThemeType selected) {
     return showDialog<ThemeType>(
       context: context,
       builder: (context) => SimpleDialog(
@@ -91,7 +92,7 @@ class _Body extends ConsumerWidget {
     );
   }
 
-  void _onThemeChanged(BuildContext context, ThemeType theme) {
+  void _onThemeChanged(BuildContext context, ThemeType? theme) {
     return Navigator.pop(context, theme);
   }
 }

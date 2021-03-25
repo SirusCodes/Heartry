@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/all.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gallery_saver/gallery_saver.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
@@ -19,13 +19,13 @@ import 'widgets/poem_image_widget.dart';
 
 class ImageScreen extends StatefulWidget {
   const ImageScreen({
-    Key key,
-    @required this.poem,
-    @required this.title,
-    @required this.poet,
+    Key? key,
+    required this.poem,
+    required this.title,
+    required this.poet,
   }) : super(key: key);
 
-  final String title, poet;
+  final String? title, poet;
 
   final List<String> poem;
 
@@ -68,11 +68,11 @@ class _ImageScreenState extends State<ImageScreen> {
                       controller: _pageController,
                       itemCount: poemLines.length,
                       itemBuilder: (context, index) => PoemImageWidget(
-                        title: widget.title,
+                        title: widget.title!,
                         poem: poemLines[index],
                         page: index,
                         total: poemLines.length,
-                        poet: widget.poet,
+                        poet: widget.poet!,
                       ),
                     ),
                   );
@@ -110,7 +110,7 @@ class _ImageScreenState extends State<ImageScreen> {
         onDonePressed: () async {
           if (!(await _isPermGranted(context))) return;
 
-          imageCache.clear();
+          imageCache!.clear();
 
           final List<String> images = [];
 
@@ -223,11 +223,12 @@ class _ImageScreenState extends State<ImageScreen> {
       "${widget.title}-$index.png",
     );
 
-    final File imgFile = await _screenshot.capture(
+    final imgBytes = await _screenshot.capture(
       pixelRatio: 3,
       delay: const Duration(milliseconds: 50),
-      path: path,
     );
+
+    final imgFile = File(path)..writeAsBytes(imgBytes!);
 
     await GallerySaver.saveImage(path, albumName: "Pictures/Heartry");
 
@@ -248,7 +249,7 @@ class _ImageScreenState extends State<ImageScreen> {
     final _titleHeight = _calcTextSize(
       context,
       constraints,
-      widget.title,
+      widget.title!,
       TITLE_TEXT_SIZE,
       _textScale,
     ).height;
@@ -257,7 +258,7 @@ class _ImageScreenState extends State<ImageScreen> {
     final _poetHeight = _calcTextSize(
       context,
       constraints,
-      widget.poet,
+      widget.poet!,
       POET_TEXT_SIZE,
       _textScale,
     ).height;
@@ -296,7 +297,7 @@ class _ImageScreenState extends State<ImageScreen> {
   Size _calcTextSize(
     BuildContext context,
     BoxConstraints constraints,
-    String text,
+    String /*!*/ text,
     double fontSize,
     double scale,
   ) {

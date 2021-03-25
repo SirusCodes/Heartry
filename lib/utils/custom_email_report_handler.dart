@@ -7,9 +7,9 @@ class CustomEmailReportHandler extends ReportHandler {
 
   @override
   List<PlatformType> getSupportedPlatforms() => [
-        PlatformType.Android,
-        PlatformType.Unknown,
-        PlatformType.Web,
+        PlatformType.android,
+        PlatformType.unknown,
+        PlatformType.web,
         PlatformType.iOS,
       ];
 

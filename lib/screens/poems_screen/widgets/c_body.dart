@@ -7,7 +7,7 @@ import '../../../providers/stream_poem_provider.dart';
 import 'poem_card.dart';
 
 class CBody extends ConsumerWidget {
-  const CBody({Key key}) : super(key: key);
+  const CBody({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, ScopedReader watch) {

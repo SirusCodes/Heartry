@@ -6,10 +6,10 @@ import 'poem_image_text.dart';
 
 class PoemImageCard extends StatelessWidget {
   const PoemImageCard({
-    Key key,
-    @required this.poem,
-    @required this.title,
-    @required this.poet,
+    Key? key,
+    required this.poem,
+    required this.title,
+    required this.poet,
   }) : super(key: key);
 
   final List<String> poem;

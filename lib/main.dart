@@ -1,7 +1,7 @@
 import 'package:catcher/catcher.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_riverpod/all.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'database/config.dart';
 import 'init_get_it.dart';
@@ -41,7 +41,8 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  Future<void> _initSharedPrefs;
+  late Future<void> _initSharedPrefs;
+
   @override
   void initState() {
     super.initState();

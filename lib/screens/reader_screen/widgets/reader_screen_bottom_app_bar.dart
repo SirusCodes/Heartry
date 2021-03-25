@@ -9,11 +9,11 @@ import '../../writing_screen/writing_screen.dart';
 
 class ReaderScreenBottomAppBar extends StatefulWidget {
   const ReaderScreenBottomAppBar({
-    Key key,
-    @required this.model,
+    Key? key,
+    required this.model,
   }) : super(key: key);
 
-  final PoemModel model;
+  final PoemModel? model;
 
   @override
   _ReaderScreenBottomAppBarState createState() =>
@@ -22,7 +22,7 @@ class ReaderScreenBottomAppBar extends StatefulWidget {
 
 class _ReaderScreenBottomAppBarState extends State<ReaderScreenBottomAppBar>
     with SingleTickerProviderStateMixin {
-  AnimationController _iconController;
+  late AnimationController _iconController;
 
   @override
   void initState() {
@@ -36,7 +36,7 @@ class _ReaderScreenBottomAppBarState extends State<ReaderScreenBottomAppBar>
 
   @override
   void dispose() {
-    _iconController?.dispose();
+    _iconController.dispose();
     super.dispose();
   }
 
@@ -68,8 +68,10 @@ class _ReaderScreenBottomAppBarState extends State<ReaderScreenBottomAppBar>
               AnimatedIconButton(
                 size: 25,
                 animationController: _iconController,
-                startIcon: const Icon(Icons.share),
-                endIcon: const Icon(Icons.close_rounded),
+                icons: const [
+                  AnimatedIconItem(icon: Icon(Icons.share)),
+                  AnimatedIconItem(icon: Icon(Icons.close_rounded)),
+                ],
                 onPressed: _changeIcon,
               ),
             ],
@@ -77,8 +79,8 @@ class _ReaderScreenBottomAppBarState extends State<ReaderScreenBottomAppBar>
           SizeTransition(
             sizeFactor: _iconController,
             child: ShareOptionList(
-              title: widget.model.title,
-              poem: widget.model.poem,
+              title: widget.model!.title,
+              poem: widget.model!.poem,
             ),
           )
         ],

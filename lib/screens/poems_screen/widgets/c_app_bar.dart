@@ -8,7 +8,7 @@ import '../../../providers/list_grid_provider.dart';
 import '../../profile_screen/profile_screen.dart';
 
 class CAppBar extends ConsumerWidget {
-  const CAppBar({Key key}) : super(key: key);
+  const CAppBar({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, ScopedReader watch) {
@@ -28,7 +28,7 @@ class CAppBar extends ConsumerWidget {
             "Heartry",
             style: Theme.of(context)
                 .accentTextTheme
-                .headline3
+                .headline3!
                 .copyWith(fontWeight: FontWeight.w600, fontFamily: "Caveat"),
           ),
           const Spacer(),

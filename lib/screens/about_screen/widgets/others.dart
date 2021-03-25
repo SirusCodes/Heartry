@@ -6,7 +6,7 @@ import '../../../widgets/privacy_statement.dart';
 import 'base_info_widget.dart';
 
 class Others extends StatelessWidget {
-  const Others({Key key}) : super(key: key);
+  const Others({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +40,7 @@ class Others extends StatelessWidget {
                 title: const Text("Version"),
                 subtitle: snapshot.connectionState == ConnectionState.done &&
                         snapshot.hasData
-                    ? Text(snapshot.data.version)
+                    ? Text(snapshot.data!.version)
                     : const Text("Can't get version"),
                 leading: const CircleAvatar(child: Icon(Icons.info)),
                 onTap: () {},

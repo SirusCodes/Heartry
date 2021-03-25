@@ -11,12 +11,12 @@ import 'poem_image_card.dart';
 
 class PoemImageWidget extends StatelessWidget {
   PoemImageWidget({
-    Key key,
-    @required this.title,
-    @required this.poem,
-    @required this.page,
-    @required this.total,
-    @required this.poet,
+    Key? key,
+    required this.title,
+    required this.poem,
+    required this.page,
+    required this.total,
+    required this.poet,
   }) : super(key: key);
   final List<String> poem;
   final int page, total;
@@ -118,7 +118,7 @@ class PoemImageWidget extends StatelessWidget {
                   right: 20,
                   child: CircleAvatar(
                     radius: 30,
-                    backgroundImage: FileImage(File(_imagePath)),
+                    backgroundImage: FileImage(File(_imagePath!)),
                   ),
                 ),
             ],

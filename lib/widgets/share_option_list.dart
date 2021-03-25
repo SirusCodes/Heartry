@@ -8,15 +8,16 @@ import '../screens/image_screen/image_screen.dart';
 
 class ShareOptionList extends StatelessWidget {
   const ShareOptionList({
-    Key key,
+    Key? key,
     this.onShareAsImage,
     this.onShareAsText,
-    @required this.title,
-    @required this.poem,
+    required this.title,
+    required this.poem,
   }) : super(key: key);
 
-  final VoidCallback onShareAsImage, onShareAsText;
-  final String title, poem;
+  final VoidCallback? onShareAsImage, onShareAsText;
+  final String? title;
+  final String poem;
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +31,7 @@ class ShareOptionList extends StatelessWidget {
             onShareAsText?.call();
             String msg = "";
 
-            if (title != null && title.isNotEmpty) msg += "$title\n\n";
+            if (title != null && title!.isNotEmpty) msg += "$title\n\n";
 
             msg += poem;
             msg += "\n\n-${locator<Config>().name}";

@@ -20,7 +20,7 @@ class ThemeProvider extends StateNotifier<AsyncValue<ThemeType>> {
 
   static const _themeKey = "theme";
 
-  SharedPreferences _sharedPreferences;
+  late SharedPreferences _sharedPreferences;
 
   void _init() {
     state = AsyncData(stringToTheme(_sharedPreferences.getString(_themeKey)));

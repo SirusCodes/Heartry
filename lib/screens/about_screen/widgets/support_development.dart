@@ -5,7 +5,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'base_info_widget.dart';
 
 class SupportDevelopment extends StatelessWidget {
-  const SupportDevelopment({Key key}) : super(key: key);
+  const SupportDevelopment({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

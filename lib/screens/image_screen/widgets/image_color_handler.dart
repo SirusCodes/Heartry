@@ -6,7 +6,7 @@ import '../../../providers/color_gradient_provider.dart';
 import '../../../widgets/color_picker_dialog.dart';
 
 class ImageColorHandler extends ConsumerWidget {
-  const ImageColorHandler({Key key}) : super(key: key);
+  const ImageColorHandler({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, ScopedReader watch) {
@@ -72,7 +72,8 @@ class ImageColorHandler extends ConsumerWidget {
     );
   }
 
-  void _showColorPicker(BuildContext context, Color currentColor, [int index]) {
+  void _showColorPicker(BuildContext context, Color currentColor,
+      [int? index]) {
     showDialog<void>(
       context: context,
       builder: (BuildContext context) {

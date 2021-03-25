@@ -12,23 +12,23 @@ import '../../widgets/profile_update_dialog.dart';
 const String noNameError = "Please enter your name...";
 
 class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({Key key}) : super(key: key);
+  const ProfileScreen({Key? key}) : super(key: key);
 
   @override
   _ProfileScreenState createState() => _ProfileScreenState();
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  TextEditingController _nameController;
+  late TextEditingController _nameController;
 
-  String _name;
+  late String _name;
 
-  final _config = locator<Config>();
+  final Config _config = locator<Config>();
 
   @override
   void initState() {
     super.initState();
-    _name = _config.name;
+    _name = _config.name!;
     _nameController = TextEditingController(text: _name);
   }
 
@@ -43,8 +43,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Scaffold(
       body: WillPopScope(
         onWillPop: () {
-          final name = _nameController?.text;
-          if (name == null || name.isEmpty) {
+          final name = _nameController.text;
+          if (name.isEmpty) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 shape: RoundedRectangleBorder(

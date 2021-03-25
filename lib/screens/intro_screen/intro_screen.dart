@@ -14,7 +14,7 @@ import '../../widgets/profile_update_dialog.dart';
 import '../poems_screen/poems_screen.dart';
 
 class IntroScreen extends StatefulWidget {
-  const IntroScreen({Key key}) : super(key: key);
+  const IntroScreen({Key? key}) : super(key: key);
 
   @override
   _IntroScreenState createState() => _IntroScreenState();
@@ -38,19 +38,22 @@ class _IntroScreenState extends State<IntroScreen> {
             _enableSlideIcon = activePageIndex != 2;
           });
         },
-        enableSlideIcon: _enableSlideIcon,
-        positionSlideIcon: 0,
-        slideIconWidget: const Icon(
-          Icons.arrow_back_ios,
-          color: Colors.white,
-        ),
+        positionSlideIcon: .5,
+        ignoreUserGestureWhileAnimating: true,
+        slideIconWidget: _enableSlideIcon
+            ? const Icon(
+                Icons.chevron_left_rounded,
+                color: Colors.white,
+                size: 40,
+              )
+            : null,
       ),
     );
   }
 }
 
 class _NamePage extends StatefulWidget {
-  const _NamePage({Key key}) : super(key: key);
+  const _NamePage({Key? key}) : super(key: key);
 
   @override
   __NamePageState createState() => __NamePageState();
@@ -145,8 +148,8 @@ class __NamePageState extends State<_NamePage> {
                 _showButton
                     ? ElevatedButton(
                         onPressed: () async {
-                          if (_formKey.currentState.validate()) {
-                            _formKey.currentState.save();
+                          if (_formKey.currentState!.validate()) {
+                            _formKey.currentState!.save();
                             setState(() {
                               _showButton = false;
                             });
@@ -229,13 +232,11 @@ You can share poem in 2 ways.
 
   Future<void> _insertPoem(
     Database db, {
-    @required String title,
-    @required String poem,
+    required String title,
+    required String poem,
   }) async {
     await db.insertPoem(
       PoemModel(
-        id: null,
-        lastEdit: null,
         title: title,
         poem: poem,
       ),
@@ -244,7 +245,7 @@ You can share poem in 2 ways.
 }
 
 class _ProfilePage extends StatelessWidget {
-  const _ProfilePage({Key key}) : super(key: key);
+  const _ProfilePage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -303,7 +304,7 @@ class _ProfilePage extends StatelessWidget {
 }
 
 class _WelcomePage extends StatelessWidget {
-  const _WelcomePage({Key key}) : super(key: key);
+  const _WelcomePage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

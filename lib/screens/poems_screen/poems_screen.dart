@@ -8,7 +8,7 @@ import 'widgets/c_body.dart';
 import 'widgets/poem_bottom_app_bar.dart';
 
 class PoemScreen extends StatelessWidget {
-  const PoemScreen({Key key}) : super(key: key);
+  const PoemScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +29,7 @@ class PoemScreen extends StatelessWidget {
       ),
       floatingActionButton: OpenContainer(
         closedColor:
-            Theme.of(context).floatingActionButtonTheme.backgroundColor,
+            Theme.of(context).floatingActionButtonTheme.backgroundColor!,
         openBuilder: (_, __) => const WritingScreen(),
         closedShape: const CircleBorder(),
         closedBuilder: (_, __) => AbsorbPointer(

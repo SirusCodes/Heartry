@@ -15,7 +15,7 @@ String themeToString(ThemeType theme) {
   }
 }
 
-ThemeType stringToTheme(String theme) {
+ThemeType stringToTheme(String? theme) {
   switch (theme) {
     case "Light":
       return ThemeType.light;
