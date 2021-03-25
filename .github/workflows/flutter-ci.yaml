@@ -28,7 +28,7 @@ jobs:
 
     - uses: subosito/flutter-action@v1
       with:
-        channel: 'beta'
+        channel: 'stable'
 
     - name: Setup project
       run: |
