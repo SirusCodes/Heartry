@@ -7,13 +7,14 @@ import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class ProfileUpdateDialog extends StatelessWidget {
+class ProfileUpdateDialog extends ConsumerWidget {
   const ProfileUpdateDialog({Key key, this.color}) : super(key: key);
 
   final Color color;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, ScopedReader watch) {
+    final _image = watch(configProvider);
     return SimpleDialog(
       contentPadding: const EdgeInsets.symmetric(
         horizontal: 24.0,
@@ -45,15 +46,16 @@ class ProfileUpdateDialog extends StatelessWidget {
           icon: const Icon(Icons.camera_alt),
           text: "Capture from camera",
         ),
-        _buildDialogButton(
-          context,
-          onPressed: () {
-            context.read(configProvider).profile = null;
-            Navigator.pop(context);
-          },
-          icon: const Icon(Icons.remove_circle),
-          text: "Remove profile",
-        ),
+        if (_image.profile != null)
+          _buildDialogButton(
+            context,
+            onPressed: () {
+              context.read(configProvider).profile = null;
+              Navigator.pop(context);
+            },
+            icon: const Icon(Icons.remove_circle),
+            text: "Remove profile",
+          ),
       ],
     );
   }
