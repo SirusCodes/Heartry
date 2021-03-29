@@ -17,7 +17,7 @@ class Others extends StatelessWidget {
           children: [
             ListTile(
               title: const Text("Change log"),
-              subtitle: const Text("Changes made to the project"),
+              subtitle: const Text("Changes made to the project."),
               leading: const CircleAvatar(child: Icon(Icons.sticky_note_2)),
               onTap: () => _launchURL(
                 "https://github.com/SirusCodes/Heartry/blob/main/CHANGELOG.md",
@@ -25,7 +25,7 @@ class Others extends StatelessWidget {
             ),
             ListTile(
               title: const Text("Privacy statement"),
-              subtitle: const Text("Our commitment towards privacy"),
+              subtitle: const Text("Our commitment towards privacy."),
               leading: const CircleAvatar(child: Icon(Icons.book)),
               onTap: () {
                 Navigator.push<void>(

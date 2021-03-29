@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:share/share.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../../utils/image_color_invert.dart';
 import 'base_info_widget.dart';
 
 class SupportDevelopment extends StatelessWidget {
@@ -14,10 +15,13 @@ class SupportDevelopment extends StatelessWidget {
       children: [
         ListTile(
           title: const Text("GitHub"),
-          subtitle: const Text("Contribute to the project"),
+          subtitle: const Text("Contribute to the project."),
           leading: CircleAvatar(
             backgroundColor: Colors.transparent,
-            child: Image.asset("assets/logos/GitHub-Mark.png"),
+            child: ImageColorInvert(
+              image: Image.asset("assets/logos/GitHub-Mark.png"),
+              invert: Theme.of(context).brightness == Brightness.dark,
+            ),
           ),
           onTap: () => _launchURL("https://github.com/SirusCodes/Heartry"),
         ),
@@ -46,7 +50,7 @@ class SupportDevelopment extends StatelessWidget {
         ListTile(
           title: const Text("Send us Feature request"),
           subtitle: const Text(
-            "Tell us what new features you want in future updates",
+            "Tell us what new features you want in future updates.",
           ),
           leading: const CircleAvatar(
             child: Icon(Icons.flare_outlined),
@@ -58,7 +62,7 @@ class SupportDevelopment extends StatelessWidget {
         ListTile(
           title: const Text("Report a bug"),
           subtitle: const Text(
-            "App is not working as expected? Send us a bug report",
+            "App is not working as expected? Send us a bug report.",
           ),
           leading: const CircleAvatar(
             child: Icon(Icons.bug_report_rounded),
@@ -69,7 +73,7 @@ class SupportDevelopment extends StatelessWidget {
         ),
         ListTile(
           title: const Text("Share"),
-          subtitle: const Text("Share it with your friends and family"),
+          subtitle: const Text("Share it with your friends and family."),
           leading: const CircleAvatar(child: Icon(Icons.share)),
           onTap: () => Share.share(
             "Hey, kindly checkout Heartry - An app for Writers on playstore at https://play.google.com/store/apps/details?id=com.darshan.heartry",
