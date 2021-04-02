@@ -2,7 +2,6 @@
     <img
         src='images/feature_graphics.png'
         style="vertical-align:middle;margin:0px 0px"
-        height=450sp
     />
 </div>
 <h1 align='center'>Heartry</h1>
@@ -53,17 +52,12 @@
     </tr>
 </table>
 
-### Download
-
-<div>
-    <a href='https://play.google.com/store/apps/details?id=com.darshan.heartry&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'>
-    <img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png'width=150sp/></a>
-    <a href='https://github.com/SirusCodes/Heartry/releases/'>
-    <img alt='Download from release' src='https://www.inspirefm.org/wp-content/uploads/button-apk.png' width=150>
-    </a>
-</div>
+ <a href='https://play.google.com/store/apps/details?id=com.darshan.heartry&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'>
+    <img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png'width=150sp/>
+</a>
 
 ### Contributions
 
-Contributions are always welcome kindly check [CONTRIBUTING.md](https://github.com/SirusCodes/Heartry/blob/main/CONTRIBUTING.md)
+- Contributions are always welcomed.
+- Please check [CONTRIBUTING.md](https://github.com/SirusCodes/Heartry/blob/main/CONTRIBUTING.md)
 
