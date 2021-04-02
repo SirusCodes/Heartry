@@ -14,3 +14,21 @@
 - Try to avoid adding new dependencies to save an hour.
 - Format your code by running `flutter format`
 - Write short and concise commit message and titles.
+
+## Project structure we follow
+
+```
+|--assets                           # Assets for app(logos, fonts)
+|--lib
+    |--database                     # Everything related local storage
+    |--models
+    |--providers                    # Every provider should be in different file
+    |--screens                      # Contains all the UI elements of app
+        |--<foo>_screen             # Each screen should have a folder and follow foo_screen convention
+            |--widgets              # Smaller widgets which help in building the screen
+            |--foo_screen.dart      # App screen
+    |--utils                        # Helper class/function which don't paint to UI but are used in logic
+    |--widgets                      # Widgets which are shared between more that one screen
+    |--init_get_it.dart             # Initialize get_it
+    |--main.dart                    # Entry point of any dart project
+```
