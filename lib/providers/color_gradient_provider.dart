@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final colorGradientListProvider =
-    StateNotifierProvider<ColorGradientListProviderNotifier>(
+    StateNotifierProvider<ColorGradientListProviderNotifier, List<Color>>(
   (_) => ColorGradientListProviderNotifier(<Color>[
     Colors.deepPurple.shade600,
     Colors.deepPurple.shade200,

@@ -10,7 +10,7 @@ class ImageColorHandler extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, ScopedReader watch) {
-    final _gradientList = watch(colorGradientListProvider.state);
+    final _gradientList = watch(colorGradientListProvider);
     return SizedBox(
       height: 300,
       child: ReorderableListView(
@@ -34,7 +34,7 @@ class ImageColorHandler extends ConsumerWidget {
         ),
         onReorder: (oldIndex, newIndex) {
           if (oldIndex != newIndex)
-            context.read(colorGradientListProvider).reorderColors(
+            context.read(colorGradientListProvider.notifier).reorderColors(
                   oldIndex,
                   oldIndex > newIndex ? newIndex : newIndex - 1,
                 );
@@ -59,7 +59,9 @@ class ImageColorHandler extends ConsumerWidget {
                             : Colors.black,
                       ),
                       onPressed: () {
-                        context.read(colorGradientListProvider).removeColor(i);
+                        context
+                            .read(colorGradientListProvider.notifier)
+                            .removeColor(i);
                       },
                     )
                   : null,
@@ -81,9 +83,11 @@ class ImageColorHandler extends ConsumerWidget {
           currentColor: currentColor,
           selectedColor: (color) {
             index == null
-                ? context.read(colorGradientListProvider).addColor(color)
+                ? context
+                    .read(colorGradientListProvider.notifier)
+                    .addColor(color)
                 : context
-                    .read(colorGradientListProvider)
+                    .read(colorGradientListProvider.notifier)
                     .changeColor(color, index);
           },
         );

@@ -6,7 +6,8 @@ final _sharedPrefsProvider = FutureProvider<SharedPreferences>((_) {
   return SharedPreferences.getInstance();
 });
 
-final themeProvider = StateNotifierProvider<ThemeProvider>((ref) {
+final themeProvider =
+    StateNotifierProvider<ThemeProvider, AsyncValue<ThemeType>>((ref) {
   return ThemeProvider(ref.read);
 });
 

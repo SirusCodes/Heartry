@@ -1,5 +1,6 @@
 import 'package:catcher/catcher.dart';
 import 'package:catcher/model/platform_type.dart';
+import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class CustomEmailReportHandler extends ReportHandler {
@@ -14,7 +15,7 @@ class CustomEmailReportHandler extends ReportHandler {
       ];
 
   @override
-  Future<bool> handle(Report error) async {
+  Future<bool> handle(Report error, BuildContext? context) async {
     return _sendMail(_getBody(error), "Error <${error.error}>");
   }
 

@@ -53,7 +53,7 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return Consumer(
       builder: (context, watch, child) {
-        final _theme = watch(themeProvider.state);
+        final _theme = watch(themeProvider);
         return _theme.when(
           data: (theme) => MaterialApp(
             title: "Heartry",

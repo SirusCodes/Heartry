@@ -34,7 +34,7 @@ class _Body extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, ScopedReader watch) {
-    final _theme = watch(themeProvider.state);
+    final _theme = watch(themeProvider);
     return _theme.when(
       data: (theme) => BaseInfoWidget(
         title: "Theme",
@@ -46,7 +46,7 @@ class _Body extends ConsumerWidget {
             onTap: () async {
               final selectedTheme = await _showThemeDialog(context, theme);
               if (selectedTheme != null)
-                context.read(themeProvider).setTheme(selectedTheme);
+                context.read(themeProvider.notifier).setTheme(selectedTheme);
             },
           ),
         ],

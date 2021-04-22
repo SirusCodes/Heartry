@@ -39,7 +39,7 @@ class PoemImageWidget extends StatelessWidget {
             children: [
               Consumer(
                 builder: (context, watch, child) {
-                  final _gradientList = watch(colorGradientListProvider.state);
+                  final _gradientList = watch(colorGradientListProvider);
 
                   return Container(
                     decoration: BoxDecoration(
