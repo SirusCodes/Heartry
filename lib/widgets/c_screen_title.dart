@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class CScreenTitle extends StatelessWidget {
-  const CScreenTitle({Key key, @required this.title}) : super(key: key);
+  const CScreenTitle({Key? key, required this.title}) : super(key: key);
 
   final String title;
 
@@ -11,7 +11,7 @@ class CScreenTitle extends StatelessWidget {
       padding: const EdgeInsets.all(15.0),
       child: Text(
         title,
-        style: Theme.of(context).accentTextTheme.headline3.copyWith(
+        style: Theme.of(context).accentTextTheme.headline3!.copyWith(
               fontWeight: FontWeight.w600,
               fontFamily: "Caveat",
             ),

@@ -9,9 +9,9 @@ import '../../utils/undo_redo.dart';
 import 'widgets/writing_bottom_app_bar.dart';
 
 class WritingScreen extends StatefulWidget {
-  const WritingScreen({Key key, this.model}) : super(key: key);
+  const WritingScreen({Key? key, this.model}) : super(key: key);
 
-  final PoemModel model;
+  final PoemModel? model;
 
   @override
   _WritingScreenState createState() => _WritingScreenState();
@@ -19,16 +19,16 @@ class WritingScreen extends StatefulWidget {
 
 class _WritingScreenState extends State<WritingScreen>
     with WidgetsBindingObserver {
-  FocusNode titleNode, poemNode;
+  late FocusNode titleNode, poemNode;
 
-  final undoRedo = locator<UndoRedo>();
-  final poemDB = locator<Database>();
+  final UndoRedo undoRedo = locator<UndoRedo>();
+  final Database poemDB = locator<Database>();
 
-  PoemModel _poemModel;
+  PoemModel? _poemModel;
 
-  Timer searchOnStoppedTyping;
+  Timer? searchOnStoppedTyping;
 
-  TextEditingController _titleTextController;
+  late TextEditingController _titleTextController;
 
   @override
   void initState() {
@@ -36,23 +36,17 @@ class _WritingScreenState extends State<WritingScreen>
     titleNode = FocusNode();
     poemNode = FocusNode();
 
-    _poemModel = widget.model ??
-        PoemModel(
-          id: null,
-          lastEdit: null,
-          title: null,
-          poem: null,
-        );
+    _poemModel = widget.model;
 
     _titleTextController = TextEditingController(text: _poemModel?.title);
     undoRedo.textEditingController =
         TextEditingController(text: _poemModel?.poem);
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance!.addPostFrameCallback((_) {
       undoRedo.registerChange(undoRedo.textEditingController.text);
     });
 
-    WidgetsBinding.instance.addObserver(this);
+    WidgetsBinding.instance!.addObserver(this);
   }
 
   @override
@@ -66,7 +60,7 @@ class _WritingScreenState extends State<WritingScreen>
     undoRedo.textEditingController.dispose();
 
     _handleDBChanges();
-    WidgetsBinding.instance.removeObserver(this);
+    WidgetsBinding.instance!.removeObserver(this);
     super.dispose();
   }
 
@@ -80,7 +74,8 @@ class _WritingScreenState extends State<WritingScreen>
     return Scaffold(
       body: WillPopScope(
         onWillPop: () {
-          if (_isEmpty && widget.model != null) poemDB.deletePoem(widget.model);
+          if (_isEmpty && widget.model != null)
+            poemDB.deletePoem(widget.model!);
 
           return Future.value(true);
         },
@@ -170,7 +165,7 @@ class _WritingScreenState extends State<WritingScreen>
     const duration = Duration(milliseconds: 800);
 
     if (searchOnStoppedTyping != null) {
-      searchOnStoppedTyping.cancel();
+      searchOnStoppedTyping!.cancel();
     }
     searchOnStoppedTyping = Timer(
       duration,
@@ -179,8 +174,8 @@ class _WritingScreenState extends State<WritingScreen>
   }
 
   bool get _hasChanged {
-    return _poemModel.title != _titleTextController.text ||
-        _poemModel.poem != undoRedo.textEditingController.text;
+    return _poemModel?.title != _titleTextController.text ||
+        _poemModel?.poem != undoRedo.textEditingController.text;
   }
 
   bool get _isNotEmpty =>
@@ -191,7 +186,7 @@ class _WritingScreenState extends State<WritingScreen>
 
   void _handleDBChanges() {
     if (_hasChanged && _isNotEmpty) {
-      if (_poemModel.id == null)
+      if (_poemModel == null)
         _save();
       else
         _update();
@@ -200,21 +195,19 @@ class _WritingScreenState extends State<WritingScreen>
 
   Future<void> _save() async {
     _poemModel = PoemModel(
-      id: null,
-      lastEdit: DateTime.now(),
       title: _titleTextController.text.trim(),
       poem: undoRedo.textEditingController.text.trim(),
     );
-    final id = await poemDB.insertPoem(_poemModel);
-    _poemModel = _poemModel.copyWith(id: id);
+    final id = await poemDB.insertPoem(_poemModel!);
+    _poemModel = _poemModel!.copyWith(id: id);
   }
 
   void _update() {
-    _poemModel = _poemModel.copyWith(
+    _poemModel = _poemModel!.copyWith(
       lastEdit: DateTime.now(),
       title: _titleTextController.text.trim(),
       poem: undoRedo.textEditingController.text.trim(),
     );
-    poemDB.updatePoem(_poemModel);
+    poemDB.updatePoem(_poemModel!);
   }
 }

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../../settings_screen/settings_screen.dart';
 
 class PoemBottomAppBar extends StatefulWidget {
-  const PoemBottomAppBar({Key key}) : super(key: key);
+  const PoemBottomAppBar({Key? key}) : super(key: key);
 
   @override
   _PoemBottomAppBarState createState() => _PoemBottomAppBarState();
@@ -11,7 +11,7 @@ class PoemBottomAppBar extends StatefulWidget {
 
 class _PoemBottomAppBarState extends State<PoemBottomAppBar>
     with SingleTickerProviderStateMixin {
-  AnimationController _iconController;
+  late AnimationController _iconController;
 
   @override
   void initState() {
@@ -25,7 +25,7 @@ class _PoemBottomAppBarState extends State<PoemBottomAppBar>
 
   @override
   void dispose() {
-    _iconController?.dispose();
+    _iconController.dispose();
     super.dispose();
   }
 

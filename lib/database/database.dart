@@ -6,8 +6,8 @@ part 'database.g.dart';
 
 @DataClassName("PoemModel")
 class Poem extends Table {
-  IntColumn get id => integer().autoIncrement()();
-  DateTimeColumn get lastEdit => dateTime().withDefault(
+  IntColumn get id => integer().nullable().autoIncrement()();
+  DateTimeColumn get lastEdit => dateTime().nullable().withDefault(
         Constant(DateTime.now()),
       )();
   TextColumn get title => text().withDefault(const Constant(""))();

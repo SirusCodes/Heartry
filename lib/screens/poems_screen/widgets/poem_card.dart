@@ -11,7 +11,7 @@ import '../../reader_screen/reader_screen.dart';
 import '../../writing_screen/writing_screen.dart';
 
 class PoemCard extends StatefulWidget {
-  const PoemCard({Key key, @required this.model}) : super(key: key);
+  const PoemCard({Key? key, required this.model}) : super(key: key);
 
   final PoemModel model;
 
@@ -21,7 +21,7 @@ class PoemCard extends StatefulWidget {
 
 class _PoemCardState extends State<PoemCard>
     with SingleTickerProviderStateMixin {
-  AnimationController _controller;
+  late AnimationController _controller;
 
   @override
   void initState() {
@@ -189,7 +189,7 @@ class _PoemCardState extends State<PoemCard>
   Future<void> _delete() async {
     final result = await locator<Database>().deletePoem(widget.model);
 
-    final String msg = result == null ? "Failed to delete" : "Deleted";
+    final String msg = result == 0 ? "Failed to delete" : "Deleted";
 
     Navigator.pop(context);
 

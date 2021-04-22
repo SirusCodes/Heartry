@@ -15,9 +15,9 @@ class UndoRedo extends ChangeNotifier {
     redoStack = ListQueue<String>();
   }
 
-  TextEditingController textEditingController;
+  late TextEditingController textEditingController;
 
-  ListQueue<String> undoStack, redoStack;
+  late ListQueue<String> undoStack, redoStack;
 
   bool get canUndo {
     return undoStack.isNotEmpty && undoStack.last != textEditingController.text;
