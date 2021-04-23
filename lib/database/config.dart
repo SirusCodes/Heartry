@@ -17,10 +17,8 @@ class Config extends ChangeNotifier {
   }
 
   set name(String? value) {
-    if (value == null) {
-      _sharedPrefs.remove(_nameKey);
-      return;
-    }
+    if (value == null) return;
+
     _sharedPrefs.setString(_nameKey, value);
     notifyListeners();
   }
@@ -30,6 +28,8 @@ class Config extends ChangeNotifier {
   set profile(String? value) {
     if (value == null) {
       _sharedPrefs.remove(_profileKey);
+      notifyListeners();
+
       return;
     }
     _sharedPrefs.setString(_profileKey, value);
