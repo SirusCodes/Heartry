@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -70,12 +71,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 alignment: Alignment.centerLeft,
                 child: CScreenTitle(title: "Profile"),
               ),
-              GestureDetector(
-                onTap: () => _showChangeProfileDialog(context),
-                child: Consumer(
-                  builder: (context, watch, child) {
-                    final _imagePath = watch(configProvider).profile;
-                    return CircleAvatar(
+              Consumer(
+                builder: (context, watch, child) {
+                  final _imagePath = watch(configProvider).profile;
+                  return Badge(
+                    badgeColor: Colors.deepPurple,
+                    badgeContent: IconButton(
+                      constraints:
+                          const BoxConstraints(maxWidth: 40, minWidth: 35),
+                      icon: const Icon(Icons.camera_alt_rounded),
+                      onPressed: () => _showChangeProfileDialog(context),
+                    ),
+                    position: BadgePosition.bottomEnd(bottom: 6, end: 6),
+                    child: CircleAvatar(
                       maxRadius: 100,
                       minRadius: 80,
                       backgroundImage: _imagePath != null
@@ -83,13 +91,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           : null,
                       child: _imagePath == null
                           ? const Icon(
-                              Icons.person_add,
+                              Icons.person,
                               size: 100,
+                              color: Colors.white,
                             )
                           : null,
-                    );
-                  },
-                ),
+                    ),
+                  );
+                },
               ),
               const SizedBox(height: 10),
               Padding(
