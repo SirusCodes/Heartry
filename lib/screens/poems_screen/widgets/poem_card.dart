@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:heartry/utils/share_helper.dart';
 
 import '../../../database/database.dart';
 import '../../../init_get_it.dart';
@@ -148,8 +149,15 @@ class _PoemCardState extends State<PoemCard>
         ),
       ),
       builder: (context) => ShareOptionList(
-        title: widget.model.title,
-        poem: widget.model.poem,
+        onShareAsImage: () => ShareHelper.shareAsImage(
+          context,
+          title: widget.model.title,
+          poem: widget.model.poem,
+        ),
+        onShareAsText: () => ShareHelper.shareAsText(
+          title: widget.model.title,
+          poem: widget.model.poem,
+        ),
       ),
     );
   }

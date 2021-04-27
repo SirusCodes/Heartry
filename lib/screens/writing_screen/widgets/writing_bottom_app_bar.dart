@@ -16,13 +16,10 @@ class WritingBottomAppBar extends StatefulWidget {
     required this.onShareAsImage,
     required this.onShareAsText,
     required this.showSharePanel,
-    required this.title,
-    required this.poem,
   }) : super(key: key);
 
   final VoidCallback onShareAsImage, onShareAsText;
   final BoolCallBack showSharePanel;
-  final String title, poem;
 
   @override
   _WritingBottomAppBarState createState() => _WritingBottomAppBarState();
@@ -92,8 +89,6 @@ class _WritingBottomAppBarState extends State<WritingBottomAppBar>
             child: ShareOptionList(
               onShareAsImage: () => widget.onShareAsImage(),
               onShareAsText: () => widget.onShareAsText(),
-              title: widget.title,
-              poem: widget.poem,
             ),
           )
         ],

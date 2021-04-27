@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:animated_icon_button/animated_icon_button.dart';
 import 'package:flutter/material.dart';
+import 'package:heartry/utils/share_helper.dart';
 
 import '../../../database/database.dart';
 import '../../../widgets/share_option_list.dart';
@@ -13,7 +14,7 @@ class ReaderScreenBottomAppBar extends StatefulWidget {
     required this.model,
   }) : super(key: key);
 
-  final PoemModel? model;
+  final PoemModel model;
 
   @override
   _ReaderScreenBottomAppBarState createState() =>
@@ -79,8 +80,15 @@ class _ReaderScreenBottomAppBarState extends State<ReaderScreenBottomAppBar>
           SizeTransition(
             sizeFactor: _iconController,
             child: ShareOptionList(
-              title: widget.model!.title,
-              poem: widget.model!.poem,
+              onShareAsImage: () => ShareHelper.shareAsImage(
+                context,
+                title: widget.model.title,
+                poem: widget.model.poem,
+              ),
+              onShareAsText: () => ShareHelper.shareAsText(
+                title: widget.model.title,
+                poem: widget.model.poem,
+              ),
             ),
           )
         ],

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:heartry/utils/share_helper.dart';
 
 import '../../database/database.dart';
 import '../../init_get_it.dart';
@@ -127,8 +128,6 @@ class _WritingScreenState extends State<WritingScreen>
                 bottom: 0,
                 width: MediaQuery.of(context).size.width,
                 child: WritingBottomAppBar(
-                  title: _titleTextController.text,
-                  poem: undoRedo.textEditingController.text,
                   showSharePanel: () {
                     if (undoRedo.textEditingController.text.isNotEmpty)
                       return true;
@@ -147,9 +146,18 @@ class _WritingScreenState extends State<WritingScreen>
                     return false;
                   },
                   onShareAsText: () {
+                    ShareHelper.shareAsText(
+                      title: _titleTextController.text,
+                      poem: undoRedo.textEditingController.text,
+                    );
                     _handleDBChanges();
                   },
                   onShareAsImage: () {
+                    ShareHelper.shareAsImage(
+                      context,
+                      title: _titleTextController.text,
+                      poem: undoRedo.textEditingController.text,
+                    );
                     _handleDBChanges();
                   },
                 ),
