@@ -146,10 +146,7 @@ class _WritingScreenState extends State<WritingScreen>
 
                     return false;
                   },
-                  onShareAsText: () {
-                    _handleDBChanges();
-                  },
-                  onShareAsImage: () {
+                  onShare: () {
                     _handleDBChanges();
                   },
                 ),

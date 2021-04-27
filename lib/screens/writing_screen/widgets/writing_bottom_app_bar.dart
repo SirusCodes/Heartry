@@ -13,14 +13,13 @@ typedef BoolCallBack = bool Function();
 class WritingBottomAppBar extends StatefulWidget {
   const WritingBottomAppBar({
     Key? key,
-    required this.onShareAsImage,
-    required this.onShareAsText,
+    required this.onShare,
     required this.showSharePanel,
     required this.title,
     required this.poem,
   }) : super(key: key);
 
-  final VoidCallback onShareAsImage, onShareAsText;
+  final VoidCallback onShare;
   final BoolCallBack showSharePanel;
   final String title, poem;
 
@@ -34,12 +33,11 @@ class _WritingBottomAppBarState extends State<WritingBottomAppBar>
 
   @override
   void initState() {
+    super.initState();
     _iconController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 250),
     );
-
-    super.initState();
   }
 
   @override
@@ -90,8 +88,7 @@ class _WritingBottomAppBarState extends State<WritingBottomAppBar>
           SizeTransition(
             sizeFactor: _iconController,
             child: ShareOptionList(
-              onShareAsImage: () => widget.onShareAsImage(),
-              onShareAsText: () => widget.onShareAsText(),
+              onShare: () => widget.onShare(),
               title: widget.title,
               poem: widget.poem,
             ),
