@@ -381,13 +381,6 @@ class _ProfilePage extends StatelessWidget {
 
     context.read(configProvider).profile = image.path;
   }
-
-  Future _showChangeProfileDialog(BuildContext context) {
-    return showDialog<void>(
-      context: context,
-      builder: (context) => const ProfileUpdateDialog(color: Color(0xFFFBFBFB)),
-    );
-  }
 }
 
 class _WelcomePage extends StatelessWidget {
