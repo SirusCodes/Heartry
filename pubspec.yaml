@@ -30,6 +30,7 @@ dependencies:
   flutter_riverpod: ^0.14.0+2
   gallery_saver: ^2.1.0
   get_it: ^6.0.0
+  google_sign_in: ^5.0.2
   image_picker: ^0.7.3
   liquid_swipe: ^2.1.0
   moor: ^4.2.1

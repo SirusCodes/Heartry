@@ -5,11 +5,12 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../api_keys.dart';
 import 'shared_prefs_provider.dart';
 
-final googleAuthProvider = StateNotifierProvider<GoogleAuthProvider>((ref) {
+final googleAuthProvider =
+    StateNotifierProvider<GoogleAuthProvider, AsyncValue<String?>>((ref) {
   return GoogleAuthProvider(ref.read);
 });
 
-class GoogleAuthProvider extends StateNotifier<AsyncValue<String>> {
+class GoogleAuthProvider extends StateNotifier<AsyncValue<String?>> {
   GoogleAuthProvider(Reader read) : super(const AsyncLoading()) {
     read(sharedPrefsProvider.future).then((sharedPrefs) {
       _sharedPreferences = sharedPrefs;
@@ -17,9 +18,9 @@ class GoogleAuthProvider extends StateNotifier<AsyncValue<String>> {
     });
   }
 
-  static const _authKey = "auth";
+  static const String _authKey = "auth";
 
-  SharedPreferences _sharedPreferences;
+  late SharedPreferences _sharedPreferences;
 
   void _init() {
     state = const AsyncLoading();
@@ -35,15 +36,15 @@ class GoogleAuthProvider extends StateNotifier<AsyncValue<String>> {
 }
 
 class _GoogleAuthService {
-  _GoogleAuthService() {
-    _googleSignIn = GoogleSignIn(
-      clientId: GOOGLE_AUTH_API,
-      scopes: <String>["https://www.googleapis.com/auth/drive.appdata"],
-    );
-  }
-  GoogleSignIn _googleSignIn;
+  _GoogleAuthService()
+      : _googleSignIn = GoogleSignIn(
+          clientId: APIKeys.googleAuth,
+          scopes: <String>["https://www.googleapis.com/auth/drive.appdata"],
+        );
 
-  Stream<GoogleSignInAccount> get _onAuthStateChange =>
+  final GoogleSignIn _googleSignIn;
+
+  Stream<GoogleSignInAccount?> get _onAuthStateChange =>
       _googleSignIn.onCurrentUserChanged;
 
   Future<void> _login() async {
