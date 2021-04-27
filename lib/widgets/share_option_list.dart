@@ -9,12 +9,13 @@ import '../screens/image_screen/image_screen.dart';
 class ShareOptionList extends StatelessWidget {
   const ShareOptionList({
     Key? key,
-    this.onShare,
+    this.onShareAsImage,
+    this.onShareAsText,
     required this.title,
     required this.poem,
   }) : super(key: key);
 
-  final VoidCallback? onShare;
+  final VoidCallback? onShareAsImage, onShareAsText;
   final String? title;
   final String poem;
 
@@ -27,7 +28,7 @@ class ShareOptionList extends StatelessWidget {
           title: const Text("Share as Text"),
           trailing: const Icon(Icons.text_fields),
           onTap: () {
-            onShare?.call();
+            onShareAsText?.call();
             String msg = "";
 
             if (title != null && title!.isNotEmpty) msg += "$title\n\n";
@@ -42,7 +43,7 @@ class ShareOptionList extends StatelessWidget {
           title: const Text("Share as Image"),
           trailing: const Icon(Icons.image),
           onTap: () {
-            onShare?.call();
+            onShareAsImage?.call();
             Navigator.push<void>(
               context,
               CupertinoPageRoute(

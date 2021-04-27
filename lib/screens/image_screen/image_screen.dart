@@ -39,12 +39,6 @@ class _ImageScreenState extends State<ImageScreen> {
   final PageController _pageController = PageController();
 
   @override
-  void initState() {
-    super.initState();
-    print(widget.poem);
-  }
-
-  @override
   void dispose() {
     _pageController.dispose();
     super.dispose();
