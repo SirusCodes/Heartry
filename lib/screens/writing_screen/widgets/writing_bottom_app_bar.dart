@@ -75,9 +75,19 @@ class _WritingBottomAppBarState extends State<WritingBottomAppBar>
                   AnimatedIconButton(
                     size: 25,
                     animationController: _iconController,
-                    icons: const [
-                      AnimatedIconItem(icon: Icon(Icons.share)),
-                      AnimatedIconItem(icon: Icon(Icons.close_rounded)),
+                    icons: [
+                      AnimatedIconItem(
+                        icon: Icon(
+                          Icons.share,
+                          color: Theme.of(context).iconTheme.color,
+                        ),
+                      ),
+                      AnimatedIconItem(
+                        icon: Icon(
+                          Icons.close_rounded,
+                          color: Theme.of(context).iconTheme.color,
+                        ),
+                      ),
                     ],
                   ),
                 ],
