@@ -2,10 +2,8 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:gallery_saver/gallery_saver.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:share/share.dart';
 
@@ -108,7 +106,8 @@ class _ImageScreenState extends State<ImageScreen> {
           );
         },
         onDonePressed: () async {
-          if (!(await _isPermGranted(context))) return;
+          // TODO: Once save to gallery is implemented
+          // if (!(await _isPermGranted(context))) return;
 
           imageCache!.clear();
 
@@ -134,6 +133,8 @@ class _ImageScreenState extends State<ImageScreen> {
     );
   }
 
+/*
+  TODO: Once save to gallery is implemented
   Future<bool> _isPermGranted(BuildContext context) async {
     final status = await Permission.storage.request();
     if (status.isGranted) return true;
@@ -156,6 +157,7 @@ class _ImageScreenState extends State<ImageScreen> {
 
     return false;
   }
+*/
 
   Future _showShareTypeDialog(BuildContext context, List<String> images) {
     return showDialog<void>(
@@ -229,8 +231,6 @@ class _ImageScreenState extends State<ImageScreen> {
     );
 
     final imgFile = File(path)..writeAsBytes(imgBytes!);
-
-    await GallerySaver.saveImage(path, albumName: "Pictures/Heartry");
 
     return imgFile.path;
   }

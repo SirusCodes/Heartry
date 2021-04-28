@@ -7,15 +7,13 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:liquid_swipe/liquid_swipe.dart';
-import 'package:path_provider/path_provider.dart';
-
 import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
 
 import '../../database/config.dart';
 import '../../database/database.dart';
 import '../../init_get_it.dart';
 import '../../widgets/privacy_statement.dart';
-import '../../widgets/profile_update_dialog.dart';
 import '../poems_screen/poems_screen.dart';
 
 class IntroScreen extends StatefulWidget {
