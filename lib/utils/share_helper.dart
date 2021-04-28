@@ -1,9 +1,9 @@
 import 'package:flutter/cupertino.dart';
-import 'package:heartry/database/config.dart';
-import 'package:heartry/screens/image_screen/image_screen.dart';
 import 'package:share/share.dart';
 
+import '../database/config.dart';
 import '../init_get_it.dart';
+import '../screens/image_screen/image_screen.dart';
 
 class ShareHelper {
   static void shareAsText({required String? title, required String poem}) {

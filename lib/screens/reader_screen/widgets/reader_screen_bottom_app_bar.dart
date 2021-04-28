@@ -2,9 +2,9 @@ import 'dart:io';
 
 import 'package:animated_icon_button/animated_icon_button.dart';
 import 'package:flutter/material.dart';
-import 'package:heartry/utils/share_helper.dart';
 
 import '../../../database/database.dart';
+import '../../../utils/share_helper.dart';
 import '../../../widgets/share_option_list.dart';
 import '../../writing_screen/writing_screen.dart';
 
