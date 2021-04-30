@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 
 class BaseInfoWidget extends StatelessWidget {
   const BaseInfoWidget({
-    Key key,
-    @required this.children,
-    @required this.title,
+    Key? key,
+    required this.children,
+    required this.title,
   }) : super(key: key);
 
   final List<Widget> children;

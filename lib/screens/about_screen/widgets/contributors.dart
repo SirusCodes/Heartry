@@ -9,7 +9,7 @@ const _profileURL =
     "https://secure.gravatar.com/avatar/81d9c078a3dfb1cda130020eecfc6e56?s=500";
 
 class Contributors extends StatefulWidget {
-  const Contributors({Key key}) : super(key: key);
+  const Contributors({Key? key}) : super(key: key);
 
   @override
   _ContributorsState createState() => _ContributorsState();

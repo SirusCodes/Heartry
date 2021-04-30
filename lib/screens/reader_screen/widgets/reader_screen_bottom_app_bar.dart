@@ -4,13 +4,14 @@ import 'package:animated_icon_button/animated_icon_button.dart';
 import 'package:flutter/material.dart';
 
 import '../../../database/database.dart';
+import '../../../utils/share_helper.dart';
 import '../../../widgets/share_option_list.dart';
 import '../../writing_screen/writing_screen.dart';
 
 class ReaderScreenBottomAppBar extends StatefulWidget {
   const ReaderScreenBottomAppBar({
-    Key key,
-    @required this.model,
+    Key? key,
+    required this.model,
   }) : super(key: key);
 
   final PoemModel model;
@@ -22,7 +23,7 @@ class ReaderScreenBottomAppBar extends StatefulWidget {
 
 class _ReaderScreenBottomAppBarState extends State<ReaderScreenBottomAppBar>
     with SingleTickerProviderStateMixin {
-  AnimationController _iconController;
+  late AnimationController _iconController;
 
   @override
   void initState() {
@@ -36,7 +37,7 @@ class _ReaderScreenBottomAppBarState extends State<ReaderScreenBottomAppBar>
 
   @override
   void dispose() {
-    _iconController?.dispose();
+    _iconController.dispose();
     super.dispose();
   }
 
@@ -68,28 +69,39 @@ class _ReaderScreenBottomAppBarState extends State<ReaderScreenBottomAppBar>
               AnimatedIconButton(
                 size: 25,
                 animationController: _iconController,
-                startIcon: const Icon(Icons.share),
-                endIcon: const Icon(Icons.close_rounded),
-                onPressed: _changeIcon,
+                icons: [
+                  AnimatedIconItem(
+                    icon: Icon(
+                      Icons.share,
+                      color: Theme.of(context).iconTheme.color,
+                    ),
+                  ),
+                  AnimatedIconItem(
+                    icon: Icon(
+                      Icons.close_rounded,
+                      color: Theme.of(context).iconTheme.color,
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
           SizeTransition(
             sizeFactor: _iconController,
             child: ShareOptionList(
-              title: widget.model.title,
-              poem: widget.model.poem,
+              onShareAsImage: () => ShareHelper.shareAsImage(
+                context,
+                title: widget.model.title,
+                poem: widget.model.poem,
+              ),
+              onShareAsText: () => ShareHelper.shareAsText(
+                title: widget.model.title,
+                poem: widget.model.poem,
+              ),
             ),
           )
         ],
       ),
     );
-  }
-
-  void _changeIcon() {
-    if (_iconController.isCompleted)
-      _iconController.reverse();
-    else
-      _iconController.forward();
   }
 }

@@ -12,17 +12,14 @@ typedef BoolCallBack = bool Function();
 
 class WritingBottomAppBar extends StatefulWidget {
   const WritingBottomAppBar({
-    Key key,
-    @required this.onShareAsImage,
-    @required this.onShareAsText,
-    @required this.showSharePanel,
-    @required this.title,
-    @required this.poem,
+    Key? key,
+    required this.onShareAsImage,
+    required this.onShareAsText,
+    required this.showSharePanel,
   }) : super(key: key);
 
   final VoidCallback onShareAsImage, onShareAsText;
   final BoolCallBack showSharePanel;
-  final String title, poem;
 
   @override
   _WritingBottomAppBarState createState() => _WritingBottomAppBarState();
@@ -30,7 +27,7 @@ class WritingBottomAppBar extends StatefulWidget {
 
 class _WritingBottomAppBarState extends State<WritingBottomAppBar>
     with SingleTickerProviderStateMixin {
-  AnimationController _iconController;
+  late AnimationController _iconController;
 
   @override
   void initState() {
@@ -44,7 +41,7 @@ class _WritingBottomAppBarState extends State<WritingBottomAppBar>
 
   @override
   void dispose() {
-    _iconController?.dispose();
+    _iconController.dispose();
     super.dispose();
   }
 
@@ -78,9 +75,20 @@ class _WritingBottomAppBarState extends State<WritingBottomAppBar>
                   AnimatedIconButton(
                     size: 25,
                     animationController: _iconController,
-                    startIcon: const Icon(Icons.share),
-                    endIcon: const Icon(Icons.close_rounded),
-                    onPressed: _changeIcon,
+                    icons: [
+                      AnimatedIconItem(
+                        icon: Icon(
+                          Icons.share,
+                          color: Theme.of(context).iconTheme.color,
+                        ),
+                      ),
+                      AnimatedIconItem(
+                        icon: Icon(
+                          Icons.close_rounded,
+                          color: Theme.of(context).iconTheme.color,
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               );
@@ -91,20 +99,10 @@ class _WritingBottomAppBarState extends State<WritingBottomAppBar>
             child: ShareOptionList(
               onShareAsImage: () => widget.onShareAsImage(),
               onShareAsText: () => widget.onShareAsText(),
-              title: widget.title,
-              poem: widget.poem,
             ),
           )
         ],
       ),
     );
-  }
-
-  void _changeIcon() {
-    if (!widget.showSharePanel()) return;
-    if (_iconController.isCompleted)
-      _iconController.reverse();
-    else
-      _iconController.forward();
   }
 }

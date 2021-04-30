@@ -3,18 +3,21 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:liquid_swipe/liquid_swipe.dart';
+import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
 
 import '../../database/config.dart';
 import '../../database/database.dart';
 import '../../init_get_it.dart';
 import '../../widgets/privacy_statement.dart';
-import '../../widgets/profile_update_dialog.dart';
 import '../poems_screen/poems_screen.dart';
 
 class IntroScreen extends StatefulWidget {
-  const IntroScreen({Key key}) : super(key: key);
+  const IntroScreen({Key? key}) : super(key: key);
 
   @override
   _IntroScreenState createState() => _IntroScreenState();
@@ -38,19 +41,22 @@ class _IntroScreenState extends State<IntroScreen> {
             _enableSlideIcon = activePageIndex != 2;
           });
         },
-        enableSlideIcon: _enableSlideIcon,
-        positionSlideIcon: 0,
-        slideIconWidget: const Icon(
-          Icons.arrow_back_ios,
-          color: Colors.white,
-        ),
+        positionSlideIcon: .5,
+        ignoreUserGestureWhileAnimating: true,
+        slideIconWidget: _enableSlideIcon
+            ? const Icon(
+                Icons.chevron_left_rounded,
+                color: Colors.white,
+                size: 40,
+              )
+            : null,
       ),
     );
   }
 }
 
 class _NamePage extends StatefulWidget {
-  const _NamePage({Key key}) : super(key: key);
+  const _NamePage({Key? key}) : super(key: key);
 
   @override
   __NamePageState createState() => __NamePageState();
@@ -145,8 +151,8 @@ class __NamePageState extends State<_NamePage> {
                 _showButton
                     ? ElevatedButton(
                         onPressed: () async {
-                          if (_formKey.currentState.validate()) {
-                            _formKey.currentState.save();
+                          if (_formKey.currentState!.validate()) {
+                            _formKey.currentState!.save();
                             setState(() {
                               _showButton = false;
                             });
@@ -229,13 +235,11 @@ You can share poem in 2 ways.
 
   Future<void> _insertPoem(
     Database db, {
-    @required String title,
-    @required String poem,
+    required String title,
+    required String poem,
   }) async {
     await db.insertPoem(
       PoemModel(
-        id: null,
-        lastEdit: null,
         title: title,
         poem: poem,
       ),
@@ -244,7 +248,7 @@ You can share poem in 2 ways.
 }
 
 class _ProfilePage extends StatelessWidget {
-  const _ProfilePage({Key key}) : super(key: key);
+  const _ProfilePage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -252,8 +256,8 @@ class _ProfilePage extends StatelessWidget {
       color: Colors.deepPurple.shade300,
       child: Center(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
+            const Spacer(),
             const Text(
               "Let's update your profile...",
               textAlign: TextAlign.center,
@@ -265,45 +269,120 @@ class _ProfilePage extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 45),
-            GestureDetector(
-              onTap: () => _showChangeProfileDialog(context),
-              child: Consumer(
-                builder: (context, watch, child) {
-                  final _imagePath = watch(configProvider).profile;
-                  return CircleAvatar(
-                    maxRadius: 100,
-                    minRadius: 80,
-                    backgroundColor: Colors.deepPurple,
-                    backgroundImage:
-                        _imagePath != null ? FileImage(File(_imagePath)) : null,
-                    child: _imagePath == null
-                        ? const Icon(
-                            Icons.person,
-                            size: 100,
-                            color: Colors.white,
-                          )
-                        : null,
-                  );
-                },
+            Consumer(
+              builder: (context, watch, child) {
+                final _imagePath = watch(configProvider).profile;
+                return CircleAvatar(
+                  maxRadius: 100,
+                  minRadius: 80,
+                  backgroundColor: Colors.deepPurple,
+                  backgroundImage:
+                      _imagePath != null ? FileImage(File(_imagePath)) : null,
+                  child: _imagePath == null
+                      ? const Icon(
+                          Icons.person,
+                          size: 100,
+                          color: Colors.white,
+                        )
+                      : null,
+                );
+              },
+            ),
+            const Spacer(),
+            Padding(
+              padding: const EdgeInsets.all(15.0),
+              child: Column(
+                children: <Widget>[
+                  _buildDialogButton(
+                    context,
+                    onPressed: () async {
+                      final picker = ImagePicker();
+                      PickedFile? pickedImage;
+                      try {
+                        pickedImage =
+                            await picker.getImage(source: ImageSource.gallery);
+                      } on PlatformException {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text("Permission denied"),
+                          ),
+                        );
+                      }
+
+                      if (pickedImage == null) return;
+
+                      await _setImage(context, pickedImage);
+                    },
+                    icon: const Icon(Icons.photo_library),
+                    text: "Add from gallery",
+                  ),
+                  _buildDialogButton(
+                    context,
+                    onPressed: () async {
+                      final picker = ImagePicker();
+                      PickedFile? pickedImage;
+                      try {
+                        pickedImage =
+                            await picker.getImage(source: ImageSource.camera);
+                      } on PlatformException {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text("Permission denied"),
+                          ),
+                        );
+                      }
+                      if (pickedImage == null) return;
+
+                      await _setImage(context, pickedImage);
+                    },
+                    icon: const Icon(Icons.camera_alt),
+                    text: "Capture from camera",
+                  ),
+                ],
               ),
             ),
-            const SizedBox(height: 125),
           ],
         ),
       ),
     );
   }
 
-  Future _showChangeProfileDialog(BuildContext context) {
-    return showDialog<void>(
-      context: context,
-      builder: (context) => const ProfileUpdateDialog(color: Color(0xFFFBFBFB)),
+  ElevatedButton _buildDialogButton(
+    BuildContext context, {
+    required VoidCallback onPressed,
+    required Icon icon,
+    required String text,
+  }) {
+    return ElevatedButton(
+      onPressed: onPressed,
+      child: Row(
+        children: <Widget>[
+          icon,
+          const Spacer(),
+          Text(text),
+          const Spacer(),
+        ],
+      ),
     );
+  }
+
+  Future<void> _setImage(BuildContext context, PickedFile pickedImage) async {
+    imageCache!.clear();
+
+    final directory = await getApplicationDocumentsDirectory();
+    final file = p.basename(pickedImage.path);
+
+    final imageSaved = p.join(directory.path, file);
+    final image = await File(imageSaved).writeAsBytes(
+      await pickedImage.readAsBytes(),
+    );
+
+    context.read(configProvider).profile = image.path;
   }
 }
 
 class _WelcomePage extends StatelessWidget {
-  const _WelcomePage({Key key}) : super(key: key);
+  const _WelcomePage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

@@ -1,11 +1,9 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/all.dart';
-import 'package:gallery_saver/gallery_saver.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:share/share.dart';
 
@@ -19,13 +17,13 @@ import 'widgets/poem_image_widget.dart';
 
 class ImageScreen extends StatefulWidget {
   const ImageScreen({
-    Key key,
-    @required this.poem,
-    @required this.title,
-    @required this.poet,
+    Key? key,
+    required this.poem,
+    required this.title,
+    required this.poet,
   }) : super(key: key);
 
-  final String title, poet;
+  final String? title, poet;
 
   final List<String> poem;
 
@@ -68,11 +66,11 @@ class _ImageScreenState extends State<ImageScreen> {
                       controller: _pageController,
                       itemCount: poemLines.length,
                       itemBuilder: (context, index) => PoemImageWidget(
-                        title: widget.title,
+                        title: widget.title!,
                         poem: poemLines[index],
                         page: index,
                         total: poemLines.length,
-                        poet: widget.poet,
+                        poet: widget.poet!,
                       ),
                     ),
                   );
@@ -108,9 +106,10 @@ class _ImageScreenState extends State<ImageScreen> {
           );
         },
         onDonePressed: () async {
-          if (!(await _isPermGranted(context))) return;
+          // TODO: Once save to gallery is implemented
+          // if (!(await _isPermGranted(context))) return;
 
-          imageCache.clear();
+          imageCache!.clear();
 
           final List<String> images = [];
 
@@ -134,6 +133,8 @@ class _ImageScreenState extends State<ImageScreen> {
     );
   }
 
+/*
+  TODO: Once save to gallery is implemented
   Future<bool> _isPermGranted(BuildContext context) async {
     final status = await Permission.storage.request();
     if (status.isGranted) return true;
@@ -156,6 +157,7 @@ class _ImageScreenState extends State<ImageScreen> {
 
     return false;
   }
+*/
 
   Future _showShareTypeDialog(BuildContext context, List<String> images) {
     return showDialog<void>(
@@ -223,13 +225,12 @@ class _ImageScreenState extends State<ImageScreen> {
       "${widget.title}-$index.png",
     );
 
-    final File imgFile = await _screenshot.capture(
+    final imgBytes = await _screenshot.capture(
       pixelRatio: 3,
       delay: const Duration(milliseconds: 50),
-      path: path,
     );
 
-    await GallerySaver.saveImage(path, albumName: "Pictures/Heartry");
+    final imgFile = File(path)..writeAsBytes(imgBytes!);
 
     return imgFile.path;
   }
@@ -248,7 +249,7 @@ class _ImageScreenState extends State<ImageScreen> {
     final _titleHeight = _calcTextSize(
       context,
       constraints,
-      widget.title,
+      widget.title!,
       TITLE_TEXT_SIZE,
       _textScale,
     ).height;
@@ -257,7 +258,7 @@ class _ImageScreenState extends State<ImageScreen> {
     final _poetHeight = _calcTextSize(
       context,
       constraints,
-      widget.poet,
+      widget.poet!,
       POET_TEXT_SIZE,
       _textScale,
     ).height;
@@ -296,7 +297,7 @@ class _ImageScreenState extends State<ImageScreen> {
   Size _calcTextSize(
     BuildContext context,
     BoxConstraints constraints,
-    String text,
+    String /*!*/ text,
     double fontSize,
     double scale,
   ) {

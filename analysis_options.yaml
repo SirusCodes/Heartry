@@ -3,8 +3,6 @@ include: package:lint/analysis_options.yaml
 analyzer:
   exclude:
     - lib/database/*.g.dart
-  strong-mode:
-    implicit-dynamic: false
 
 linter:
   rules:

@@ -3,9 +3,9 @@ import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 
 class ColorPickerDialog extends StatelessWidget {
   const ColorPickerDialog({
-    Key key,
-    @required this.currentColor,
-    @required this.selectedColor,
+    Key? key,
+    required this.currentColor,
+    required this.selectedColor,
   }) : super(key: key);
 
   final Color currentColor;

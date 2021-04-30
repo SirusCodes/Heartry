@@ -1,16 +1,17 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:heartry/database/config.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:path/path.dart' as p;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
+
+import '../database/config.dart';
 
 class ProfileUpdateDialog extends ConsumerWidget {
-  const ProfileUpdateDialog({Key key, this.color}) : super(key: key);
+  const ProfileUpdateDialog({Key? key, this.color}) : super(key: key);
 
-  final Color color;
+  final Color? color;
 
   @override
   Widget build(BuildContext context, ScopedReader watch) {
@@ -28,6 +29,9 @@ class ProfileUpdateDialog extends ConsumerWidget {
             final picker = ImagePicker();
             final pickedImage =
                 await picker.getImage(source: ImageSource.gallery);
+
+            if (pickedImage == null) return;
+
             await _setImage(context, pickedImage);
             Navigator.pop(context);
           },
@@ -40,6 +44,9 @@ class ProfileUpdateDialog extends ConsumerWidget {
             final picker = ImagePicker();
             final pickedImage =
                 await picker.getImage(source: ImageSource.camera);
+
+            if (pickedImage == null) return;
+
             await _setImage(context, pickedImage);
             Navigator.pop(context);
           },
@@ -62,9 +69,9 @@ class ProfileUpdateDialog extends ConsumerWidget {
 
   ElevatedButton _buildDialogButton(
     BuildContext context, {
-    @required VoidCallback onPressed,
-    @required Icon icon,
-    @required String text,
+    required VoidCallback onPressed,
+    required Icon icon,
+    required String text,
   }) {
     return ElevatedButton(
       onPressed: onPressed,
@@ -80,9 +87,7 @@ class ProfileUpdateDialog extends ConsumerWidget {
   }
 
   Future<void> _setImage(BuildContext context, PickedFile pickedImage) async {
-    if (pickedImage == null) return;
-
-    imageCache.clear();
+    imageCache!.clear();
 
     final directory = await getApplicationDocumentsDirectory();
     final file = p.basename(pickedImage.path);

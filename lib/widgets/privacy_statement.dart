@@ -17,7 +17,7 @@ const data = """
 • We do not collect any personal data.""";
 
 class PrivacyStatement extends StatelessWidget {
-  const PrivacyStatement({Key key}) : super(key: key);
+  const PrivacyStatement({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +30,7 @@ class PrivacyStatement extends StatelessWidget {
               "⨕ We don't collect any data! 🥳",
               style: Theme.of(context)
                   .textTheme
-                  .headline4
+                  .headline4!
                   .copyWith(fontWeight: FontWeight.bold, color: Colors.black),
             ),
             const Text(

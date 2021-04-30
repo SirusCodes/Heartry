@@ -5,7 +5,7 @@ import '../../widgets/c_screen_title.dart';
 import 'widgets/reader_screen_bottom_app_bar.dart';
 
 class ReaderScreen extends StatelessWidget {
-  const ReaderScreen({Key key, this.model}) : super(key: key);
+  const ReaderScreen({Key? key, required this.model}) : super(key: key);
 
   final PoemModel model;
 
