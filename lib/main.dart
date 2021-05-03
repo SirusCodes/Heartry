@@ -106,7 +106,7 @@ class _MyAppState extends State<MyApp> {
   }
 
   ThemeData _getDarkTheme(ThemeType theme) {
-    if (theme == ThemeType.black) return blackTheme;
-    return darkTheme;
+    if (theme == ThemeType.dark) return darkTheme;
+    return blackTheme;
   }
 }
