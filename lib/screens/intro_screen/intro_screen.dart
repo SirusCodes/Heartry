@@ -242,6 +242,7 @@ You can share poem in 2 ways.
       PoemModel(
         title: title,
         poem: poem,
+        isSecret: false,
       ),
     );
   }

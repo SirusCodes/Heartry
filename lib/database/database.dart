@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:moor/moor.dart';
 
 import 'open_connection.dart';
@@ -12,14 +13,30 @@ class Poem extends Table {
       )();
   TextColumn get title => text().withDefault(const Constant(""))();
   TextColumn get poem => text()();
+  BoolColumn get isSecret => boolean().withDefault(const Constant(false))();
 }
 
 @UseMoor(tables: [Poem])
 class Database extends _$Database {
   Database() : super(openConnection());
 
+  @visibleForTesting
+  Database.connect(DatabaseConnection dbConnection)
+      : super(dbConnection.executor);
+
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
+
+  @override
+  MigrationStrategy get migration => MigrationStrategy(
+        onCreate: (m) => m.createAll(),
+        onUpgrade: (m, from, to) async {
+          if (from == 1) {
+            // secrets was added in 2.
+            await m.addColumn(poem, poem.isSecret);
+          }
+        },
+      );
 
   Stream<List<PoemModel>> get getPoemStream => (select(poem)
         ..orderBy(

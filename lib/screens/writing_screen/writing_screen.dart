@@ -205,6 +205,7 @@ class _WritingScreenState extends State<WritingScreen>
     _poemModel = PoemModel(
       title: _titleTextController.text.trim(),
       poem: undoRedo.textEditingController.text.trim(),
+      isSecret: false,
     );
     final id = await poemDB.insertPoem(_poemModel!);
     _poemModel = _poemModel!.copyWith(id: id);
