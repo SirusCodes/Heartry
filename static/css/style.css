@@ -1,0 +1,94 @@
+*
+{
+	padding: 0;
+	margin: 0;
+	box-sizing: border-box;
+}
+
+body
+{
+	font-family: "Poppins", sans-serif;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	background-color: hsl(281, 46%, 95%);
+}
+
+h1, #app-name
+{
+	font-family: "Caveat", cursive;
+	color: #330066;
+}
+
+h1
+{
+	font-size: 65px;
+	font-weight: 550;
+	margin: 0.5em 0.4em 0.5em 0.2em;
+	text-align: center;
+}
+
+h2
+{
+	margin-bottom: 3em;
+	font-size: 18px;
+}
+
+#app-name
+{
+	font-size: 30px;
+	font-weight: 600;
+	margin-right: 0.1em;
+}
+
+a
+{
+	color: black;
+}
+
+main
+{
+	margin-bottom: 4em;
+	width: 60vw;
+	text-align: justify;
+}
+
+#google-play
+{
+	margin-bottom: 3em;
+}
+
+.ul-intro
+{
+	margin: 4em 0 1em 0;
+}
+
+li
+{
+	margin-bottom: 1em;
+	list-style-position: inside;
+}
+
+#bottom-link
+{
+	margin-bottom: 3em;
+}
+
+#logo
+{
+	width: 15vw;
+	margin-bottom: 2em;
+}
+
+@media screen and (max-width: 500px)
+{
+	main
+	{
+		width: 80vw;
+	}
+
+	#logo
+	{
+		width: 30vw;
+	}
+}
