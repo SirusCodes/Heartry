@@ -10,26 +10,35 @@ class SignInScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        RichText(
-          textAlign: TextAlign.center,
-          text: const TextSpan(
-            children: <TextSpan>[
-              TextSpan(
-                text: "Please sign in to start back-up.\n",
-                style: TextStyle(fontSize: 20, height: 3),
-              ),
-              TextSpan(text: "We will use your Google drive to save you data."),
-            ],
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 15.0),
+          child: RichText(
+            textAlign: TextAlign.center,
+            text: TextSpan(
+              style: Theme.of(context).textTheme.bodyText2,
+              children: const <TextSpan>[
+                TextSpan(
+                  text: "Please sign in to start back-up.\n",
+                  style: TextStyle(fontSize: 20, height: 3),
+                ),
+                TextSpan(text: '''
+We will use your Google drive to save your data.
+But rest assured, we won't be able to access any other data.
+'''),
+              ],
+            ),
           ),
         ),
-        const SizedBox(height: 15),
         ElevatedButton.icon(
-          icon: Image.asset(
-            "assets/logos/google_signin_btn.png",
-            height: 40,
-            width: 40,
+          icon: Padding(
+            padding: const EdgeInsets.all(2.0),
+            child: Image.asset(
+              "assets/logos/google_signin_btn.png",
+              height: 35,
+              width: 35,
+            ),
           ),
           style: ElevatedButton.styleFrom(
             primary: isDark ? const Color(0xFF4285F4) : Colors.white,
@@ -38,9 +47,9 @@ class SignInScreen extends StatelessWidget {
           onPressed: () {
             context.read(googleSignInProvider.notifier).signIn();
           },
-          label: const Text(
+          label: Text(
             "Sign in with Google",
-            style: TextStyle(fontSize: 14),
+            style: Theme.of(context).textTheme.button,
           ),
         ),
       ],
