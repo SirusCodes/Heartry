@@ -2,6 +2,8 @@ import 'package:catcher/catcher.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:heartry/providers/shared_prefs_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'database/config.dart';
 import 'init_get_it.dart';
@@ -13,6 +15,7 @@ import 'utils/theme.dart';
 
 Future<void> main() async {
   initGetIt();
+  WidgetsFlutterBinding.ensureInitialized();
 
   final releaseCatcher = CatcherOptions(
     DialogReportMode(),
@@ -21,10 +24,14 @@ Future<void> main() async {
     ],
   );
 
+  final _sharedPrefs = await SharedPreferences.getInstance();
   Catcher(
     releaseConfig: releaseCatcher,
     profileConfig: releaseCatcher,
-    rootWidget: ProviderScope(child: MyApp()),
+    rootWidget: ProviderScope(
+      overrides: [sharedPrefsProvider.overrideWithValue(_sharedPrefs)],
+      child: MyApp(),
+    ),
   );
 
   SystemChrome.setPreferredOrientations(
@@ -53,41 +60,31 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return Consumer(
       builder: (context, watch, child) {
-        final _theme = watch(themeProvider);
-        return _theme.when(
-          data: (theme) => MaterialApp(
-            title: "Heartry",
-            navigatorKey: Catcher.navigatorKey,
-            themeMode: _getThemeMode(theme),
-            theme: lightTheme,
-            darkTheme: _getDarkTheme(theme),
-            home: FutureBuilder(
-              future: _initSharedPrefs,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.done) {
-                  final _name = locator<Config>().name;
+        final theme = watch(themeProvider);
+        return MaterialApp(
+          title: "Heartry",
+          navigatorKey: Catcher.navigatorKey,
+          themeMode: _getThemeMode(theme),
+          theme: lightTheme,
+          darkTheme: _getDarkTheme(theme),
+          home: FutureBuilder(
+            future: _initSharedPrefs,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.done) {
+                final _name = locator<Config>().name;
 
-                  if (_name != null) return const PoemScreen();
+                if (_name != null) return const PoemScreen();
 
-                  return const IntroScreen();
-                }
+                return const IntroScreen();
+              }
 
-                return const Material(
-                  child: Center(
-                    child: CircularProgressIndicator(),
-                  ),
-                );
-              },
-            ),
+              return const Material(
+                child: Center(
+                  child: CircularProgressIndicator(),
+                ),
+              );
+            },
           ),
-          loading: () => const Material(
-            child: Center(
-              child: CircularProgressIndicator(),
-            ),
-          ),
-          error: (err, st) {
-            throw Exception("$err\n${"_" * 25}\nst");
-          },
         );
       },
     );

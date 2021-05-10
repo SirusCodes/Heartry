@@ -34,25 +34,21 @@ class _Body extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, ScopedReader watch) {
-    final _theme = watch(themeProvider);
-    return _theme.when(
-      data: (theme) => BaseInfoWidget(
-        title: "Theme",
-        children: [
-          ListTile(
-            leading: const CircleAvatar(child: Icon(Icons.palette)),
-            title: const Text("Theme"),
-            subtitle: Text(themeToString(theme)),
-            onTap: () async {
-              final selectedTheme = await _showThemeDialog(context, theme);
-              if (selectedTheme != null)
-                context.read(themeProvider.notifier).setTheme(selectedTheme);
-            },
-          ),
-        ],
-      ),
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (err, st) => throw Exception("$err\n${"_" * 25}\nst"),
+    final theme = watch(themeProvider);
+    return BaseInfoWidget(
+      title: "Theme",
+      children: [
+        ListTile(
+          leading: const CircleAvatar(child: Icon(Icons.palette)),
+          title: const Text("Theme"),
+          subtitle: Text(themeToString(theme)),
+          onTap: () async {
+            final selectedTheme = await _showThemeDialog(context, theme);
+            if (selectedTheme != null)
+              context.read(themeProvider.notifier).setTheme(selectedTheme);
+          },
+        ),
+      ],
     );
   }
 

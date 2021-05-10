@@ -4,29 +4,22 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../utils/theme.dart';
 import 'shared_prefs_provider.dart';
 
-final themeProvider =
-    StateNotifierProvider<ThemeProvider, AsyncValue<ThemeType>>((ref) {
-  return ThemeProvider(ref.read);
+final themeProvider = StateNotifierProvider<ThemeProvider, ThemeType>((ref) {
+  return ThemeProvider(ref.watch(sharedPrefsProvider));
 });
 
-class ThemeProvider extends StateNotifier<AsyncValue<ThemeType>> {
-  ThemeProvider(Reader read) : super(const AsyncLoading()) {
-    read(sharedPrefsProvider.future).then((sharedPrefs) {
-      _sharedPreferences = sharedPrefs;
-      _init();
-    });
-  }
+class ThemeProvider extends StateNotifier<ThemeType> {
+  ThemeProvider(this.sharedPreferences) : super(_getTheme(sharedPreferences));
 
   static const _themeKey = "theme";
 
-  late SharedPreferences _sharedPreferences;
+  final SharedPreferences sharedPreferences;
 
-  void _init() {
-    state = AsyncData(stringToTheme(_sharedPreferences.getString(_themeKey)));
-  }
+  static ThemeType _getTheme(SharedPreferences sharedPreferences) =>
+      stringToTheme(sharedPreferences.getString(_themeKey));
 
   void setTheme(ThemeType theme) {
-    _sharedPreferences.setString(_themeKey, themeToString(theme));
-    state = AsyncData(theme);
+    sharedPreferences.setString(_themeKey, themeToString(theme));
+    state = theme;
   }
 }
