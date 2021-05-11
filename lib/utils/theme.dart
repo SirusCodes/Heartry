@@ -134,6 +134,9 @@ final blackTheme = ThemeData(
       padding: const EdgeInsets.all(10.0),
     ),
   ),
+  timePickerTheme: const TimePickerThemeData(
+    backgroundColor: Color(0xFF212121),
+  ),
   bottomAppBarColor: const Color(0xFF212121),
   scaffoldBackgroundColor: Colors.black,
   floatingActionButtonTheme: FloatingActionButtonThemeData(

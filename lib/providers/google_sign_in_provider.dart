@@ -19,6 +19,9 @@ class GoogleSignInProvider
   }
   final GoogleSignIn googleSignIn;
 
+  Future<Map<String, String>>? get authHeader =>
+      googleSignIn.currentUser?.authHeaders;
+
   Future<void> signIn() async {
     try {
       final user = await googleSignIn.signIn();

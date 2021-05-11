@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 import '../../providers/google_sign_in_provider.dart';
 import '../../widgets/c_screen_title.dart';
 import 'widgets/backup_options.dart';
 import 'widgets/sign_in_screen.dart';
+
+final googleUserInfoProvider = ScopedProvider<GoogleSignInAccount>(null);
 
 class BackupScreen extends ConsumerWidget {
   const BackupScreen({Key? key}) : super(key: key);
@@ -37,7 +40,13 @@ class BackupScreen extends ConsumerWidget {
               Expanded(
                 child: googleSignIn.data?.value == null
                     ? const SignInScreen()
-                    : const BackupOptions(),
+                    : ProviderScope(
+                        overrides: [
+                          googleUserInfoProvider
+                              .overrideWithValue(googleSignIn.data!.value!)
+                        ],
+                        child: const BackupOptions(),
+                      ),
               ),
             ],
           ),
