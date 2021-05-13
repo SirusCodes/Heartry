@@ -27,6 +27,9 @@ class Database extends _$Database {
         ))
       .watch();
 
+  Future<List<PoemModel>> get poemsFuture =>
+      (select(poem)..orderBy([(u) => OrderingTerm.asc(u.id)])).get();
+
   Future<int> insertPoem(PoemModel model) {
     return into(poem).insert(model);
   }
