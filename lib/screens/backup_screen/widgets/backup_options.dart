@@ -45,8 +45,8 @@ class BackupInfo extends StatelessWidget {
               ),
               const SizedBox(height: 5),
               ElevatedButton.icon(
-                onPressed: () {
-                  context.read(backupManagerProvider).run();
+                onPressed: () async {
+                  await context.read(backupManagerProvider).run();
                 },
                 icon: const Icon(Icons.backup_rounded),
                 label: const Text("Backup now"),

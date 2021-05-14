@@ -35,8 +35,8 @@ class BackupModel {
   factory BackupModel.fromMap(Map<String, dynamic> map) {
     return BackupModel(
       name: map['name'] as String,
-      theme: map['theme'] as String,
-      profile: map['profile'] as String,
+      theme: map['theme'] as String?,
+      profile: map['profile'] as String?,
     );
   }
 

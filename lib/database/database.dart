@@ -30,6 +30,10 @@ class Database extends _$Database {
   Future<List<PoemModel>> get poemsFuture =>
       (select(poem)..orderBy([(u) => OrderingTerm.asc(u.id)])).get();
 
+  Future<void> insertAllPoem(List<PoemModel> poemList) => batch((b) {
+        b.insertAll(poem, poemList);
+      });
+
   Future<int> insertPoem(PoemModel model) {
     return into(poem).insert(model);
   }
