@@ -1,5 +1,5 @@
-import 'dart:convert';
 import 'dart:io' as io;
+import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -75,28 +75,46 @@ class BackupManagerProvider {
     final driveApi = DriveApi(authenticateClient);
 
     bool userConfigResponse = true;
-    bool userDataResponse = true;
+    bool userPoemResponse = true;
+    bool userProfileResponse = true;
 
     if (_dataChangeProvider.isUserConfigChanged) {
       final data = _bckupDataProvider.getUserConfigData();
       userConfigResponse = await _backup(driveApi, USER_CONFIG, data);
+      _dataChangeProvider.updateUserConfig(value: false);
     }
 
     if (_dataChangeProvider.isUserPoemChanged) {
       final data = _bckupDataProvider.getUserPoemData();
-      userDataResponse = await _backup(driveApi, USER_POEM, data);
+      userPoemResponse = await _backup(driveApi, USER_POEM, data);
+      _dataChangeProvider.updateUserPoem(value: false);
     }
 
-    return userConfigResponse && userDataResponse;
+    if (_dataChangeProvider.isUserProfileChanged) {
+      final data = await _bckupDataProvider.getUserProfileData();
+      userProfileResponse = await _backup(
+        driveApi,
+        USER_PROFILE,
+        Future.value(data?.toList(growable: false)),
+        "png"
+      );
+      _dataChangeProvider.updateUserProfile(value: false);
+    }
+
+    return userConfigResponse && userPoemResponse && userProfileResponse;
   }
 
   /// Will backup file on appDataFolder
   Future<bool> _backup(
-      DriveApi driveApi, String fileName, Future<List<int>> data) async {
+    DriveApi driveApi,
+    String fileName,
+    Future<List<int>> data, [
+    String extension = "json",
+  ]) async {
     final Stream<List<int>> mediaStream = data.asStream();
-    final media = Media(mediaStream, null, contentType: "application/json");
+    final media = Media(mediaStream, null);
     final driveFile = File()
-      ..name = "$fileName.json"
+      ..name = "$fileName.$extension"
       ..parents = ["appDataFolder"];
 
     File? result;
@@ -149,17 +167,19 @@ class BackupDataProvider {
   Future<List<int>> getUserConfigData() async {
     final config = locator<Config>();
     final theme = _read(themeProvider.notifier).themeString;
-    final profileData = config.profile == null
-        ? null
-        : base64Encode(io.File(config.profile!).readAsBytesSync());
 
     final backupModel = BackupModel(
       name: config.name,
       theme: theme,
-      profile: profileData,
     );
 
     return backupModel.toJson().codeUnits;
+  }
+
+  Future<Uint8List?> getUserProfileData() async {
+    final profile = locator<Config>().profile;
+    if (profile == null) return null;
+    return io.File(profile).readAsBytes();
   }
 
   Future<List<int>> getUserPoemData() async {

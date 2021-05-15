@@ -4,23 +4,19 @@ import 'dart:convert';
 class BackupModel {
   final String? name;
   final String? theme;
-  final String? profile;
 
   BackupModel({
     required this.name,
     required this.theme,
-    required this.profile,
   });
 
   BackupModel copyWith({
     String? name,
     String? theme,
-    String? profile,
   }) {
     return BackupModel(
       name: name ?? this.name,
       theme: theme ?? this.theme,
-      profile: profile ?? this.profile,
     );
   }
 
@@ -28,7 +24,6 @@ class BackupModel {
     return {
       'name': name,
       'theme': theme,
-      'profile': profile,
     };
   }
 
@@ -36,7 +31,6 @@ class BackupModel {
     return BackupModel(
       name: map['name'] as String,
       theme: map['theme'] as String?,
-      profile: map['profile'] as String?,
     );
   }
 
@@ -47,21 +41,18 @@ class BackupModel {
 
   @override
   String toString() {
-    return '''BackupModel(name: $name, theme: $theme, profile: $profile)''';
+    return '''BackupModel(name: $name, theme: $theme)''';
   }
 
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
 
-    return other is BackupModel &&
-        other.name == name &&
-        other.theme == theme &&
-        other.profile == profile;
+    return other is BackupModel && other.name == name && other.theme == theme;
   }
 
   @override
   int get hashCode {
-    return name.hashCode ^ theme.hashCode ^ profile.hashCode;
+    return name.hashCode ^ theme.hashCode;
   }
 }
