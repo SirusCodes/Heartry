@@ -18,7 +18,8 @@ class ThemeProvider extends StateNotifier<ThemeType> {
   static ThemeType _getTheme(SharedPreferences sharedPreferences) =>
       stringToTheme(sharedPreferences.getString(_themeKey));
 
-  String? get themeString => sharedPreferences.getString(_themeKey);
+  String get themeString =>
+      sharedPreferences.getString(_themeKey) ?? "System Default";
 
   void setTheme(ThemeType theme) {
     sharedPreferences.setString(_themeKey, themeToString(theme));
