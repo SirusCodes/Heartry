@@ -1,5 +1,4 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../utils/theme.dart';
 import 'shared_prefs_provider.dart';
@@ -9,20 +8,16 @@ final themeProvider = StateNotifierProvider<ThemeProvider, ThemeType>((ref) {
 });
 
 class ThemeProvider extends StateNotifier<ThemeType> {
-  ThemeProvider(this.sharedPreferences) : super(_getTheme(sharedPreferences));
+  ThemeProvider(this.sharedPrefsProvider)
+      : super(_getTheme(sharedPrefsProvider));
 
-  static const _themeKey = "theme";
+  final SharedPrefsProvider sharedPrefsProvider;
 
-  final SharedPreferences sharedPreferences;
-
-  static ThemeType _getTheme(SharedPreferences sharedPreferences) =>
-      stringToTheme(sharedPreferences.getString(_themeKey));
-
-  String get themeString =>
-      sharedPreferences.getString(_themeKey) ?? "System Default";
+  static ThemeType _getTheme(SharedPrefsProvider sharedPreferences) =>
+      stringToTheme(sharedPreferences.theme);
 
   void setTheme(ThemeType theme) {
-    sharedPreferences.setString(_themeKey, themeToString(theme));
+    sharedPrefsProvider.theme = themeToString(theme);
     state = theme;
   }
 }

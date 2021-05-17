@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:googleapis/drive/v3.dart';
 import 'package:mime_type/mime_type.dart' as m;
 import 'package:path/path.dart' as p;
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../database/config.dart';
 import '../database/database.dart';
@@ -15,7 +14,6 @@ import '../utils/google_auth_client.dart';
 import 'data_change_provider.dart';
 import 'google_sign_in_provider.dart';
 import 'shared_prefs_provider.dart';
-import 'theme_provider.dart';
 
 final backupManagerProvider = Provider<BackupManagerProvider>((ref) {
   return BackupManagerProvider(ref.read);
@@ -42,7 +40,7 @@ class BackupManagerProvider {
     final driveApi = DriveApi(authenticateClient);
 
     final sharedPrefs = _read(sharedPrefsProvider);
-    final theme = _read(themeProvider.notifier).themeString;
+    final theme = sharedPrefs.theme;
 
     final backupConfig = BackupConfig(
       driveApi,
@@ -84,21 +82,24 @@ abstract class BackupData {
   /// File name with extension (filename.json)
   String get fileName;
 
-  /// Shared pref key to store revision of the backup
-  String get sharedPrefKey;
-
   /// if there is a change in the data
   bool get isChanged;
+
+  /// old drive file id
+  String? get oldId;
 
   /// Content type of the file defaults to ["application/json"]
   String get contentType => "application/json";
 
   final DriveApi driveApi;
-  final SharedPreferences sharedPrefs;
+  final SharedPrefsProvider sharedPrefs;
 
   /// To update the status of change i.e. after backup change should false to
   /// stop from updating forever
   void updateSharedPref();
+
+  /// will return new saved Id
+  Future<bool> updateNewId(String newId);
 
   /// Check if the needs to backup if yes then start of else
   /// return true;
@@ -138,8 +139,7 @@ abstract class BackupData {
   /// Delete the older file to remove garbage files and
   /// update the ids of new in shared preferences
   Future<bool> _deleteOldAndUpdateNew(String newFileId) async {
-    final oldFileId = sharedPrefs.getString(sharedPrefKey);
-
+    final oldFileId = oldId;
     if (oldFileId != null) {
       try {
         await driveApi.files.delete(oldFileId);
@@ -148,14 +148,14 @@ abstract class BackupData {
       }
     }
 
-    return sharedPrefs.setString(sharedPrefKey, newFileId);
+    return updateNewId(newFileId);
   }
 }
 
 class BackupConfig extends BackupData {
   BackupConfig(
     DriveApi driveApi,
-    SharedPreferences sharedPrefs,
+    SharedPrefsProvider sharedPrefs,
     this.theme,
     this.dataChangeProvider,
   ) : super(driveApi, sharedPrefs);
@@ -177,19 +177,23 @@ class BackupConfig extends BackupData {
   String get fileName => "$USER_CONFIG.json";
 
   @override
-  String get sharedPrefKey => "${USER_CONFIG}_key";
-
-  @override
   bool get isChanged => dataChangeProvider.isUserConfigChanged || true;
 
   @override
   void updateSharedPref() => dataChangeProvider.updateUserConfig(value: false);
+
+  @override
+  String? get oldId => sharedPrefs.getUserConfigFile();
+
+  @override
+  Future<bool> updateNewId(String newId) =>
+      sharedPrefs.setUserConfigFile(newId);
 }
 
 class BackupProfile extends BackupData {
   BackupProfile(
     DriveApi driveApi,
-    SharedPreferences sharedPrefs,
+    SharedPrefsProvider sharedPrefs,
     this.dataChangeProvider,
   ) : super(driveApi, sharedPrefs);
 
@@ -218,16 +222,20 @@ class BackupProfile extends BackupData {
   bool get isChanged => dataChangeProvider.isUserProfileChanged || true;
 
   @override
-  String get sharedPrefKey => "${USER_PROFILE}_key";
+  void updateSharedPref() => dataChangeProvider.updateUserProfile(value: false);
 
   @override
-  void updateSharedPref() => dataChangeProvider.updateUserProfile(value: false);
+  String? get oldId => sharedPrefs.getUserProfileFile();
+
+  @override
+  Future<bool> updateNewId(String newId) =>
+      sharedPrefs.setUserProfileFile(newId);
 }
 
 class BackupPoem extends BackupData {
   BackupPoem(
     DriveApi driveApi,
-    SharedPreferences sharedPrefs,
+    SharedPrefsProvider sharedPrefs,
     this.dataChangeProvider,
   ) : super(driveApi, sharedPrefs);
 
@@ -246,8 +254,11 @@ class BackupPoem extends BackupData {
   bool get isChanged => dataChangeProvider.isUserPoemChanged || true;
 
   @override
-  String get sharedPrefKey => "${USER_POEM}_key";
+  void updateSharedPref() => dataChangeProvider.updateUserPoem(value: false);
 
   @override
-  void updateSharedPref() => dataChangeProvider.updateUserPoem(value: false);
+  String? get oldId => sharedPrefs.getUserPoemFile();
+
+  @override
+  Future<bool> updateNewId(String newId) => sharedPrefs.setUserPoemFile(newId);
 }

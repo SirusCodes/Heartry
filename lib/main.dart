@@ -2,11 +2,11 @@ import 'package:catcher/catcher.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:heartry/providers/shared_prefs_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'database/config.dart';
 import 'init_get_it.dart';
+import 'providers/shared_prefs_provider.dart';
 import 'providers/theme_provider.dart';
 import 'screens/intro_screen/intro_screen.dart';
 import 'screens/poems_screen/poems_screen.dart';
@@ -29,7 +29,9 @@ Future<void> main() async {
     releaseConfig: releaseCatcher,
     profileConfig: releaseCatcher,
     rootWidget: ProviderScope(
-      overrides: [sharedPrefsProvider.overrideWithValue(_sharedPrefs)],
+      overrides: [
+        sharedPrefsProvider.overrideWithValue(SharedPrefsProvider(_sharedPrefs))
+      ],
       child: MyApp(),
     ),
   );

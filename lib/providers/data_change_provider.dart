@@ -1,8 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:heartry/utils/contants.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import 'shared_prefs_provider.dart';
+
+// ignore_for_file: use_setters_to_change_properties
 
 final dataChangeProvider = Provider<DataChangeProvider>((ref) {
   return DataChangeProvider(ref.read);
@@ -15,29 +15,23 @@ class DataChangeProvider {
 
   final Reader _read;
 
-  late SharedPreferences _sharedPrefs;
+  late SharedPrefsProvider _sharedPrefs;
 
-  bool get isUserConfigChanged {
-    return _sharedPrefs.getBool(USER_CONFIG) ?? false;
-  }
+  bool get isUserConfigChanged => _sharedPrefs.userConfigChange;
 
-  bool get isUserProfileChanged {
-    return _sharedPrefs.getBool(USER_PROFILE) ?? false;
-  }
+  bool get isUserProfileChanged => _sharedPrefs.userProfileChange;
 
-  bool get isUserPoemChanged {
-    return _sharedPrefs.getBool(USER_POEM) ?? false;
-  }
+  bool get isUserPoemChanged => _sharedPrefs.userPoemChange;
 
   void updateUserConfig({required bool value}) {
-    _sharedPrefs.setBool(USER_CONFIG, value);
+    _sharedPrefs.userConfigChange = value;
   }
 
   void updateUserProfile({required bool value}) {
-    _sharedPrefs.setBool(USER_PROFILE, value);
+    _sharedPrefs.userProfileChange = value;
   }
 
   void updateUserPoem({required bool value}) {
-    _sharedPrefs.setBool(USER_POEM, value);
+    _sharedPrefs.userPoemChange = value;
   }
 }
