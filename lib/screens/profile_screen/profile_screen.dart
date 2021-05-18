@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:heartry/providers/shared_prefs_provider.dart';
 
 import '../../database/config.dart';
 import '../../init_get_it.dart';
@@ -24,12 +25,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   late String _name;
 
-  final Config _config = locator<Config>();
-
   @override
-  void initState() {
-    super.initState();
-    _name = _config.name!;
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _name = context.read(sharedPrefsProvider).name!;
     _nameController = TextEditingController(text: _name);
   }
 
@@ -60,7 +59,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             return Future.value(false);
           }
           if (_name != _nameController.text)
-            _config.name = _nameController.text;
+            context.read(sharedPrefsProvider).name = _nameController.text;
 
           return Future.value(true);
         },

@@ -1,23 +1,31 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:share/share.dart';
 
-import '../database/config.dart';
-import '../init_get_it.dart';
 import '../screens/image_screen/image_screen.dart';
+import 'shared_prefs_provider.dart';
 
-class ShareHelper {
-  static void shareAsText({required String? title, required String poem}) {
+final shareHelperProvider = Provider<ShareHelperProvider>((ref) {
+  return ShareHelperProvider(ref.read(sharedPrefsProvider));
+});
+
+class ShareHelperProvider {
+  ShareHelperProvider(this._sharedPrefs);
+
+  final SharedPrefsProvider _sharedPrefs;
+
+  void shareAsText({required String? title, required String poem}) {
     String msg = "";
 
     if (title != null && title.isNotEmpty) msg += "$title\n\n";
 
     msg += poem;
-    msg += "\n\n-${locator<Config>().name}";
+    msg += "\n\n-${_sharedPrefs.name}";
 
     Share.share(msg);
   }
 
-  static void shareAsImage(
+  void shareAsImage(
     BuildContext context, {
     required String? title,
     required String poem,
@@ -28,7 +36,7 @@ class ShareHelper {
         builder: (_) => ImageScreen(
           title: title,
           poem: poem.split("\n"),
-          poet: locator<Config>().name,
+          poet: _sharedPrefs.name,
         ),
       ),
     );

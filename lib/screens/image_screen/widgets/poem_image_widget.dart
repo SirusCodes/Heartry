@@ -3,14 +3,13 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../database/config.dart';
-import '../../../init_get_it.dart';
 import '../../../providers/color_gradient_provider.dart';
+import '../../../providers/shared_prefs_provider.dart';
 import '../../../providers/text_providers.dart';
 import 'poem_image_card.dart';
 
-class PoemImageWidget extends StatelessWidget {
-  PoemImageWidget({
+class PoemImageWidget extends ConsumerWidget {
+  const PoemImageWidget({
     Key? key,
     required this.title,
     required this.poem,
@@ -22,10 +21,9 @@ class PoemImageWidget extends StatelessWidget {
   final int page, total;
   final String title, poet;
 
-  final _imagePath = locator<Config>().profile;
-
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, ScopedReader watch) {
+    final _imagePath = watch(sharedPrefsProvider).profile;
     return AspectRatio(
       aspectRatio: 9 / 16,
       child: SizedBox.expand(
@@ -118,7 +116,7 @@ class PoemImageWidget extends StatelessWidget {
                   right: 20,
                   child: CircleAvatar(
                     radius: 30,
-                    backgroundImage: FileImage(File(_imagePath!)),
+                    backgroundImage: FileImage(File(_imagePath)),
                   ),
                 ),
             ],

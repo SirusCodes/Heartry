@@ -13,6 +13,7 @@ import 'package:path_provider/path_provider.dart';
 import '../../database/config.dart';
 import '../../database/database.dart';
 import '../../init_get_it.dart';
+import '../../providers/shared_prefs_provider.dart';
 import '../../widgets/privacy_statement.dart';
 import '../poems_screen/poems_screen.dart';
 
@@ -109,7 +110,7 @@ class __NamePageState extends State<_NamePage> {
                     return null;
                   },
                   onSaved: (newValue) {
-                    locator<Config>().name = newValue;
+                    context.read(sharedPrefsProvider).name = newValue;
                   },
                   textCapitalization: TextCapitalization.words,
                   decoration: const InputDecoration(

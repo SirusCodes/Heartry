@@ -44,51 +44,18 @@ Future<void> main() async {
   );
 }
 
-class MyApp extends StatefulWidget {
+class MyApp extends ConsumerWidget {
   @override
-  _MyAppState createState() => _MyAppState();
-}
-
-class _MyAppState extends State<MyApp> {
-  late Future<void> _initSharedPrefs;
-
-  @override
-  void initState() {
-    super.initState();
-    _initSharedPrefs = locator<Config>().init();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Consumer(
-      builder: (context, watch, child) {
-        final theme = watch(themeProvider);
-        return MaterialApp(
-          title: "Heartry",
-          navigatorKey: Catcher.navigatorKey,
-          themeMode: _getThemeMode(theme),
-          theme: lightTheme,
-          darkTheme: _getDarkTheme(theme),
-          home: FutureBuilder(
-            future: _initSharedPrefs,
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.done) {
-                final _name = locator<Config>().name;
-
-                if (_name != null) return const PoemScreen();
-
-                return const IntroScreen();
-              }
-
-              return const Material(
-                child: Center(
-                  child: CircularProgressIndicator(),
-                ),
-              );
-            },
-          ),
-        );
-      },
+  Widget build(BuildContext context, ScopedReader watch) {
+    final theme = watch(themeProvider);
+    final config = watch(configProvider);
+    return MaterialApp(
+      title: "Heartry",
+      navigatorKey: Catcher.navigatorKey,
+      themeMode: _getThemeMode(theme),
+      theme: lightTheme,
+      darkTheme: _getDarkTheme(theme),
+      home: config.name != null ? const PoemScreen() : const IntroScreen(),
     );
   }
 

@@ -20,6 +20,8 @@ class SharedPrefsProvider {
   static const _userConfigFileKey = "${USER_CONFIG}_file";
   static const _userProfileFileKey = "${USER_PROFILE}_file";
   static const _userPoemFileKey = "${USER_POEM}_file";
+  static const _nameKey = "name";
+  static const _profileKey = "profile";
 
   bool get userConfigChange => _sharedPrefs.getBool(_userConfigKey) ?? false;
   set userConfigChange(bool value) {
@@ -62,4 +64,22 @@ class SharedPrefsProvider {
   String? getUserPoemFile() => _sharedPrefs.getString(_userPoemFileKey);
   Future<bool> setUserPoemFile(String value) =>
       _sharedPrefs.setString(_userPoemFileKey, value);
+
+  set name(String? value) {
+    if (value == null) return;
+
+    _sharedPrefs.setString(_nameKey, value);
+  }
+
+  String? get name => _sharedPrefs.getString(_nameKey);
+
+  set profile(String? value) {
+    if (value == null) {
+      _sharedPrefs.remove(_profileKey);
+      return;
+    }
+    _sharedPrefs.setString(_profileKey, value);
+  }
+
+  String? get profile => _sharedPrefs.getString(_profileKey);
 }

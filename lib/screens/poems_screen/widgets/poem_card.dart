@@ -6,7 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../database/database.dart';
 import '../../../init_get_it.dart';
 import '../../../providers/list_grid_provider.dart';
-import '../../../utils/share_helper.dart';
+import '../../../providers/share_helper_provider.dart';
 import '../../../widgets/share_option_list.dart';
 import '../../reader_screen/reader_screen.dart';
 import '../../writing_screen/writing_screen.dart';
@@ -149,15 +149,15 @@ class _PoemCardState extends State<PoemCard>
         ),
       ),
       builder: (context) => ShareOptionList(
-        onShareAsImage: () => ShareHelper.shareAsImage(
-          context,
-          title: widget.model.title,
-          poem: widget.model.poem,
-        ),
-        onShareAsText: () => ShareHelper.shareAsText(
-          title: widget.model.title,
-          poem: widget.model.poem,
-        ),
+        onShareAsImage: () => context.read(shareHelperProvider).shareAsImage(
+              context,
+              title: widget.model.title,
+              poem: widget.model.poem,
+            ),
+        onShareAsText: () => context.read(shareHelperProvider).shareAsText(
+              title: widget.model.title,
+              poem: widget.model.poem,
+            ),
       ),
     );
   }

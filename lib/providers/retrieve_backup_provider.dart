@@ -1,5 +1,13 @@
+import 'dart:convert';
+import 'dart:io' as io;
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:googleapis/drive/v3.dart';
+import 'package:heartry/database/database.dart';
+import 'package:heartry/providers/shared_prefs_provider.dart';
+import 'package:path_provider/path_provider.dart';
+
+import 'package:path/path.dart' as p;
 
 import '../database/config.dart';
 import '../init_get_it.dart';
@@ -30,25 +38,70 @@ class RetrieveBackupProvider {
 
     if (files != null && files.isEmpty) return;
 
+    final sharedPrefs = _read(sharedPrefsProvider);
+
     final userConfig = files?.firstWhere(
       (file) => file.name == "$USER_CONFIG.json",
     );
 
     if (userConfig != null) {
-      final fileData = await _getFileData(userConfig.id!) as Media;
-      final dataStore = <int>[];
-
-      fileData.stream.listen(
-        (data) => dataStore.addAll(data),
-        onDone: () {
-          final backupModel = _getUserConfig(dataStore);
-          locator<Config>().name = backupModel.name;
-          _read(themeProvider.notifier)
-              .setTheme(stringToTheme(backupModel.theme));
-        },
-        cancelOnError: true,
-      );
+      _extractAndSaveData(userConfig.id!, (data) {
+        final backupModel = _getUserConfig(data);
+        sharedPrefs.name = backupModel.name;
+        _read(themeProvider.notifier)
+            .setTheme(stringToTheme(backupModel.theme));
+      });
     }
+
+    final userPoems = files?.firstWhere(
+      (file) => file.name == "$USER_POEM.json",
+    );
+
+    if (userPoems != null) {
+      _extractAndSaveData(userPoems.id!, (data) {
+        final poemModels = _getUserPoems(data);
+        locator<Database>().insertAllPoem(poemModels);
+      });
+    }
+
+    final userProfile = files?.firstWhere(
+      (file) => file.name!.contains(USER_PROFILE),
+    );
+
+    if (userProfile != null) {
+      _extractAndSaveData(userProfile.id!, (data) async {
+        imageCache!.clear();
+
+        final directory = await getApplicationDocumentsDirectory();
+
+        final imageSaved = p.join(directory.path, userProfile.name);
+        final image = await io.File(imageSaved).writeAsBytes(data);
+
+        _read(sharedPrefsProvider).profile = image.path;
+      });
+    }
+  }
+
+  Future<void> _extractAndSaveData(
+    String id,
+    Function(List<int> data) onDoneSave,
+  ) async {
+    final fileData = await _getFileData(id) as Media;
+    final dataStore = <int>[];
+
+    fileData.stream.listen(
+      (data) => dataStore.addAll(data),
+      onDone: () => onDoneSave.call(dataStore),
+      cancelOnError: true,
+    );
+  }
+
+  List<PoemModel> _getUserPoems(List<int> data) {
+    final jsonData = String.fromCharCodes(data);
+    final list = json.decode(jsonData) as List;
+    return list
+        .map((e) => PoemModel.fromJson(e as Map<String, dynamic>))
+        .toList();
   }
 
   BackupModel _getUserConfig(List<int> data) {

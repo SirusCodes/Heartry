@@ -2,10 +2,11 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../database/database.dart';
 import '../../init_get_it.dart';
-import '../../utils/share_helper.dart';
+import '../../providers/share_helper_provider.dart';
 import '../../utils/undo_redo.dart';
 import 'widgets/writing_bottom_app_bar.dart';
 
@@ -146,18 +147,18 @@ class _WritingScreenState extends State<WritingScreen>
                     return false;
                   },
                   onShareAsText: () {
-                    ShareHelper.shareAsText(
-                      title: _titleTextController.text,
-                      poem: undoRedo.textEditingController.text,
-                    );
+                    context.read(shareHelperProvider).shareAsText(
+                          title: _titleTextController.text,
+                          poem: undoRedo.textEditingController.text,
+                        );
                     _handleDBChanges();
                   },
                   onShareAsImage: () {
-                    ShareHelper.shareAsImage(
-                      context,
-                      title: _titleTextController.text,
-                      poem: undoRedo.textEditingController.text,
-                    );
+                    context.read(shareHelperProvider).shareAsImage(
+                          context,
+                          title: _titleTextController.text,
+                          poem: undoRedo.textEditingController.text,
+                        );
                     _handleDBChanges();
                   },
                 ),

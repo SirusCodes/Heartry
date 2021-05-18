@@ -2,9 +2,10 @@ import 'dart:io';
 
 import 'package:animated_icon_button/animated_icon_button.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../database/database.dart';
-import '../../../utils/share_helper.dart';
+import '../../../providers/share_helper_provider.dart';
 import '../../../widgets/share_option_list.dart';
 import '../../writing_screen/writing_screen.dart';
 
@@ -89,15 +90,17 @@ class _ReaderScreenBottomAppBarState extends State<ReaderScreenBottomAppBar>
           SizeTransition(
             sizeFactor: _iconController,
             child: ShareOptionList(
-              onShareAsImage: () => ShareHelper.shareAsImage(
-                context,
-                title: widget.model.title,
-                poem: widget.model.poem,
-              ),
-              onShareAsText: () => ShareHelper.shareAsText(
-                title: widget.model.title,
-                poem: widget.model.poem,
-              ),
+              onShareAsImage: () =>
+                  context.read(shareHelperProvider).shareAsImage(
+                        context,
+                        title: widget.model.title,
+                        poem: widget.model.poem,
+                      ),
+              onShareAsText: () =>
+                  context.read(shareHelperProvider).shareAsText(
+                        title: widget.model.title,
+                        poem: widget.model.poem,
+                      ),
             ),
           )
         ],

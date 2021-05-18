@@ -165,9 +165,8 @@ class BackupConfig extends BackupData {
 
   @override
   Future<List<int>?> get data async {
-    final config = locator<Config>();
     final backupModel = BackupModel(
-      name: config.name,
+      name: sharedPrefs.name,
       theme: theme,
     );
     return backupModel.toJson().codeUnits;
@@ -202,7 +201,7 @@ class BackupProfile extends BackupData {
 
   @override
   Future<List<int>?> get data async {
-    final profile = locator<Config>().profile;
+    final profile = sharedPrefs.profile;
     if (profile == null) return null;
     final file = io.File(profile);
     final extension = p.extension(file.path);
