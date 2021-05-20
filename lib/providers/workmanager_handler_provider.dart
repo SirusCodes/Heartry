@@ -21,7 +21,7 @@ class WorkManagerHandlerProvider {
     Workmanager().executeTask((taskName, inputData) {
       switch (taskName) {
         case BackupManagerProvider.key:
-          return _backupManagerProvider.run();
+          return _backupManagerProvider.run(forced: false);
         default:
           return Future.value(false);
       }

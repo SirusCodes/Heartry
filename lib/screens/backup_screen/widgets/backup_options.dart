@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:heartry/providers/last_backup_provider.dart';
 
 import '../../../extension/extensions.dart';
 import '../../../providers/backup_manager_provider.dart';
@@ -40,14 +41,47 @@ class BackupInfo extends StatelessWidget {
                 style: Theme.of(context).textTheme.caption,
               ),
               const SizedBox(height: 10),
-              const Align(
-                alignment: Alignment.centerLeft,
-                child: Text("Last backup:"),
+              Consumer(
+                builder: (context, watch, child) {
+                  final lastBackup = watch(lastBackupProvider);
+                  String formattedString;
+                  if (lastBackup == null)
+                    formattedString = "Never";
+                  else {
+                    final dt = lastBackup.toLocal();
+                    formattedString =
+                        '''${dt.day}-${dt.month}-${dt.year} ${dt.hour}:${dt.minute}''';
+                  }
+
+                  return Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text("Last backup: ${formattedString}"),
+                  );
+                },
               ),
               const SizedBox(height: 5),
               ElevatedButton.icon(
                 onPressed: () async {
-                  await context.read(backupManagerProvider).run();
+                  final result = await context
+                      .read(backupManagerProvider)
+                      .run(forced: true);
+                  String msg;
+                  if (result) {
+                    msg = "Backup was successful";
+                    context.read(lastBackupProvider.notifier).setLastBackup();
+                  } else
+                    msg = "Couldn't backup, try again";
+
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15.0),
+                      ),
+                      behavior: SnackBarBehavior.floating,
+                      margin: const EdgeInsets.all(8.0),
+                      content: Text(msg),
+                    ),
+                  );
                 },
                 icon: const Icon(Icons.backup_rounded),
                 label: const Text("Backup now"),

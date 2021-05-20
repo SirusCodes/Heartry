@@ -30,7 +30,7 @@ class BackupManagerProvider {
   late DataChangeProvider _dataChangeProvider;
 
   /// To save user data in google drive drive.
-  Future<bool> run() async {
+  Future<bool> run({required bool forced}) async {
     final authHeaders = await _read(googleSignInProvider.notifier).authHeader;
 
     if (authHeaders == null) return Future.value(false);
@@ -70,7 +70,8 @@ class BackupManagerProvider {
       (previousValue, element) => previousValue && element,
     );
 
-    if (result) sharedPrefs.lastBackupTime = DateTime.now().toUtc().toString();
+    if (!forced && result)
+      sharedPrefs.lastBackupTime = DateTime.now().toUtc().toString();
 
     return result;
   }
