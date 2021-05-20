@@ -16,7 +16,7 @@ class BackupTimeProvider extends StateNotifier<TimeOfDay> {
 
   static TimeOfDay _getBackupTime(SharedPrefsProvider sharedPrefs) {
     final storedTime = sharedPrefs.backupTime;
-    return storedTime!.parse();
+    return storedTime?.parse() ?? const TimeOfDay(hour: 2, minute: 00);
   }
 
   void setBackupTime(TimeOfDay time) {

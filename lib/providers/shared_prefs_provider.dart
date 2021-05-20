@@ -40,6 +40,7 @@ class SharedPrefsProvider {
 
   String get theme => _sharedPrefs.getString(_themeKey) ?? "System Default";
   set theme(String theme) {
+    updatedConfig();
     _sharedPrefs.setString(_themeKey, theme);
   }
 
@@ -66,6 +67,7 @@ class SharedPrefsProvider {
       _sharedPrefs.setString(_userPoemFileKey, value);
 
   set name(String? value) {
+    updatedConfig();
     if (value == null) return;
 
     _sharedPrefs.setString(_nameKey, value);
@@ -73,7 +75,10 @@ class SharedPrefsProvider {
 
   String? get name => _sharedPrefs.getString(_nameKey);
 
+  String? get profile => _sharedPrefs.getString(_profileKey);
+
   set profile(String? value) {
+    updateProfile();
     if (value == null) {
       _sharedPrefs.remove(_profileKey);
       return;
@@ -81,5 +86,33 @@ class SharedPrefsProvider {
     _sharedPrefs.setString(_profileKey, value);
   }
 
-  String? get profile => _sharedPrefs.getString(_profileKey);
+  /// Configs were updated
+  void updatedConfig() {
+    if (!userConfigChange) userConfigChange = true;
+  }
+
+  /// Configs were backup-ed
+  void backupConfig() {
+    userConfigChange = false;
+  }
+
+  /// poem was updated
+  void updatedPoem() {
+    if (!userPoemChange) userPoemChange = true;
+  }
+
+  /// poem was backup-ed
+  void backupPoem() {
+    userPoemChange = false;
+  }
+
+  /// profile was updated
+  void updateProfile() {
+    if (!userProfileChange) userProfileChange = true;
+  }
+
+  /// profile was backup-ed
+  void backupProfile() {
+    userProfileChange = false;
+  }
 }

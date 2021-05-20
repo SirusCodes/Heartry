@@ -5,7 +5,6 @@ import 'package:googleapis/drive/v3.dart';
 import 'package:mime_type/mime_type.dart' as m;
 import 'package:path/path.dart' as p;
 
-import '../database/config.dart';
 import '../database/database.dart';
 import '../init_get_it.dart';
 import '../models/backup_model.dart';
@@ -66,10 +65,14 @@ class BackupManagerProvider {
 
     final List<bool> backupResults = await Future.wait(backupResultsFuture);
 
-    return backupResults.fold<bool>(
+    final result = backupResults.fold<bool>(
       true,
       (previousValue, element) => previousValue && element,
     );
+
+    if (result) sharedPrefs.lastBackupTime = DateTime.now().toUtc().toString();
+
+    return result;
   }
 }
 
@@ -176,7 +179,7 @@ class BackupConfig extends BackupData {
   String get fileName => "$USER_CONFIG.json";
 
   @override
-  bool get isChanged => dataChangeProvider.isUserConfigChanged || true;
+  bool get isChanged => dataChangeProvider.isUserConfigChanged;
 
   @override
   void updateSharedPref() => dataChangeProvider.updateUserConfig(value: false);
@@ -218,7 +221,7 @@ class BackupProfile extends BackupData {
   String get contentType => _contentType;
 
   @override
-  bool get isChanged => dataChangeProvider.isUserProfileChanged || true;
+  bool get isChanged => dataChangeProvider.isUserProfileChanged;
 
   @override
   void updateSharedPref() => dataChangeProvider.updateUserProfile(value: false);
@@ -250,7 +253,7 @@ class BackupPoem extends BackupData {
   String get fileName => "$USER_POEM.json";
 
   @override
-  bool get isChanged => dataChangeProvider.isUserPoemChanged || true;
+  bool get isChanged => dataChangeProvider.isUserPoemChanged;
 
   @override
   void updateSharedPref() => dataChangeProvider.updateUserPoem(value: false);

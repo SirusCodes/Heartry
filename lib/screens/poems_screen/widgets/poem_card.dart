@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:heartry/providers/shared_prefs_provider.dart';
 
 import '../../../database/database.dart';
 import '../../../init_get_it.dart';
@@ -197,7 +198,14 @@ class _PoemCardState extends State<PoemCard>
   Future<void> _delete() async {
     final result = await locator<Database>().deletePoem(widget.model);
 
-    final String msg = result == 0 ? "Failed to delete" : "Deleted";
+    String msg;
+
+    if (result == 0) {
+      msg = "Failed to delete";
+    } else {
+      context.read(sharedPrefsProvider).updatedPoem();
+      msg = "Deleted";
+    }
 
     Navigator.pop(context);
 

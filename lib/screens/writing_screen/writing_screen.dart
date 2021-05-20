@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:heartry/providers/shared_prefs_provider.dart';
 
 import '../../database/database.dart';
 import '../../init_get_it.dart';
@@ -32,6 +33,8 @@ class _WritingScreenState extends State<WritingScreen>
 
   late TextEditingController _titleTextController;
 
+  late SharedPrefsProvider _sharedPrefs;
+
   @override
   void initState() {
     super.initState();
@@ -47,6 +50,7 @@ class _WritingScreenState extends State<WritingScreen>
     WidgetsBinding.instance!.addPostFrameCallback((_) {
       undoRedo.registerChange(undoRedo.textEditingController.text);
     });
+    _sharedPrefs = context.read(sharedPrefsProvider);
 
     WidgetsBinding.instance!.addObserver(this);
   }
@@ -195,6 +199,7 @@ class _WritingScreenState extends State<WritingScreen>
 
   void _handleDBChanges() {
     if (_hasChanged && _isNotEmpty) {
+      _sharedPrefs.updatedPoem();
       if (_poemModel == null)
         _save();
       else
