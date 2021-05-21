@@ -55,7 +55,7 @@ class BackupInfo extends StatelessWidget {
 
                   return Align(
                     alignment: Alignment.centerLeft,
-                    child: Text("Last backup: ${formattedString}"),
+                    child: Text("Last backup: $formattedString"),
                   );
                 },
               ),
