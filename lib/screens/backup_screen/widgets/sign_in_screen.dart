@@ -21,9 +21,10 @@ class SignInScreen extends StatelessWidget {
               children: const <TextSpan>[
                 TextSpan(
                   text: "Please sign in to start back-up.\n",
-                  style: TextStyle(fontSize: 20, height: 3),
+                  style: TextStyle(fontSize: 20),
                 ),
                 TextSpan(text: '''
+                
 We will use your Google drive to save your data.
 But rest assured, we won't be able to access any other data.
 '''),

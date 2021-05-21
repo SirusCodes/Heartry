@@ -13,6 +13,8 @@ import 'screens/poems_screen/poems_screen.dart';
 import 'utils/custom_email_report_handler.dart';
 import 'utils/theme.dart';
 
+GlobalKey<NavigatorState>? get navigatorKey => Catcher.navigatorKey;
+
 Future<void> main() async {
   initGetIt();
   WidgetsFlutterBinding.ensureInitialized();
@@ -51,7 +53,7 @@ class MyApp extends ConsumerWidget {
     final config = watch(configProvider);
     return MaterialApp(
       title: "Heartry",
-      navigatorKey: Catcher.navigatorKey,
+      navigatorKey: navigatorKey,
       themeMode: _getThemeMode(theme),
       theme: lightTheme,
       darkTheme: _getDarkTheme(theme),
