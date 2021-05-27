@@ -1,15 +1,13 @@
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:heartry/database/database.dart';
-import 'package:heartry/providers/shared_prefs_provider.dart';
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:heartry/screens/poems_screen/poems_screen.dart';
-import 'package:heartry/widgets/privacy_statement.dart';
 
+import '../../../database/database.dart';
 import '../../../init_get_it.dart';
+import '../../../providers/shared_prefs_provider.dart';
+import '../../../widgets/privacy_statement.dart';
+import '../../poems_screen/poems_screen.dart';
 
 class NameWidget extends StatefulWidget {
   const NameWidget({Key? key}) : super(key: key);
@@ -106,26 +104,26 @@ class _NameWidgetState extends State<NameWidget> {
                 const SizedBox(height: 15),
                 _showButton
                     ? ElevatedButton(
-                  onPressed: () async {
-                    if (_formKey.currentState!.validate()) {
-                      _formKey.currentState!.save();
-                      setState(() {
-                        _showButton = false;
-                      });
-                      await _addDetailsInDB();
-                      Navigator.pushReplacement<void, void>(
-                        context,
-                        CupertinoPageRoute(
-                          builder: (_) => const PoemScreen(),
-                        ),
-                      );
-                    }
-                  },
-                  child: const Text("Let's Go!"),
-                )
+                        onPressed: () async {
+                          if (_formKey.currentState!.validate()) {
+                            _formKey.currentState!.save();
+                            setState(() {
+                              _showButton = false;
+                            });
+                            await _addDetailsInDB();
+                            Navigator.pushReplacement<void, void>(
+                              context,
+                              CupertinoPageRoute(
+                                builder: (_) => const PoemScreen(),
+                              ),
+                            );
+                          }
+                        },
+                        child: const Text("Let's Go!"),
+                      )
                     : const Center(
-                  child: CircularProgressIndicator(),
-                ),
+                        child: CircularProgressIndicator(),
+                      ),
               ],
             ),
           ),
@@ -190,10 +188,10 @@ You can share poem in 2 ways.
   }
 
   Future<void> _insertPoem(
-      Database db, {
-        required String title,
-        required String poem,
-      }) async {
+    Database db, {
+    required String title,
+    required String poem,
+  }) async {
     await db.insertPoem(
       PoemModel(
         title: title,

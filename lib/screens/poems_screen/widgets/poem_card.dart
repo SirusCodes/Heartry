@@ -2,12 +2,12 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:heartry/providers/shared_prefs_provider.dart';
 
 import '../../../database/database.dart';
 import '../../../init_get_it.dart';
 import '../../../providers/list_grid_provider.dart';
 import '../../../providers/share_helper_provider.dart';
+import '../../../providers/shared_prefs_provider.dart';
 import '../../../widgets/share_option_list.dart';
 import '../../reader_screen/reader_screen.dart';
 import '../../writing_screen/writing_screen.dart';

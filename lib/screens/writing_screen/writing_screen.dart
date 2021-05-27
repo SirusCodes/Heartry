@@ -3,11 +3,11 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:heartry/providers/shared_prefs_provider.dart';
 
 import '../../database/database.dart';
 import '../../init_get_it.dart';
 import '../../providers/share_helper_provider.dart';
+import '../../providers/shared_prefs_provider.dart';
 import '../../utils/undo_redo.dart';
 import 'widgets/writing_bottom_app_bar.dart';
 

@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io' as io;
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -209,7 +210,7 @@ class BackupProfile extends BackupData {
     if (profile == null) return null;
     final file = io.File(profile);
     final extension = p.extension(file.path);
-    _fileName = "profile$extension";
+    _fileName = "$USER_PROFILE$extension";
     _contentType = m.mime(file.path) ?? "image/*";
     final fileData = await file.readAsBytes();
     return fileData.toList(growable: false);
@@ -247,7 +248,9 @@ class BackupPoem extends BackupData {
   @override
   Future<List<int>?> get data async {
     final poems = await locator<Database>().poemsFuture;
-    return poems.toString().codeUnits;
+    final data = poems.map((e) => e.toJson()).toList();
+    final jsonData = json.encode(data);
+    return jsonData.codeUnits;
   }
 
   @override

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 import '../../../providers/google_sign_in_provider.dart';
+import '../../../providers/retrieve_backup_provider.dart';
 
 class BackupOrRestoreWidget extends ConsumerWidget {
   const BackupOrRestoreWidget({Key? key}) : super(key: key);
@@ -9,14 +11,33 @@ class BackupOrRestoreWidget extends ConsumerWidget {
   @override
   Widget build(BuildContext context, ScopedReader watch) {
     final _googleSignIn = watch(googleSignInProvider);
-    return Container(
-      color: Colors.deepPurple.shade400,
-      child: _googleSignIn.data?.value != null
-          ? const _CompletedWidget(
-              msg:
-                  '''Now we take backup periodically to change go to settings>backup''',
-            )
-          : const _SignInIntroWidget(),
+    return ProviderListener(
+      provider: googleSignInProvider,
+      onChange: (context, value) async {
+        if (value is AsyncData<GoogleSignInAccount?>) {
+          context
+              .read(retrieveBackupProvider)
+              .saveToDB(await value.data!.value!.authHeaders);
+        } else if (value is AsyncError) {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text(value.error.toString()),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(15.0),
+            ),
+            behavior: SnackBarBehavior.floating,
+            margin: const EdgeInsets.all(8.0),
+          ));
+        }
+      },
+      child: Container(
+        color: Colors.deepPurple.shade400,
+        child: _googleSignIn.data?.value != null
+            ? const _CompletedWidget(
+                msg:
+                    '''Now we take backup periodically to change go to settings>backup''',
+              )
+            : const _SignInIntroWidget(),
+      ),
     );
   }
 }
@@ -70,7 +91,7 @@ class _SignInIntroWidget extends StatelessWidget {
                   style: TextStyle(fontSize: 20),
                 ),
                 TextSpan(text: '''
-                  
+
 We will use your Google drive to save your data.
 But rest assured, we won't be able to access any other data.
 '''),

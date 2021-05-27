@@ -3,9 +3,9 @@ import 'dart:io';
 import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:heartry/providers/shared_prefs_provider.dart';
 
 import '../../database/config.dart';
+import '../../providers/shared_prefs_provider.dart';
 import '../../widgets/c_screen_title.dart';
 import '../../widgets/only_back_button_bottom_app_bar.dart';
 import '../../widgets/profile_update_dialog.dart';
