@@ -74,7 +74,7 @@ class RetrieveBackupProvider {
         final directory = await getApplicationDocumentsDirectory();
 
         final imageSaved = p.join(directory.path, userProfile.name);
-        final image = await  io.File(imageSaved).writeAsBytes(data);
+        final image = await io.File(imageSaved).writeAsBytes(data);
 
         _read(sharedPrefsProvider).profile = image.path;
       });

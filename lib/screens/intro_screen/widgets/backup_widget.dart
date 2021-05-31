@@ -14,7 +14,8 @@ class BackupOrRestoreWidget extends ConsumerWidget {
     return ProviderListener(
       provider: googleSignInProvider,
       onChange: (context, value) async {
-        if (value is AsyncData<GoogleSignInAccount?>) {
+        if (value is AsyncData<GoogleSignInAccount?> &&
+            value.data!.value != null) {
           context
               .read(retrieveBackupProvider)
               .saveToDB(await value.data!.value!.authHeaders);

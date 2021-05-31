@@ -4,20 +4,26 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:googleapis/drive/v3.dart' as drive;
+import 'package:heartry/providers/shared_prefs_provider.dart';
 
 final googleSignInProvider = StateNotifierProvider<GoogleSignInProvider,
     AsyncValue<GoogleSignInAccount?>>((ref) {
-  return GoogleSignInProvider();
+  return GoogleSignInProvider(ref.read);
 });
 
 class GoogleSignInProvider
     extends StateNotifier<AsyncValue<GoogleSignInAccount?>> {
-  GoogleSignInProvider()
-      : googleSignIn = GoogleSignIn(scopes: [drive.DriveApi.driveAppdataScope]),
+  GoogleSignInProvider(Reader read)
+      : googleSignIn = GoogleSignIn(scopes: [
+          drive.DriveApi.driveAppdataScope,
+        ]),
         super(const AsyncLoading()) {
     state = AsyncData(googleSignIn.currentUser);
+    _sharedPrefsProvider = read(sharedPrefsProvider);
   }
+
   final GoogleSignIn googleSignIn;
+  late SharedPrefsProvider _sharedPrefsProvider;
 
   Future<Map<String, String>>? get authHeader =>
       googleSignIn.currentUser?.authHeaders;
@@ -28,6 +34,7 @@ class GoogleSignInProvider
       if (user == null) {
         state = AsyncError("Please sign in to continue");
       } else {
+        _updateUserInfo(user);
         state = AsyncData(user);
       }
     } on PlatformException catch (e) {
@@ -39,9 +46,19 @@ class GoogleSignInProvider
     }
   }
 
+  void _updateUserInfo(GoogleSignInAccount user) {
+    // update name if not set
+    _sharedPrefsProvider.name ??= user.displayName;
+
+    // add profile if present and not set
+    if (user.photoUrl != null && _sharedPrefsProvider.profile == null) {
+      // TODO: Add save and update image
+    }
+  }
+
   Future<void> signOut() async {
     try {
-      state = AsyncData(await googleSignIn.signOut());
+      state = AsyncData(await googleSignIn.disconnect());
     } on PlatformException catch (e) {
       if (e.code == "status") {
         state = AsyncError(
