@@ -1,11 +1,7 @@
 import 'dart:convert';
-import 'dart:io' as io;
 
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:googleapis/drive/v3.dart';
-import 'package:path/path.dart' as p;
-import 'package:path_provider/path_provider.dart';
 
 import '../database/database.dart';
 import '../init_get_it.dart';
@@ -69,14 +65,7 @@ class RetrieveBackupProvider {
 
     if (userProfile != null) {
       _extractAndSaveData(userProfile.id!, (data) async {
-        imageCache!.clear();
-
-        final directory = await getApplicationDocumentsDirectory();
-
-        final imageSaved = p.join(directory.path, userProfile.name);
-        final image = await io.File(imageSaved).writeAsBytes(data);
-
-        _read(sharedPrefsProvider).profile = image.path;
+        _read(sharedPrefsProvider).setProfile(userProfile.name!, data);
       });
     }
   }

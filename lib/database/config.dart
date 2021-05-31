@@ -1,5 +1,7 @@
 import 'package:flutter/foundation.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:path/path.dart' as p;
 
 import '../providers/shared_prefs_provider.dart';
 
@@ -17,8 +19,14 @@ class Config extends ChangeNotifier {
 
   String? get name => _sharedPrefs.name;
 
-  set profile(String? value) {
-    _sharedPrefs.profile = value;
+  Future<void> setProfile(String filePath, List<int> imageData) async {
+    final fileName = p.basename(filePath);
+    await _sharedPrefs.setProfile(fileName, imageData);
+    notifyListeners();
+  }
+
+  Future<void> removeProfile() async {
+    _sharedPrefs.removeProfile();
     notifyListeners();
   }
 

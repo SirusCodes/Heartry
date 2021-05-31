@@ -1,10 +1,12 @@
 import 'dart:io';
 
 import 'package:flutter/services.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:googleapis/drive/v3.dart' as drive;
-import 'package:heartry/providers/shared_prefs_provider.dart';
+
+import 'shared_prefs_provider.dart';
 
 final googleSignInProvider = StateNotifierProvider<GoogleSignInProvider,
     AsyncValue<GoogleSignInAccount?>>((ref) {

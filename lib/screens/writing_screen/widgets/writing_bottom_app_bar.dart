@@ -1,8 +1,9 @@
 import 'dart:io';
 
-import 'package:animated_icon_button/animated_icon_button.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+
+import 'package:animated_icon_button/animated_icon_button.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../utils/undo_redo.dart';

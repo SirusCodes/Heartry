@@ -2,10 +2,9 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:path/path.dart' as p;
-import 'package:path_provider/path_provider.dart';
 
 import '../../../database/config.dart';
 
@@ -131,14 +130,8 @@ class ProfileWidget extends StatelessWidget {
   Future<void> _setImage(BuildContext context, PickedFile pickedImage) async {
     imageCache!.clear();
 
-    final directory = await getApplicationDocumentsDirectory();
-    final file = p.basename(pickedImage.path);
-
-    final imageSaved = p.join(directory.path, file);
-    final image = await File(imageSaved).writeAsBytes(
-      await pickedImage.readAsBytes(),
-    );
-
-    context.read(configProvider).profile = image.path;
+    context
+        .read(configProvider)
+        .setProfile(pickedImage.path, await pickedImage.readAsBytes());
   }
 }
