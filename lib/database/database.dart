@@ -1,4 +1,4 @@
-import 'package:moor/moor.dart';
+import 'package:drift/drift.dart';
 
 import 'open_connection.dart';
 
@@ -14,7 +14,7 @@ class Poem extends Table {
   TextColumn get poem => text()();
 }
 
-@UseMoor(tables: [Poem])
+@DriftDatabase(tables: [Poem])
 class Database extends _$Database {
   Database() : super(openConnection());
 

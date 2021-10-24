@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:waterfall_flow/waterfall_flow.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 import '../../../providers/list_grid_provider.dart';
 import '../../../providers/stream_poem_provider.dart';
@@ -18,23 +18,19 @@ class CBody extends ConsumerWidget {
         return _isGrid
             ? SliverPadding(
                 padding: const EdgeInsets.all(10.0),
-                sliver: SliverWaterfallFlow(
-                  gridDelegate:
-                      const SliverWaterfallFlowDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    mainAxisSpacing: 10,
-                    crossAxisSpacing: 10,
-                  ),
-                  delegate: SliverChildBuilderDelegate(
-                    (context, index) {
-                      final poem = poems[index];
-                      return PoemCard(
-                        model: poem,
-                        key: ValueKey("${poem.lastEdit}-${poem.id}"),
-                      );
-                    },
-                    childCount: poems.length,
-                  ),
+                sliver: SliverStaggeredGrid.countBuilder(
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 10,
+                  mainAxisSpacing: 10,
+                  staggeredTileBuilder: (index) => const StaggeredTile.fit(1),
+                  itemBuilder: (context, index) {
+                    final poem = poems[index];
+                    return PoemCard(
+                      model: poem,
+                      key: ValueKey("${poem.lastEdit}-${poem.id}"),
+                    );
+                  },
+                  itemCount: poems.length,
                 ),
               )
             : SliverList(
