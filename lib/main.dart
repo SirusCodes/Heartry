@@ -24,7 +24,7 @@ Future<void> main() async {
   Catcher(
     releaseConfig: releaseCatcher,
     profileConfig: releaseCatcher,
-    rootWidget: ProviderScope(child: MyApp()),
+    rootWidget: const ProviderScope(child: MyApp()),
   );
 
   SystemChrome.setPreferredOrientations(
@@ -36,8 +36,10 @@ Future<void> main() async {
 }
 
 class MyApp extends StatefulWidget {
+  const MyApp({Key? key}) : super(key: key);
+
   @override
-  _MyAppState createState() => _MyAppState();
+  State<MyApp> createState() => _MyAppState();
 }
 
 class _MyAppState extends State<MyApp> {
@@ -53,8 +55,8 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return Consumer(
       builder: (context, watch, child) {
-        final _theme = watch(themeProvider);
-        return _theme.when(
+        final theme = watch(themeProvider);
+        return theme.when(
           data: (theme) => MaterialApp(
             title: "Heartry",
             navigatorKey: Catcher.navigatorKey,
@@ -65,9 +67,9 @@ class _MyAppState extends State<MyApp> {
               future: _initSharedPrefs,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.done) {
-                  final _name = locator<Config>().name;
+                  final name = locator<Config>().name;
 
-                  if (_name != null) return const PoemScreen();
+                  if (name != null) return const PoemScreen();
 
                   return const IntroScreen();
                 }

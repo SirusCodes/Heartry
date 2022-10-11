@@ -39,14 +39,14 @@ class PoemImageWidget extends StatelessWidget {
             children: [
               Consumer(
                 builder: (context, watch, child) {
-                  final _gradientList = watch(colorGradientListProvider);
+                  final gradientList = watch(colorGradientListProvider);
 
                   return Container(
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
-                        colors: _gradientList,
+                        colors: gradientList,
                       ),
                     ),
                   );

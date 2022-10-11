@@ -17,7 +17,7 @@ class PoemCard extends StatefulWidget {
   final PoemModel model;
 
   @override
-  _PoemCardState createState() => _PoemCardState();
+  State<PoemCard> createState() => _PoemCardState();
 }
 
 class _PoemCardState extends State<PoemCard>
@@ -41,7 +41,7 @@ class _PoemCardState extends State<PoemCard>
 
   @override
   Widget build(BuildContext context) {
-    final _iconList = [
+    final iconList = [
       IconButton(
         icon: const Icon(Icons.share),
         onPressed: () => _shareClicked(),
@@ -117,18 +117,18 @@ class _PoemCardState extends State<PoemCard>
                       data: const IconThemeData(color: Colors.white),
                       child: Consumer(
                         builder: (context, watch, child) {
-                          final _listGrid = watch(listGridProvider).state;
-                          return _listGrid
+                          final listGrid = watch(listGridProvider).state;
+                          return listGrid
                               ? GridView.count(
                                   crossAxisCount: 2,
                                   shrinkWrap: true,
                                   physics: const NeverScrollableScrollPhysics(),
-                                  children: _iconList,
+                                  children: iconList,
                                 )
                               : Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceEvenly,
-                                  children: _iconList,
+                                  children: iconList,
                                 );
                         },
                       ),
@@ -195,13 +195,16 @@ class _PoemCardState extends State<PoemCard>
   }
 
   Future<void> _delete() async {
+    final navigator = Navigator.of(context);
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+
     final result = await locator<Database>().deletePoem(widget.model);
 
     final String msg = result == 0 ? "Failed to delete" : "Deleted";
 
-    Navigator.pop(context);
+    navigator.pop();
 
-    ScaffoldMessenger.of(context).showSnackBar(
+    scaffoldMessenger.showSnackBar(
       SnackBar(
         content: Text(msg),
         shape: RoundedRectangleBorder(

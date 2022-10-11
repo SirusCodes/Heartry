@@ -21,7 +21,7 @@ class WritingBottomAppBar extends StatefulWidget {
   final BoolCallBack showSharePanel;
 
   @override
-  _WritingBottomAppBarState createState() => _WritingBottomAppBarState();
+  State<WritingBottomAppBar> createState() => _WritingBottomAppBarState();
 }
 
 class _WritingBottomAppBarState extends State<WritingBottomAppBar>

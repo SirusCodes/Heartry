@@ -9,18 +9,18 @@ import 'package:image_picker/image_picker.dart';
 import 'package:liquid_swipe/liquid_swipe.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../database/config.dart';
 import '../../database/database.dart';
 import '../../init_get_it.dart';
-import '../../widgets/privacy_statement.dart';
 import '../poems_screen/poems_screen.dart';
 
 class IntroScreen extends StatefulWidget {
   const IntroScreen({Key? key}) : super(key: key);
 
   @override
-  _IntroScreenState createState() => _IntroScreenState();
+  State<IntroScreen> createState() => _IntroScreenState();
 }
 
 class _IntroScreenState extends State<IntroScreen> {
@@ -136,12 +136,7 @@ class __NamePageState extends State<_NamePage> {
                         ),
                         recognizer: TapGestureRecognizer()
                           ..onTap = () {
-                            Navigator.push<void>(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => const PrivacyStatement(),
-                              ),
-                            );
+                            launch("https://heartry.darshanrander.com/policy");
                           },
                       )
                     ],
@@ -179,22 +174,22 @@ class __NamePageState extends State<_NamePage> {
   }
 
   Future<void> _addDetailsInDB() async {
-    final _db = locator<Database>();
+    final db = locator<Database>();
 
     await _insertPoem(
-      _db,
+      db,
       title: "Welcome",
       poem: "Hey ${_nameController.text}, thanks for using Heartry. 🤗",
     );
 
     await _insertPoem(
-      _db,
+      db,
       title: "Writing",
       poem: "Everything that you ✍ will be auto saved.",
     );
 
     await _insertPoem(
-      _db,
+      db,
       title: "Tool bar",
       poem: """
 Press and hold this card to access toolbar. 😊
@@ -202,7 +197,7 @@ You can access Reader Mode, Share and Edit from it.""",
     );
 
     await _insertPoem(
-      _db,
+      db,
       title: "Reader Mode",
       poem: """
 Sometimes keyboards can be annoying.
@@ -211,7 +206,7 @@ Now that keyboard will never disturb you. 😇""",
     );
 
     await _insertPoem(
-      _db,
+      db,
       title: "Share",
       poem: """
 You can share poem in 2 ways.
@@ -220,14 +215,14 @@ You can share poem in 2 ways.
     );
 
     await _insertPoem(
-      _db,
+      db,
       title: "Share as Image",
       poem: "It will open a new screen, you can select each image and add "
           "them to your story one by one. ❤",
     );
 
     await _insertPoem(
-      _db,
+      db,
       title: "About",
       poem: "You can know more about us by going in About in Settings. 🙈",
     );
@@ -271,14 +266,14 @@ class _ProfilePage extends StatelessWidget {
             const SizedBox(height: 45),
             Consumer(
               builder: (context, watch, child) {
-                final _imagePath = watch(configProvider).profile;
+                final imagePath = watch(configProvider).profile;
                 return CircleAvatar(
                   maxRadius: 100,
                   minRadius: 80,
                   backgroundColor: Colors.deepPurple,
                   backgroundImage:
-                      _imagePath != null ? FileImage(File(_imagePath)) : null,
-                  child: _imagePath == null
+                      imagePath != null ? FileImage(File(imagePath)) : null,
+                  child: imagePath == null
                       ? const Icon(
                           Icons.person,
                           size: 100,
@@ -367,7 +362,7 @@ class _ProfilePage extends StatelessWidget {
   }
 
   Future<void> _setImage(BuildContext context, PickedFile pickedImage) async {
-    imageCache!.clear();
+    imageCache.clear();
 
     final directory = await getApplicationDocumentsDirectory();
     final file = p.basename(pickedImage.path);

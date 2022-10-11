@@ -16,7 +16,7 @@ class ProfileScreen extends StatefulWidget {
   const ProfileScreen({Key? key}) : super(key: key);
 
   @override
-  _ProfileScreenState createState() => _ProfileScreenState();
+  State<ProfileScreen> createState() => _ProfileScreenState();
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
@@ -73,7 +73,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
               Consumer(
                 builder: (context, watch, child) {
-                  final _imagePath = watch(configProvider).profile;
+                  final imagePath = watch(configProvider).profile;
                   return Badge(
                     badgeColor: Colors.deepPurple,
                     badgeContent: IconButton(
@@ -86,10 +86,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     child: CircleAvatar(
                       maxRadius: 100,
                       minRadius: 80,
-                      backgroundImage: _imagePath != null
-                          ? FileImage(File(_imagePath))
-                          : null,
-                      child: _imagePath == null
+                      backgroundImage:
+                          imagePath != null ? FileImage(File(imagePath)) : null,
+                      child: imagePath == null
                           ? const Icon(
                               Icons.person,
                               size: 100,

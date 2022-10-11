@@ -17,7 +17,7 @@ class ReaderScreenBottomAppBar extends StatefulWidget {
   final PoemModel model;
 
   @override
-  _ReaderScreenBottomAppBarState createState() =>
+  State<ReaderScreenBottomAppBar> createState() =>
       _ReaderScreenBottomAppBarState();
 }
 

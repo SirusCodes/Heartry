@@ -10,7 +10,7 @@ class ImageColorHandler extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, ScopedReader watch) {
-    final _gradientList = watch(colorGradientListProvider);
+    final gradientList = watch(colorGradientListProvider);
     return SizedBox(
       height: 300,
       child: ReorderableListView(
@@ -40,21 +40,21 @@ class ImageColorHandler extends ConsumerWidget {
                 );
         },
         children: [
-          for (var i = 0; i < _gradientList.length; i++)
+          for (var i = 0; i < gradientList.length; i++)
             ListTile(
-              key: ValueKey("${_gradientList[i].hashCode}-$i"),
-              tileColor: _gradientList[i],
+              key: ValueKey("${gradientList[i].hashCode}-$i"),
+              tileColor: gradientList[i],
               leading: Icon(
                 Icons.menu,
-                color: useWhiteForeground(_gradientList[i])
+                color: useWhiteForeground(gradientList[i])
                     ? Colors.white
                     : Colors.black,
               ),
-              trailing: _gradientList.length > 2
+              trailing: gradientList.length > 2
                   ? IconButton(
                       icon: Icon(
                         Icons.close,
-                        color: useWhiteForeground(_gradientList[i])
+                        color: useWhiteForeground(gradientList[i])
                             ? Colors.white
                             : Colors.black,
                       ),
@@ -66,7 +66,7 @@ class ImageColorHandler extends ConsumerWidget {
                     )
                   : null,
               onTap: () {
-                _showColorPicker(context, _gradientList[i], i);
+                _showColorPicker(context, gradientList[i], i);
               },
             ),
         ],

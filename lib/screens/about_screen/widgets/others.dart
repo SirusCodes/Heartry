@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:package_info/package_info.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
-import '../../../widgets/privacy_statement.dart';
 import 'base_info_widget.dart';
 
 class Others extends StatelessWidget {
@@ -28,10 +27,7 @@ class Others extends StatelessWidget {
               subtitle: const Text("Our commitment towards privacy."),
               leading: const CircleAvatar(child: Icon(Icons.book)),
               onTap: () {
-                Navigator.push<void>(
-                  context,
-                  MaterialPageRoute(builder: (_) => const PrivacyStatement()),
-                );
+                _launchURL("https://heartry.darshanrander.com/policy");
               },
             ),
             FutureBuilder<PackageInfo>(
@@ -59,8 +55,8 @@ class Others extends StatelessWidget {
   }
 
   Future<void> _launchURL(String url) async {
-    if (await canLaunch(url)) {
-      await launch(url);
+    if (await canLaunchUrlString(url)) {
+      await launchUrlString(url);
     } else {
       throw 'Could not launch $url';
     }

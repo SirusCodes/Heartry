@@ -34,8 +34,8 @@ class _Body extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, ScopedReader watch) {
-    final _theme = watch(themeProvider);
-    return _theme.when(
+    final theme = watch(themeProvider);
+    return theme.when(
       data: (theme) => BaseInfoWidget(
         title: "Theme",
         children: [

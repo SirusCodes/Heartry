@@ -15,7 +15,7 @@ class ProfileUpdateDialog extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, ScopedReader watch) {
-    final _image = watch(configProvider);
+    final image = watch(configProvider);
     return SimpleDialog(
       contentPadding: const EdgeInsets.symmetric(
         horizontal: 24.0,
@@ -53,7 +53,7 @@ class ProfileUpdateDialog extends ConsumerWidget {
           icon: const Icon(Icons.camera_alt),
           text: "Capture from camera",
         ),
-        if (_image.profile != null)
+        if (image.profile != null)
           _buildDialogButton(
             context,
             onPressed: () {
@@ -87,7 +87,7 @@ class ProfileUpdateDialog extends ConsumerWidget {
   }
 
   Future<void> _setImage(BuildContext context, PickedFile pickedImage) async {
-    imageCache!.clear();
+    imageCache.clear();
 
     final directory = await getApplicationDocumentsDirectory();
     final file = p.basename(pickedImage.path);

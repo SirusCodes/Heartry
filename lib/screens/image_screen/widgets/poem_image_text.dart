@@ -16,7 +16,7 @@ class PoemImageText extends ConsumerWidget {
   final String title, poet;
   @override
   Widget build(BuildContext context, ScopedReader watch) {
-    final _scale = watch(textSizeProvider).state;
+    final scale = watch(textSizeProvider).state;
     final color = watch(textColorProvider).state;
 
     return Column(
@@ -27,7 +27,7 @@ class PoemImageText extends ConsumerWidget {
         Text(
           title,
           textAlign: TextAlign.center,
-          textScaleFactor: _scale,
+          textScaleFactor: scale,
           style: TextStyle(
             fontSize: TITLE_TEXT_SIZE,
             color: color,
@@ -37,7 +37,7 @@ class PoemImageText extends ConsumerWidget {
         ...poem.map(
           (e) => Text(
             e,
-            textScaleFactor: _scale,
+            textScaleFactor: scale,
             style: TextStyle(
               fontSize: POEM_TEXT_SIZE,
               color: color,
@@ -49,7 +49,7 @@ class PoemImageText extends ConsumerWidget {
         Text(
           "-$poet",
           textAlign: TextAlign.center,
-          textScaleFactor: _scale,
+          textScaleFactor: scale,
           style: TextStyle(
             fontSize: POET_TEXT_SIZE,
             color: color,

@@ -11,11 +11,11 @@ class CBody extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, ScopedReader watch) {
-    final _isGrid = watch(listGridProvider).state;
-    final _poems = watch(streamPoemProvider);
-    return _poems.when(
+    final isGrid = watch(listGridProvider).state;
+    final poems = watch(streamPoemProvider);
+    return poems.when(
       data: (poems) {
-        return _isGrid
+        return isGrid
             ? MasonryGridView.count(
                 crossAxisCount: 2,
                 crossAxisSpacing: 10,
@@ -41,15 +41,11 @@ class CBody extends ConsumerWidget {
                 ),
               );
       },
-      loading: () => const SliverToBoxAdapter(
-        child: Center(
-          child: CircularProgressIndicator(),
-        ),
+      loading: () => const Center(
+        child: CircularProgressIndicator(),
       ),
-      error: (e, st) => SliverToBoxAdapter(
-        child: Center(
-          child: Text(e.toString() + st.toString()),
-        ),
+      error: (e, st) => Center(
+        child: Text(e.toString() + st.toString()),
       ),
     );
   }

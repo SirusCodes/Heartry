@@ -14,7 +14,7 @@ class WritingScreen extends StatefulWidget {
   final PoemModel? model;
 
   @override
-  _WritingScreenState createState() => _WritingScreenState();
+  State<WritingScreen> createState() => _WritingScreenState();
 }
 
 class _WritingScreenState extends State<WritingScreen>
@@ -42,11 +42,11 @@ class _WritingScreenState extends State<WritingScreen>
     undoRedo.textEditingController =
         TextEditingController(text: _poemModel?.poem);
 
-    WidgetsBinding.instance!.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       undoRedo.registerChange(undoRedo.textEditingController.text);
     });
 
-    WidgetsBinding.instance!.addObserver(this);
+    WidgetsBinding.instance.addObserver(this);
   }
 
   @override
@@ -60,7 +60,7 @@ class _WritingScreenState extends State<WritingScreen>
     undoRedo.textEditingController.dispose();
 
     _handleDBChanges();
-    WidgetsBinding.instance!.removeObserver(this);
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
 

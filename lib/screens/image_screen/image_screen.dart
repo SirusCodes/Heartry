@@ -28,7 +28,7 @@ class ImageScreen extends StatefulWidget {
   final List<String> poem;
 
   @override
-  _ImageScreenState createState() => _ImageScreenState();
+  State<ImageScreen> createState() => _ImageScreenState();
 }
 
 class _ImageScreenState extends State<ImageScreen> {
@@ -51,13 +51,13 @@ class _ImageScreenState extends State<ImageScreen> {
         child: Center(
           child: Consumer(
             builder: (context, watch, child) {
-              final _textScale = watch(textSizeProvider).state;
+              final textScale = watch(textSizeProvider).state;
               return LayoutBuilder(
                 builder: (context, constraints) {
                   poemLines = _getPoemSeparated(
                     context,
                     constraints,
-                    _textScale,
+                    textScale,
                   );
 
                   return Screenshot<void>(
@@ -84,7 +84,6 @@ class _ImageScreenState extends State<ImageScreen> {
         onTextPressed: () {
           showModalBottomSheet<void>(
             context: context,
-            isDismissible: true,
             shape: const RoundedRectangleBorder(
               borderRadius: BorderRadius.vertical(top: Radius.circular(15)),
             ),
@@ -96,7 +95,6 @@ class _ImageScreenState extends State<ImageScreen> {
         onColorPressed: () {
           showModalBottomSheet<void>(
             context: context,
-            isDismissible: true,
             shape: const RoundedRectangleBorder(
               borderRadius: BorderRadius.vertical(top: Radius.circular(15)),
             ),
@@ -109,7 +107,9 @@ class _ImageScreenState extends State<ImageScreen> {
           // TODO: Once save to gallery is implemented
           // if (!(await _isPermGranted(context))) return;
 
-          imageCache!.clear();
+          final navigator = Navigator.of(context);
+
+          imageCache.clear();
 
           final List<String> images = [];
 
@@ -121,7 +121,7 @@ class _ImageScreenState extends State<ImageScreen> {
             images.add(path);
           }
 
-          Navigator.pop(context);
+          navigator.pop();
 
           if (images.length == 1) {
             await _shareAll(images);
@@ -238,58 +238,57 @@ class _ImageScreenState extends State<ImageScreen> {
   List<List<String>> _getPoemSeparated(
     BuildContext context,
     BoxConstraints constraints,
-    double _textScale,
+    double textScale,
   ) {
     final List<List<String>> poemLines = [];
     final List<String> poemLine = [];
 
-    final _size = MediaQuery.of(context).size;
+    final size = MediaQuery.of(context).size;
 
     // getting title height
-    final _titleHeight = _calcTextSize(
+    final titleHeight = _calcTextSize(
       context,
       constraints,
       widget.title!,
       TITLE_TEXT_SIZE,
-      _textScale,
+      textScale,
     ).height;
 
     // getting poet height
-    final _poetHeight = _calcTextSize(
+    final poetHeight = _calcTextSize(
       context,
       constraints,
       widget.poet!,
       POET_TEXT_SIZE,
-      _textScale,
+      textScale,
     ).height;
 
-    final double _availableHeight =
-        _size.height - 200 - _titleHeight - _poetHeight;
+    final double availableHeight = size.height - 200 - titleHeight - poetHeight;
 
-    double _height = _availableHeight;
+    double height = availableHeight;
 
     // creating the size of the poem
     for (final line in widget.poem) {
-      final double _heightToSub = _calcTextSize(
+      final double heightToSub = _calcTextSize(
         context,
         constraints,
         line,
         POEM_TEXT_SIZE,
-        _textScale,
+        textScale,
       ).height;
 
-      _height -= _heightToSub;
+      height -= heightToSub;
 
-      if (_height <= 0) {
+      if (height <= 0) {
         poemLines.add([...poemLine]);
         poemLine.clear();
-        _height = _availableHeight - _heightToSub;
+        height = availableHeight - heightToSub;
       }
 
       poemLine.add(line);
     }
 
-    if (_height > 0) poemLines.add([...poemLine]);
+    if (height > 0) poemLines.add([...poemLine]);
 
     return poemLines;
   }

@@ -1,7 +1,7 @@
 import 'package:catcher/catcher.dart';
 import 'package:catcher/model/platform_type.dart';
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 class CustomEmailReportHandler extends ReportHandler {
   CustomEmailReportHandler();
@@ -57,8 +57,8 @@ class CustomEmailReportHandler extends ReportHandler {
 
   Future<bool> _sendMail(String body, String subject) async {
     final url = "mailto:heartryapp@gmail.com?body=$body&subject=$subject";
-    if (await canLaunch(url)) {
-      await launch(url);
+    if (await canLaunchUrlString(url)) {
+      await launchUrlString(url);
       return true;
     }
 

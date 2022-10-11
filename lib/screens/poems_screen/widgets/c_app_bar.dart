@@ -12,8 +12,8 @@ class CAppBar extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, ScopedReader watch) {
-    final _imagePath = watch(configProvider).profile;
-    final _isList = watch(listGridProvider).state;
+    final imagePath = watch(configProvider).profile;
+    final isList = watch(listGridProvider).state;
 
     return Padding(
       padding: const EdgeInsets.only(
@@ -37,7 +37,7 @@ class CAppBar extends ConsumerWidget {
               context.read(listGridProvider).state =
                   !context.read(listGridProvider).state;
             },
-            icon: _isList
+            icon: isList
                 ? const Icon(Icons.list_alt_rounded)
                 : const Icon(Icons.grid_view),
           ),
@@ -51,8 +51,8 @@ class CAppBar extends ConsumerWidget {
             },
             child: CircleAvatar(
               backgroundImage:
-                  _imagePath != null ? FileImage(File(_imagePath)) : null,
-              child: _imagePath == null ? const Icon(Icons.person) : null,
+                  imagePath != null ? FileImage(File(imagePath)) : null,
+              child: imagePath == null ? const Icon(Icons.person) : null,
             ),
           ),
         ],

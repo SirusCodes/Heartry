@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 import 'base_info_widget.dart';
 
@@ -12,7 +12,7 @@ class Contributors extends StatefulWidget {
   const Contributors({Key? key}) : super(key: key);
 
   @override
-  _ContributorsState createState() => _ContributorsState();
+  State<Contributors> createState() => _ContributorsState();
 }
 
 class _ContributorsState extends State<Contributors> {
@@ -40,8 +40,8 @@ class _ContributorsState extends State<Contributors> {
   }
 
   Future<void> _launchURL(String url) async {
-    if (await canLaunch(url)) {
-      await launch(url);
+    if (await canLaunchUrlString(url)) {
+      await launchUrlString(url);
     } else {
       throw 'Could not launch $url';
     }
