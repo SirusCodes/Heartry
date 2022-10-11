@@ -1,6 +1,5 @@
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../writing_screen/writing_screen.dart';
 import 'widgets/c_app_bar.dart';
@@ -14,17 +13,13 @@ class PoemScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: Consumer(
-          builder: (context, watch, child) {
-            return const CustomScrollView(
-              slivers: [
-                SliverToBoxAdapter(
-                  child: CAppBar(),
-                ),
-                CBody(),
-              ],
-            );
-          },
+        child: NestedScrollView(
+          headerSliverBuilder: (context, innerBoxIsScrolled) => [
+            const SliverToBoxAdapter(
+              child: CAppBar(),
+            ),
+          ],
+          body: const CBody(),
         ),
       ),
       floatingActionButton: OpenContainer(

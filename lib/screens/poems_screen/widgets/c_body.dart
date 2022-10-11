@@ -16,35 +16,28 @@ class CBody extends ConsumerWidget {
     return _poems.when(
       data: (poems) {
         return _isGrid
-            ? SliverPadding(
+            ? MasonryGridView.count(
+                crossAxisCount: 2,
+                crossAxisSpacing: 10,
                 padding: const EdgeInsets.all(10.0),
-                sliver: SliverStaggeredGrid.countBuilder(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 10,
-                  mainAxisSpacing: 10,
-                  staggeredTileBuilder: (index) => const StaggeredTile.fit(1),
-                  itemBuilder: (context, index) {
-                    final poem = poems[index];
-                    return PoemCard(
-                      model: poem,
-                      key: ValueKey("${poem.lastEdit}-${poem.id}"),
-                    );
-                  },
-                  itemCount: poems.length,
-                ),
+                mainAxisSpacing: 10,
+                itemBuilder: (context, index) {
+                  final poem = poems[index];
+                  return PoemCard(
+                    model: poem,
+                    key: ValueKey("${poem.lastEdit}-${poem.id}"),
+                  );
+                },
+                itemCount: poems.length,
               )
-            : SliverList(
-                delegate: SliverChildBuilderDelegate(
-                  (context, index) {
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 5,
-                      ),
-                      child: PoemCard(model: poems[index]),
-                    );
-                  },
-                  childCount: poems.length,
+            : ListView.builder(
+                itemCount: poems.length,
+                itemBuilder: (context, index) => Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 5,
+                  ),
+                  child: PoemCard(model: poems[index]),
                 ),
               );
       },
