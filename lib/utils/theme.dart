@@ -1,30 +1,31 @@
 import 'package:flutter/material.dart';
 
-enum ThemeType { light, dark, black, system }
+enum ThemeType {
+  light("Light"),
+  dark("Dark"),
+  black("Black"),
+  system("System Default");
 
-String themeToString(ThemeType theme) {
-  switch (theme) {
-    case ThemeType.light:
-      return "Light";
-    case ThemeType.dark:
-      return "Dark";
-    case ThemeType.black:
-      return "Black";
-    default:
-      return "System Default";
+  const ThemeType(this.value);
+
+  final String value;
+
+  @override
+  String toString() {
+    return value;
   }
-}
 
-ThemeType stringToTheme(String? theme) {
-  switch (theme) {
-    case "Light":
-      return ThemeType.light;
-    case "Dark":
-      return ThemeType.dark;
-    case "Black":
-      return ThemeType.black;
-    default:
-      return ThemeType.system;
+  static ThemeType fromString(String? value) {
+    switch (value) {
+      case "Light":
+        return ThemeType.light;
+      case "Dark":
+        return ThemeType.dark;
+      case "Black":
+        return ThemeType.black;
+      default:
+        return ThemeType.system;
+    }
   }
 }
 

@@ -42,7 +42,7 @@ class _Body extends ConsumerWidget {
           ListTile(
             leading: const CircleAvatar(child: Icon(Icons.palette)),
             title: const Text("Theme"),
-            subtitle: Text(themeToString(currentTheme)),
+            subtitle: Text(currentTheme.toString()),
             onTap: () async {
               final theme = context.read(themeProvider.notifier);
               final selectedTheme =

@@ -22,11 +22,12 @@ class ThemeProvider extends StateNotifier<AsyncValue<ThemeType>> {
   late SharedPreferences _sharedPreferences;
 
   void _init() {
-    state = AsyncData(stringToTheme(_sharedPreferences.getString(_themeKey)));
+    state = AsyncData(
+        ThemeType.fromString(_sharedPreferences.getString(_themeKey)));
   }
 
   void setTheme(ThemeType theme) {
-    _sharedPreferences.setString(_themeKey, themeToString(theme));
+    _sharedPreferences.setString(_themeKey, theme.toString());
     state = AsyncData(theme);
   }
 }
