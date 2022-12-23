@@ -10,6 +10,7 @@ import 'package:liquid_swipe/liquid_swipe.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 import '../../database/config.dart';
 import '../../database/database.dart';
@@ -136,7 +137,9 @@ class __NamePageState extends State<_NamePage> {
                         ),
                         recognizer: TapGestureRecognizer()
                           ..onTap = () {
-                            launch("https://heartry.darshanrander.com/policy");
+                            launchUrlString(
+                              "https://heartry.darshanrander.com/policy",
+                            );
                           },
                       )
                     ],
