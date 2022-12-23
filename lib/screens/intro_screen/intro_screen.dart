@@ -146,14 +146,14 @@ class __NamePageState extends State<_NamePage> {
                 _showButton
                     ? ElevatedButton(
                         onPressed: () async {
+                          final navigator = Navigator.of(context);
                           if (_formKey.currentState!.validate()) {
                             _formKey.currentState!.save();
                             setState(() {
                               _showButton = false;
                             });
                             await _addDetailsInDB();
-                            Navigator.pushReplacement<void, void>(
-                              context,
+                            navigator.pushReplacement<void, void>(
                               CupertinoPageRoute(
                                 builder: (_) => const PoemScreen(),
                               ),
@@ -290,46 +290,13 @@ class _ProfilePage extends StatelessWidget {
                 children: <Widget>[
                   _buildDialogButton(
                     context,
-                    onPressed: () async {
-                      final picker = ImagePicker();
-                      PickedFile? pickedImage;
-                      try {
-                        pickedImage =
-                            await picker.getImage(source: ImageSource.gallery);
-                      } on PlatformException {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text("Permission denied"),
-                          ),
-                        );
-                      }
-
-                      if (pickedImage == null) return;
-
-                      await _setImage(context, pickedImage);
-                    },
+                    onPressed: () => _updateImage(context, ImageSource.gallery),
                     icon: const Icon(Icons.photo_library),
                     text: "Add from gallery",
                   ),
                   _buildDialogButton(
                     context,
-                    onPressed: () async {
-                      final picker = ImagePicker();
-                      PickedFile? pickedImage;
-                      try {
-                        pickedImage =
-                            await picker.getImage(source: ImageSource.camera);
-                      } on PlatformException {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text("Permission denied"),
-                          ),
-                        );
-                      }
-                      if (pickedImage == null) return;
-
-                      await _setImage(context, pickedImage);
-                    },
+                    onPressed: () => _updateImage(context, ImageSource.camera),
                     icon: const Icon(Icons.camera_alt),
                     text: "Capture from camera",
                   ),
@@ -361,7 +328,24 @@ class _ProfilePage extends StatelessWidget {
     );
   }
 
-  Future<void> _setImage(BuildContext context, PickedFile pickedImage) async {
+  Future<void> _updateImage(BuildContext context, ImageSource source) async {
+    final navigator = Navigator.of(context);
+    final config = context.read(configProvider.notifier);
+    final picker = ImagePicker();
+    try {
+      final pickedImage = await picker.getImage(source: source);
+      if (pickedImage == null) return;
+
+      config.profile = await _saveImageInAppStorage(pickedImage);
+      navigator.pop();
+    } on PlatformException {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Permission denied")),
+      );
+    }
+  }
+
+  Future<String> _saveImageInAppStorage(PickedFile pickedImage) async {
     imageCache.clear();
 
     final directory = await getApplicationDocumentsDirectory();
@@ -372,7 +356,7 @@ class _ProfilePage extends StatelessWidget {
       await pickedImage.readAsBytes(),
     );
 
-    context.read(configProvider).profile = image.path;
+    return image.path;
   }
 }
 

@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart' as p;
@@ -25,31 +26,13 @@ class ProfileUpdateDialog extends ConsumerWidget {
       children: [
         _buildDialogButton(
           context,
-          onPressed: () async {
-            final picker = ImagePicker();
-            final pickedImage =
-                await picker.getImage(source: ImageSource.gallery);
-
-            if (pickedImage == null) return;
-
-            await _setImage(context, pickedImage);
-            Navigator.pop(context);
-          },
+          onPressed: () => _updateImage(context, ImageSource.gallery),
           icon: const Icon(Icons.photo_library),
           text: "Add from gallery",
         ),
         _buildDialogButton(
           context,
-          onPressed: () async {
-            final picker = ImagePicker();
-            final pickedImage =
-                await picker.getImage(source: ImageSource.camera);
-
-            if (pickedImage == null) return;
-
-            await _setImage(context, pickedImage);
-            Navigator.pop(context);
-          },
+          onPressed: () => _updateImage(context, ImageSource.camera),
           icon: const Icon(Icons.camera_alt),
           text: "Capture from camera",
         ),
@@ -86,7 +69,24 @@ class ProfileUpdateDialog extends ConsumerWidget {
     );
   }
 
-  Future<void> _setImage(BuildContext context, PickedFile pickedImage) async {
+  Future<void> _updateImage(BuildContext context, ImageSource source) async {
+    final navigator = Navigator.of(context);
+    final config = context.read(configProvider.notifier);
+    final picker = ImagePicker();
+    try {
+      final pickedImage = await picker.getImage(source: source);
+      if (pickedImage == null) return;
+
+      config.profile = await _saveImageInAppStorage(pickedImage);
+      navigator.pop();
+    } on PlatformException {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Permission denied")),
+      );
+    }
+  }
+
+  Future<String> _saveImageInAppStorage(PickedFile pickedImage) async {
     imageCache.clear();
 
     final directory = await getApplicationDocumentsDirectory();
@@ -97,6 +97,6 @@ class ProfileUpdateDialog extends ConsumerWidget {
       await pickedImage.readAsBytes(),
     );
 
-    context.read(configProvider).profile = image.path;
+    return image.path;
   }
 }

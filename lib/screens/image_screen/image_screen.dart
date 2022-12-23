@@ -127,6 +127,9 @@ class _ImageScreenState extends State<ImageScreen> {
             await _shareAll(images);
             return;
           }
+
+          if (!mounted) return;
+
           _showShareTypeDialog(context, images);
         },
       ),

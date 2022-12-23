@@ -36,17 +36,18 @@ class _Body extends ConsumerWidget {
   Widget build(BuildContext context, ScopedReader watch) {
     final theme = watch(themeProvider);
     return theme.when(
-      data: (theme) => BaseInfoWidget(
+      data: (currentTheme) => BaseInfoWidget(
         title: "Theme",
         children: [
           ListTile(
             leading: const CircleAvatar(child: Icon(Icons.palette)),
             title: const Text("Theme"),
-            subtitle: Text(themeToString(theme)),
+            subtitle: Text(themeToString(currentTheme)),
             onTap: () async {
-              final selectedTheme = await _showThemeDialog(context, theme);
-              if (selectedTheme != null)
-                context.read(themeProvider.notifier).setTheme(selectedTheme);
+              final theme = context.read(themeProvider.notifier);
+              final selectedTheme =
+                  await _showThemeDialog(context, currentTheme);
+              if (selectedTheme != null) theme.setTheme(selectedTheme);
             },
           ),
         ],
