@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 
 import '../../database/database.dart';
+import '../../utils/share_helper.dart';
 import '../../widgets/c_screen_title.dart';
-import 'widgets/reader_screen_bottom_app_bar.dart';
+import '../../widgets/share_option_list.dart';
+import '../writing_screen/writing_screen.dart';
 
 class ReaderScreen extends StatelessWidget {
   const ReaderScreen({Key? key, required this.model}) : super(key: key);
@@ -11,6 +13,7 @@ class ReaderScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isIOS = Theme.of(context).platform == TargetPlatform.iOS;
     return Scaffold(
       body: ListView(
         children: [
@@ -19,12 +22,55 @@ class ReaderScreen extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 15.0),
             child: Text(
               model.poem,
-              style: Theme.of(context).textTheme.headline5,
+              style: Theme.of(context).textTheme.headlineSmall,
             ),
           ),
         ],
       ),
-      bottomNavigationBar: ReaderScreenBottomAppBar(model: model),
+      bottomNavigationBar: BottomAppBar(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            if (isIOS)
+              IconButton(
+                icon: const Icon(Icons.arrow_back_ios_rounded),
+                onPressed: () => Navigator.pop(context),
+              ),
+            IconButton(
+              icon: const Icon(Icons.edit),
+              onPressed: () => Navigator.pushReplacement<void, void>(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => WritingScreen(
+                    model: model,
+                  ),
+                ),
+              ),
+            ),
+            IconButton(
+              onPressed: () => _showShareBottomSheet(context),
+              icon: const Icon(Icons.share),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _showShareBottomSheet(BuildContext context) {
+    return showModalBottomSheet(
+      context: context,
+      builder: (context) => ShareOptionList(
+        onShareAsImage: () => ShareHelper.shareAsImage(
+          context,
+          title: model.title,
+          poem: model.poem,
+        ),
+        onShareAsText: () => ShareHelper.shareAsText(
+          title: model.title,
+          poem: model.poem,
+        ),
+      ),
     );
   }
 }

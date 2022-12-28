@@ -127,7 +127,7 @@ class _WritingScreenState extends State<WritingScreen>
               Positioned(
                 bottom: 0,
                 width: MediaQuery.of(context).size.width,
-                child: WritingBottomAppBar(
+                child: _WritingBottomAppBar(
                   showSharePanel: () {
                     if (undoRedo.textEditingController.text.isNotEmpty)
                       return true;
@@ -222,8 +222,8 @@ class _WritingScreenState extends State<WritingScreen>
 
 typedef BoolCallBack = bool Function();
 
-class WritingBottomAppBar extends StatelessWidget {
-  const WritingBottomAppBar({
+class _WritingBottomAppBar extends StatelessWidget {
+  const _WritingBottomAppBar({
     Key? key,
     required this.onShareAsImage,
     required this.onShareAsText,
