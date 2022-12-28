@@ -15,7 +15,7 @@ class ImageColorHandler extends ConsumerWidget {
       height: 300,
       child: ReorderableListView(
         header: Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 20),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
@@ -74,8 +74,12 @@ class ImageColorHandler extends ConsumerWidget {
     );
   }
 
-  void _showColorPicker(BuildContext context, Color currentColor,
-      [int? index]) {
+  // TODO: Migrate to FlexColorPicker
+  void _showColorPicker(
+    BuildContext context,
+    Color currentColor, [
+    int? index,
+  ]) {
     showDialog<void>(
       context: context,
       builder: (BuildContext context) {

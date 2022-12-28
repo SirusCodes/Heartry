@@ -84,9 +84,6 @@ class _ImageScreenState extends State<ImageScreen> {
         onTextPressed: () {
           showModalBottomSheet<void>(
             context: context,
-            shape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.vertical(top: Radius.circular(15)),
-            ),
             builder: (context) {
               return const ImageTextHandler();
             },
@@ -95,9 +92,6 @@ class _ImageScreenState extends State<ImageScreen> {
         onColorPressed: () {
           showModalBottomSheet<void>(
             context: context,
-            shape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.vertical(top: Radius.circular(15)),
-            ),
             builder: (context) {
               return const ImageColorHandler();
             },
@@ -245,8 +239,7 @@ class _ImageScreenState extends State<ImageScreen> {
   ) {
     final List<List<String>> poemLines = [];
     final List<String> poemLine = [];
-
-    final size = MediaQuery.of(context).size;
+    const PADDING_IN_HEIGHT_TEXT = 280;
 
     // getting title height
     final titleHeight = _calcTextSize(
@@ -266,7 +259,10 @@ class _ImageScreenState extends State<ImageScreen> {
       textScale,
     ).height;
 
-    final double availableHeight = size.height - 200 - titleHeight - poetHeight;
+    final double availableHeight = constraints.maxHeight -
+        PADDING_IN_HEIGHT_TEXT -
+        titleHeight -
+        poetHeight;
 
     double height = availableHeight;
 
@@ -283,6 +279,7 @@ class _ImageScreenState extends State<ImageScreen> {
       height -= heightToSub;
 
       if (height <= 0) {
+        if (poemLine[poemLine.length - 1].isEmpty) poemLine.removeLast();
         poemLines.add([...poemLine]);
         poemLine.clear();
         height = availableHeight - heightToSub;
@@ -299,7 +296,7 @@ class _ImageScreenState extends State<ImageScreen> {
   Size _calcTextSize(
     BuildContext context,
     BoxConstraints constraints,
-    String /*!*/ text,
+    String text,
     double fontSize,
     double scale,
   ) {
@@ -313,7 +310,7 @@ class _ImageScreenState extends State<ImageScreen> {
       ),
       textScaleFactor: scale,
       textDirection: TextDirection.ltr,
-    )..layout(maxWidth: constraints.maxWidth - 120);
+    )..layout(maxWidth: constraints.maxWidth - 140);
 
     return painter.size;
   }

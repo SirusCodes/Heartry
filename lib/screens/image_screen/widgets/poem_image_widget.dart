@@ -73,37 +73,27 @@ class PoemImageWidget extends StatelessWidget {
               const Positioned(
                 top: -30,
                 left: -30,
-                child: CircleAvatar(
-                  radius: 80,
-                ),
+                child: CircleAvatar(radius: 80),
               ),
               const Positioned(
                 top: 200,
                 right: -10,
-                child: CircleAvatar(
-                  radius: 40,
-                ),
+                child: CircleAvatar(radius: 40),
               ),
               const Positioned(
                 bottom: -30,
                 left: 0,
-                child: CircleAvatar(
-                  radius: 75,
-                ),
+                child: CircleAvatar(radius: 75),
               ),
               const Positioned(
                 bottom: 10,
                 right: 10,
-                child: CircleAvatar(
-                  radius: 50,
-                ),
+                child: CircleAvatar(radius: 50),
               ),
               const Positioned(
                 bottom: 250,
                 right: 110,
-                child: CircleAvatar(
-                  radius: 20,
-                ),
+                child: CircleAvatar(radius: 20),
               ),
               Center(
                 child: PoemImageCard(

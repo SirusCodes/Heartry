@@ -50,9 +50,10 @@ class ImageTextHandler extends ConsumerWidget {
           ),
           Slider(
             value: value,
+            min: 0.8,
             max: 2,
-            divisions: 20,
-            label: value.toStringAsPrecision(3),
+            divisions: 12,
+            label: value.toStringAsPrecision(2),
             onChanged: (value) {
               context.read(textSizeProvider).state = value;
             },
