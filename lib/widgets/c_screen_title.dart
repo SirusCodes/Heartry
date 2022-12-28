@@ -11,9 +11,10 @@ class CScreenTitle extends StatelessWidget {
       padding: const EdgeInsets.all(15.0),
       child: Text(
         title,
-        style: Theme.of(context).accentTextTheme.headline3!.copyWith(
+        style: Theme.of(context).textTheme.displaySmall!.copyWith(
               fontWeight: FontWeight.w600,
               fontFamily: "Caveat",
+              color: Theme.of(context).colorScheme.primary,
             ),
       ),
     );

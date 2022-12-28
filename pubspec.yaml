@@ -24,7 +24,7 @@ dependencies:
   flutter:
     sdk: flutter
   animated_icon_button: ^1.0.2
-  animations: ^2.0.2
+  animations: ^2.0.7
   badges: ^2.0.2
   catcher: ^0.6.9
   flutter_colorpicker: ^1.0.3
