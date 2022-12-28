@@ -14,6 +14,7 @@ class ShareOptionList extends StatelessWidget {
     return ListView(
       shrinkWrap: true,
       children: [
+        const SizedBox(height: 8),
         ListTile(
           title: const Text("Share as Text"),
           trailing: const Icon(Icons.text_fields),

@@ -142,11 +142,6 @@ class _PoemCardState extends State<PoemCard>
   void _shareClicked() {
     showModalBottomSheet<void>(
       context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(15),
-        ),
-      ),
       builder: (context) => ShareOptionList(
         onShareAsImage: () => ShareHelper.shareAsImage(
           context,

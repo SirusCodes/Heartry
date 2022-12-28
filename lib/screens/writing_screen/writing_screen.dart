@@ -1,12 +1,13 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../database/database.dart';
 import '../../init_get_it.dart';
 import '../../utils/share_helper.dart';
 import '../../utils/undo_redo.dart';
-import 'widgets/writing_bottom_app_bar.dart';
+import '../../widgets/share_option_list.dart';
 
 class WritingScreen extends StatefulWidget {
   const WritingScreen({Key? key, this.model}) : super(key: key);
@@ -95,7 +96,7 @@ class _WritingScreenState extends State<WritingScreen>
                         hintText: "Title",
                         enabledBorder: UnderlineInputBorder(
                           borderSide: BorderSide(
-                            color: Theme.of(context).accentColor,
+                            color: Theme.of(context).colorScheme.secondary,
                           ),
                         ),
                       ),
@@ -216,5 +217,72 @@ class _WritingScreenState extends State<WritingScreen>
       poem: undoRedo.textEditingController.text.trim(),
     );
     poemDB.updatePoem(_poemModel!);
+  }
+}
+
+typedef BoolCallBack = bool Function();
+
+class WritingBottomAppBar extends StatelessWidget {
+  const WritingBottomAppBar({
+    Key? key,
+    required this.onShareAsImage,
+    required this.onShareAsText,
+    required this.showSharePanel,
+  }) : super(key: key);
+
+  final VoidCallback onShareAsImage, onShareAsText;
+  final BoolCallBack showSharePanel;
+
+  @override
+  Widget build(BuildContext context) {
+    final isIOS = Theme.of(context).platform == TargetPlatform.iOS;
+    return BottomAppBar(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Consumer(
+            builder: (context, watch, child) {
+              final undoRedo = watch(undoRedoProvider);
+              return Row(
+                children: <Widget>[
+                  if (isIOS)
+                    IconButton(
+                      icon: const Icon(Icons.arrow_back_ios_rounded),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                  if (!isIOS) const SizedBox(width: 48),
+                  const Spacer(),
+                  IconButton(
+                    icon: const Icon(Icons.undo_rounded),
+                    onPressed: undoRedo.canUndo ? undoRedo.undo : null,
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.redo_rounded),
+                    onPressed: undoRedo.canRedo ? undoRedo.redo : null,
+                  ),
+                  const Spacer(),
+                  IconButton(
+                    onPressed: () => _showSharePanel(context),
+                    icon: const Icon(Icons.share),
+                  )
+                ],
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _showSharePanel(BuildContext context) {
+    return showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return ShareOptionList(
+          onShareAsImage: onShareAsImage,
+          onShareAsText: onShareAsText,
+        );
+      },
+    );
   }
 }
