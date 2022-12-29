@@ -27,7 +27,7 @@ dependencies:
   animations: ^2.0.7
   badges: ^2.0.3
   catcher: ^0.6.9
-  flutter_colorpicker: ^1.0.3
+  flex_color_picker: ^3.0.0
   flutter_riverpod: ^0.14.0+3
   get_it: ^7.2.0
   image_picker: ^0.7.5+4

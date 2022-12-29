@@ -28,9 +28,12 @@ class ImageTextHandler extends ConsumerWidget {
           ),
           const SizedBox(height: 15),
           GestureDetector(
-            onTap: () {
-              _showColorPicker(context, color);
-            },
+            onTap: () => showColorPicker(
+              context: context,
+              currentColor: color,
+              onColorChanged: (color) =>
+                  context.read(textColorProvider).state = color,
+            ),
             child: Container(
               height: 50,
               width: 50,
@@ -60,20 +63,6 @@ class ImageTextHandler extends ConsumerWidget {
           ),
         ],
       ),
-    );
-  }
-
-  void _showColorPicker(BuildContext context, Color currentColor) {
-    showDialog<void>(
-      context: context,
-      builder: (BuildContext context) {
-        return ColorPickerDialog(
-          currentColor: currentColor,
-          selectedColor: (color) {
-            context.read(textColorProvider).state = color;
-          },
-        );
-      },
     );
   }
 }

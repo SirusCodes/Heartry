@@ -329,19 +329,27 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.1"
+  flex_color_picker:
+    dependency: "direct main"
+    description:
+      name: flex_color_picker
+      sha256: "1e34b68692c9f1cf709d2a1d7e8028574a3acc0df98fde2b57577858bf84d982"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.0.0"
+  flex_seed_scheme:
+    dependency: transitive
+    description:
+      name: flex_seed_scheme
+      sha256: "7ded1dbf0cef4d9d27a194ad021f4755cd4a82a3c5f10e803dca84d9843fd639"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.0"
   flutter:
     dependency: "direct main"
     description: flutter
     source: sdk
     version: "0.0.0"
-  flutter_colorpicker:
-    dependency: "direct main"
-    description:
-      name: flutter_colorpicker
-      sha256: "458a6ed8ea480eb16ff892aedb4b7092b2804affd7e046591fb03127e8d8ef8b"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.3"
   flutter_lints:
     dependency: "direct dev"
     description:
@@ -1178,4 +1186,4 @@ packages:
     version: "3.1.1"
 sdks:
   dart: ">=2.18.0 <4.0.0"
-  flutter: ">=3.0.0"
+  flutter: ">=3.3.0"
