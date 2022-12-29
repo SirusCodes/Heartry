@@ -36,29 +36,21 @@ final lightTheme = ThemeData(
     style: OutlinedButton.styleFrom(
       padding: const EdgeInsets.all(10.0),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-      backgroundColor: Colors.deepPurple.shade50,
+      side: BorderSide(color: _lightColorScheme.primary),
+      backgroundColor: _lightColorScheme.secondaryContainer,
     ),
-  ),
-  floatingActionButtonTheme: const FloatingActionButtonThemeData(
-    backgroundColor: Colors.deepPurple,
   ),
 );
 
 final darkTheme = ThemeData(
   useMaterial3: true,
   colorScheme: _darkColorScheme,
-  textButtonTheme: TextButtonThemeData(
-    style: TextButton.styleFrom(foregroundColor: Colors.white),
-  ),
   outlinedButtonTheme: OutlinedButtonThemeData(
     style: OutlinedButton.styleFrom(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
       padding: const EdgeInsets.all(10.0),
-      backgroundColor: Colors.deepPurple.shade50.withOpacity(.7),
+      backgroundColor: _darkColorScheme.secondaryContainer,
     ),
-  ),
-  floatingActionButtonTheme: FloatingActionButtonThemeData(
-    backgroundColor: Colors.deepPurpleAccent.shade100,
   ),
 );
 
@@ -68,8 +60,8 @@ final blackTheme = ThemeData(
   outlinedButtonTheme: OutlinedButtonThemeData(
     style: OutlinedButton.styleFrom(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-      side: BorderSide(color: Colors.deepPurple.shade50.withOpacity(.4)),
       padding: const EdgeInsets.all(10.0),
+      side: BorderSide(color: _blackColorScheme.secondaryContainer, width: 2),
     ),
   ),
 );
