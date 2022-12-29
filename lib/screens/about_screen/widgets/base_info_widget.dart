@@ -12,10 +12,12 @@ class BaseInfoWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Container(
       margin: const EdgeInsets.fromLTRB(15, 0, 15, 15),
       decoration: BoxDecoration(
-        border: Border.all(color: Theme.of(context).accentColor),
+        border: Border.all(color: theme.colorScheme.secondary),
         borderRadius: BorderRadius.circular(15),
       ),
       child: ClipRRect(
@@ -27,7 +29,9 @@ class BaseInfoWidget extends StatelessWidget {
               padding: const EdgeInsets.only(top: 15.0, left: 15.0),
               child: Text(
                 title,
-                style: Theme.of(context).accentTextTheme.bodyText1,
+                style: theme.textTheme.bodyMedium!.copyWith(
+                  color: theme.colorScheme.secondary,
+                ),
                 textAlign: TextAlign.start,
               ),
             ),

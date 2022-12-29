@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 
 import '../../widgets/c_screen_title.dart';
@@ -13,6 +11,8 @@ class SettingsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isIOS = Theme.of(context).platform == TargetPlatform.iOS;
+
     return Scaffold(
       body: SafeArea(
         child: ListView(
@@ -50,8 +50,7 @@ class SettingsScreen extends StatelessWidget {
           ],
         ),
       ),
-      bottomNavigationBar:
-          Platform.isIOS ? const OnlyBackButtonBottomAppBar() : null,
+      bottomNavigationBar: isIOS ? const OnlyBackButtonBottomAppBar() : null,
     );
   }
 }

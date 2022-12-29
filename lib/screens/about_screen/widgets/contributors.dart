@@ -5,8 +5,7 @@ import 'package:url_launcher/url_launcher_string.dart';
 
 import 'base_info_widget.dart';
 
-const _profileURL =
-    "https://secure.gravatar.com/avatar/81d9c078a3dfb1cda130020eecfc6e56?s=500";
+const _profileURL = "https://darshanrander.com/darshan-min.jpg";
 
 class Contributors extends StatefulWidget {
   const Contributors({Key? key}) : super(key: key);
@@ -26,9 +25,7 @@ class _ContributorsState extends State<Contributors> {
         InkWell(
           borderRadius: BorderRadius.circular(15),
           onTap: () {
-            _launchURL(
-              "https://www.linkedin.com/in/darshan-rander-b28a3b193/",
-            );
+            _launchURL("https://darshanrander.com");
           },
           child: Padding(
             padding: const EdgeInsets.all(10),
@@ -41,7 +38,7 @@ class _ContributorsState extends State<Contributors> {
 
   Future<void> _launchURL(String url) async {
     if (await canLaunchUrlString(url)) {
-      await launchUrlString(url);
+      await launchUrlString(url, mode: LaunchMode.externalApplication);
     } else {
       throw 'Could not launch $url';
     }
@@ -64,23 +61,18 @@ class _ContributorsState extends State<Contributors> {
           },
           backgroundImage:
               !_profileError ? const NetworkImage(_profileURL) : null,
-          child: _profileError
-              ? const Icon(
-                  Icons.person,
-                  size: 80,
-                )
-              : null,
+          child: _profileError ? const Icon(Icons.person, size: 80) : null,
         ),
         const SizedBox(height: 10),
         Text(
           "Darshan Rander",
           textAlign: TextAlign.center,
-          style: Theme.of(context).textTheme.headline6,
+          style: Theme.of(context).textTheme.titleLarge,
         ),
         Text(
           "Lead Developer",
           textAlign: TextAlign.center,
-          style: Theme.of(context).textTheme.bodyText2,
+          style: Theme.of(context).textTheme.bodyMedium,
         ),
       ],
     );

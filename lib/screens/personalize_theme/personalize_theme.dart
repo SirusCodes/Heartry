@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -14,6 +12,8 @@ class PersonalizeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isIOS = Theme.of(context).platform == TargetPlatform.iOS;
+
     return Scaffold(
       body: SafeArea(
         child: ListView(
@@ -23,8 +23,7 @@ class PersonalizeScreen extends StatelessWidget {
           ],
         ),
       ),
-      bottomNavigationBar:
-          Platform.isIOS ? const OnlyBackButtonBottomAppBar() : null,
+      bottomNavigationBar: isIOS ? const OnlyBackButtonBottomAppBar() : null,
     );
   }
 }
@@ -37,7 +36,7 @@ class _Body extends ConsumerWidget {
     final theme = watch(themeProvider);
     return theme.when(
       data: (currentTheme) => BaseInfoWidget(
-        title: "Theme",
+        title: "THEME",
         children: [
           ListTile(
             leading: const CircleAvatar(child: Icon(Icons.palette)),

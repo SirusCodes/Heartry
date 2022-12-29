@@ -1,6 +1,5 @@
 import 'dart:io';
 
-// TODO: remove badges package
 import 'package:badges/badges.dart';
 import 'package:flutter/material.dart' hide Badge;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -42,6 +41,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isIOS = theme.platform == TargetPlatform.iOS;
+
     return Scaffold(
       body: WillPopScope(
         onWillPop: () {
@@ -76,24 +78,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 builder: (context, watch, child) {
                   final imagePath = watch(configProvider).profile;
                   return Badge(
-                    badgeColor: Colors.deepPurple,
+                    badgeColor: theme.colorScheme.onPrimaryContainer,
                     badgeContent: IconButton(
-                      constraints:
-                          const BoxConstraints(maxWidth: 40, minWidth: 35),
-                      icon: const Icon(Icons.camera_alt_rounded),
+                      icon: Icon(
+                        Icons.camera_alt_rounded,
+                        color: theme.colorScheme.background,
+                      ),
                       onPressed: () => _showChangeProfileDialog(context),
                     ),
                     position: BadgePosition.bottomEnd(bottom: 6, end: 6),
+                    toAnimate: false,
                     child: CircleAvatar(
                       maxRadius: 100,
                       minRadius: 80,
                       backgroundImage:
                           imagePath != null ? FileImage(File(imagePath)) : null,
                       child: imagePath == null
-                          ? const Icon(
+                          ? Icon(
                               Icons.person,
                               size: 100,
-                              color: Colors.white,
+                              color: theme.colorScheme.onPrimaryContainer,
                             )
                           : null,
                     ),
@@ -121,8 +125,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
         ),
       ),
-      bottomNavigationBar:
-          Platform.isIOS ? const OnlyBackButtonBottomAppBar() : null,
+      bottomNavigationBar: isIOS ? const OnlyBackButtonBottomAppBar() : null,
     );
   }
 

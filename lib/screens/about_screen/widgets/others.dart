@@ -46,7 +46,7 @@ class Others extends StatelessWidget {
         ),
         Text(
           "Made with ❤ in India",
-          style: Theme.of(context).textTheme.bodyText1,
+          style: Theme.of(context).textTheme.bodyLarge,
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 10),
