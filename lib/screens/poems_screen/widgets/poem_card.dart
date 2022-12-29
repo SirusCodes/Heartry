@@ -198,15 +198,6 @@ class _PoemCardState extends State<PoemCard>
 
     navigator.pop();
 
-    scaffoldMessenger.showSnackBar(
-      SnackBar(
-        content: Text(msg),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(15.0),
-        ),
-        behavior: SnackBarBehavior.floating,
-        margin: const EdgeInsets.all(8.0),
-      ),
-    );
+    scaffoldMessenger.showSnackBar(SnackBar(content: Text(msg)));
   }
 }

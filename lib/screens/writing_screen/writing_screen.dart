@@ -133,14 +133,7 @@ class _WritingScreenState extends State<WritingScreen>
                       return true;
 
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: const Text("Please write something!"),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15.0),
-                        ),
-                        behavior: SnackBarBehavior.floating,
-                        margin: const EdgeInsets.all(8.0),
-                      ),
+                      const SnackBar(content: Text("Please write something!")),
                     );
 
                     return false;

@@ -50,14 +50,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           final name = _nameController.text;
           if (name.isEmpty) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15.0),
-                ),
-                behavior: SnackBarBehavior.floating,
-                margin: const EdgeInsets.all(8.0),
-                content: const Text(noNameError),
-              ),
+              const SnackBar(content: Text(noNameError)),
             );
 
             return Future.value(false);

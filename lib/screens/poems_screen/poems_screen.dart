@@ -21,6 +21,7 @@ class PoemScreen extends StatelessWidget {
     return Scaffold(
       body: SafeArea(
         child: NestedScrollView(
+          floatHeaderSlivers: true,
           headerSliverBuilder: (_, __) => [
             const SliverToBoxAdapter(
               child: _CAppBar(),
@@ -125,8 +126,29 @@ class _CBody extends ConsumerWidget {
   Widget build(BuildContext context, ScopedReader watch) {
     final isGrid = watch(listGridProvider).state;
     final poems = watch(streamPoemProvider);
+
     return poems.when(
       data: (poems) {
+        if (poems.isEmpty) {
+          return InkWell(
+            onTap: () => Navigator.push<void>(
+              context,
+              MaterialPageRoute(builder: (_) => const WritingScreen()),
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text("🥺", style: TextStyle(fontSize: 100)),
+                const SizedBox(height: 10),
+                Text(
+                  "No poems yet...",
+                  style: Theme.of(context).textTheme.headlineMedium,
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
+          );
+        }
         return isGrid
             ? MasonryGridView.count(
                 crossAxisCount: 2,
