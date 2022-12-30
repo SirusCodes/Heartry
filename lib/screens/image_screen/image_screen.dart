@@ -50,8 +50,8 @@ class _ImageScreenState extends State<ImageScreen> {
       body: SafeArea(
         child: Center(
           child: Consumer(
-            builder: (context, watch, child) {
-              final textScale = watch(textSizeProvider).state;
+            builder: (context, ref, child) {
+              final textScale = ref.watch(textSizeProvider);
               return LayoutBuilder(
                 builder: (context, constraints) {
                   poemLines = _getPoemSeparated(

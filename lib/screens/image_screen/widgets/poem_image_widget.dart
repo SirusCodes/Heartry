@@ -38,8 +38,8 @@ class PoemImageWidget extends StatelessWidget {
             fit: StackFit.expand,
             children: [
               Consumer(
-                builder: (context, watch, child) {
-                  final gradientList = watch(colorGradientListProvider);
+                builder: (context, ref, child) {
+                  final gradientList = ref.watch(colorGradientListProvider);
 
                   return Container(
                     decoration: BoxDecoration(
@@ -57,8 +57,8 @@ class PoemImageWidget extends StatelessWidget {
                   top: 20,
                   right: 20,
                   child: Consumer(
-                    builder: (context, watch, child) {
-                      final color = watch(textColorProvider).state;
+                    builder: (context, ref, child) {
+                      final color = ref.watch(textColorProvider);
 
                       return Text(
                         "${page + 1}/$total",

@@ -68,9 +68,9 @@ class _CAppBar extends ConsumerWidget {
   const _CAppBar({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context, ScopedReader watch) {
-    final imagePath = watch(configProvider).profile;
-    final isList = watch(listGridProvider).state;
+  Widget build(BuildContext context, WidgetRef ref) {
+    final imagePath = ref.watch(configProvider).profile;
+    final isList = ref.watch(listGridProvider);
 
     return Padding(
       padding: const EdgeInsets.only(
@@ -92,8 +92,8 @@ class _CAppBar extends ConsumerWidget {
           const Spacer(),
           IconButton(
             onPressed: () {
-              context.read(listGridProvider).state =
-                  !context.read(listGridProvider).state;
+              ref.read(listGridProvider.notifier).state =
+                  !ref.read(listGridProvider);
             },
             icon: isList
                 ? const Icon(Icons.list_alt_rounded)
@@ -123,9 +123,9 @@ class _CBody extends ConsumerWidget {
   const _CBody({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context, ScopedReader watch) {
-    final isGrid = watch(listGridProvider).state;
-    final poems = watch(streamPoemProvider);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isGrid = ref.watch(listGridProvider);
+    final poems = ref.watch(streamPoemProvider);
 
     return poems.when(
       data: (poems) {

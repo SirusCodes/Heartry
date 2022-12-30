@@ -115,8 +115,8 @@ class _PoemCardState extends State<PoemCard>
                     child: IconTheme(
                       data: const IconThemeData(color: Colors.white),
                       child: Consumer(
-                        builder: (context, watch, child) {
-                          final listGrid = watch(listGridProvider).state;
+                        builder: (context, ref, child) {
+                          final listGrid = ref.watch(listGridProvider);
                           return listGrid
                               ? GridView.count(
                                   crossAxisCount: 2,

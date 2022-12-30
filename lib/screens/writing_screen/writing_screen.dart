@@ -235,8 +235,8 @@ class _WritingBottomAppBar extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Consumer(
-            builder: (context, watch, child) {
-              final undoRedo = watch(undoRedoProvider);
+            builder: (context, ref, child) {
+              final undoRedo = ref.watch(undoRedoProvider);
               return Row(
                 children: <Widget>[
                   if (isIOS)

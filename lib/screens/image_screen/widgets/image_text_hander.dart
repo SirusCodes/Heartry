@@ -8,9 +8,9 @@ class ImageTextHandler extends ConsumerWidget {
   const ImageTextHandler({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context, ScopedReader watch) {
-    final value = watch(textSizeProvider).state;
-    final color = watch(textColorProvider).state;
+  Widget build(BuildContext context, WidgetRef ref) {
+    final value = ref.watch(textSizeProvider);
+    final color = ref.watch(textColorProvider);
 
     return Padding(
       padding: const EdgeInsets.all(20.0),
@@ -32,7 +32,7 @@ class ImageTextHandler extends ConsumerWidget {
               context: context,
               currentColor: color,
               onColorChanged: (color) =>
-                  context.read(textColorProvider).state = color,
+                  ref.read(textColorProvider.notifier).state = color,
             ),
             child: Container(
               height: 50,
@@ -58,7 +58,7 @@ class ImageTextHandler extends ConsumerWidget {
             divisions: 12,
             label: value.toStringAsPrecision(2),
             onChanged: (value) {
-              context.read(textSizeProvider).state = value;
+              ref.read(textSizeProvider.notifier).state = value;
             },
           ),
         ],

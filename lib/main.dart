@@ -54,8 +54,8 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return Consumer(
-      builder: (context, watch, child) {
-        final theme = watch(themeProvider);
+      builder: (context, ref, child) {
+        final theme = ref.watch(themeProvider);
         return theme.when(
           data: (theme) => MaterialApp(
             title: "Heartry",

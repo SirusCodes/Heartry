@@ -205,11 +205,11 @@ You can share poem in 2 ways.
   }
 }
 
-class _ProfilePage extends StatelessWidget {
+class _ProfilePage extends ConsumerWidget {
   const _ProfilePage({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final isAndroid = Theme.of(context).platform == TargetPlatform.android;
 
     return Container(
@@ -230,8 +230,8 @@ class _ProfilePage extends StatelessWidget {
             ),
             const SizedBox(height: 45),
             Consumer(
-              builder: (context, watch, child) {
-                final imagePath = watch(configProvider).profile;
+              builder: (context, ref, child) {
+                final imagePath = ref.watch(configProvider).profile;
                 return CircleAvatar(
                   maxRadius: 100,
                   minRadius: 80,
@@ -239,7 +239,7 @@ class _ProfilePage extends StatelessWidget {
                       imagePath != null ? FileImage(File(imagePath)) : null,
                   child: isAndroid
                       ? FutureBuilder(
-                          future: _retriveImage(context),
+                          future: _retriveImage(ref, context),
                           builder: (context, snapshot) {
                             if (snapshot.connectionState ==
                                 ConnectionState.done) {
@@ -263,13 +263,15 @@ class _ProfilePage extends StatelessWidget {
                 children: <Widget>[
                   _buildDialogButton(
                     context,
-                    onPressed: () => _updateImage(context, ImageSource.gallery),
+                    onPressed: () =>
+                        _updateImage(ref, context, ImageSource.gallery),
                     icon: const Icon(Icons.photo_library),
                     text: "Add from gallery",
                   ),
                   _buildDialogButton(
                     context,
-                    onPressed: () => _updateImage(context, ImageSource.camera),
+                    onPressed: () =>
+                        _updateImage(ref, context, ImageSource.camera),
                     icon: const Icon(Icons.camera_alt),
                     text: "Capture from camera",
                   ),
@@ -282,8 +284,8 @@ class _ProfilePage extends StatelessWidget {
     );
   }
 
-  Future<void> _retriveImage(BuildContext context) async {
-    final config = context.read(configProvider.notifier);
+  Future<void> _retriveImage(WidgetRef ref, BuildContext context) async {
+    final config = ref.read(configProvider.notifier);
     final retrievedImage = await ImagePicker().retrieveLostData();
 
     if (retrievedImage.isEmpty) return;
@@ -313,8 +315,9 @@ class _ProfilePage extends StatelessWidget {
     );
   }
 
-  Future<void> _updateImage(BuildContext context, ImageSource source) async {
-    final config = context.read(configProvider.notifier);
+  Future<void> _updateImage(
+      WidgetRef ref, BuildContext context, ImageSource source) async {
+    final config = ref.read(configProvider.notifier);
     final picker = ImagePicker();
     try {
       final pickedImage = await picker.pickImage(

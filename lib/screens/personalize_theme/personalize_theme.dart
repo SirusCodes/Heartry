@@ -32,8 +32,8 @@ class _Body extends ConsumerWidget {
   const _Body({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context, ScopedReader watch) {
-    final theme = watch(themeProvider);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = ref.watch(themeProvider);
     return theme.when(
       data: (currentTheme) => BaseInfoWidget(
         title: "THEME",
@@ -43,7 +43,7 @@ class _Body extends ConsumerWidget {
             title: const Text("Theme"),
             subtitle: Text(currentTheme.toString()),
             onTap: () async {
-              final theme = context.read(themeProvider.notifier);
+              final theme = ref.read(themeProvider.notifier);
               final selectedTheme =
                   await _showThemeDialog(context, currentTheme);
               if (selectedTheme != null) theme.setTheme(selectedTheme);

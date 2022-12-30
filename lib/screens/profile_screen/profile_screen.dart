@@ -72,8 +72,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 child: CScreenTitle(title: "Profile"),
               ),
               Consumer(
-                builder: (context, watch, child) {
-                  final imagePath = watch(configProvider).profile;
+                builder: (context, ref, child) {
+                  final imagePath = ref.watch(configProvider).profile;
                   return Badge(
                     badgeColor: theme.colorScheme.onPrimaryContainer,
                     badgeContent: IconButton(
@@ -81,7 +81,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         Icons.camera_alt_rounded,
                         color: theme.colorScheme.background,
                       ),
-                      onPressed: _showChangeProfileDialog,
+                      onPressed: () => _showChangeProfileDialog(ref),
                     ),
                     position: BadgePosition.bottomEnd(bottom: 6, end: 6),
                     toAnimate: false,
@@ -92,7 +92,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           imagePath != null ? FileImage(File(imagePath)) : null,
                       child: isAndroid
                           ? FutureBuilder(
-                              future: _retriveImage(),
+                              future: _retriveImage(ref),
                               builder: (context, snapshot) {
                                 if (snapshot.connectionState ==
                                     ConnectionState.done) {
@@ -135,8 +135,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Future<void> _retriveImage() async {
-    final config = context.read(configProvider.notifier);
+  Future<void> _retriveImage(WidgetRef ref) async {
+    final config = ref.read(configProvider.notifier);
     final retrievedImage = await ImagePicker().retrieveLostData();
 
     if (retrievedImage.isEmpty) return;
@@ -147,8 +147,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
     config.profile = await _saveImageInAppStorage(image);
   }
 
-  Future<void> _showChangeProfileDialog() async {
-    final config = context.read(configProvider.notifier);
+  Future<void> _showChangeProfileDialog(WidgetRef ref) async {
+    final config = ref.read(configProvider.notifier);
     final file = await showDialog<XFile>(
       context: context,
       builder: (context) => const _ProfileUpdateDialog(),
@@ -178,8 +178,8 @@ class _ProfileUpdateDialog extends ConsumerWidget {
   const _ProfileUpdateDialog({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context, ScopedReader watch) {
-    final image = watch(configProvider);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final image = ref.watch(configProvider);
     return SimpleDialog(
       contentPadding: const EdgeInsets.symmetric(
         horizontal: 24.0,
@@ -202,7 +202,7 @@ class _ProfileUpdateDialog extends ConsumerWidget {
           _buildDialogButton(
             context,
             onPressed: () {
-              context.read(configProvider).profile = null;
+              ref.read(configProvider).profile = null;
               Navigator.pop(context);
             },
             icon: const Icon(Icons.remove_circle),

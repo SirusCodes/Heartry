@@ -15,9 +15,9 @@ class PoemImageText extends ConsumerWidget {
   final List<String> poem;
   final String title, poet;
   @override
-  Widget build(BuildContext context, ScopedReader watch) {
-    final scale = watch(textSizeProvider).state;
-    final color = watch(textColorProvider).state;
+  Widget build(BuildContext context, WidgetRef ref) {
+    final scale = ref.watch(textSizeProvider);
+    final color = ref.watch(textColorProvider);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,

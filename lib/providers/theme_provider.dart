@@ -5,13 +5,12 @@ import '../utils/theme.dart';
 import 'shared_prefs_provider.dart';
 
 final themeProvider =
-    StateNotifierProvider<ThemeProvider, AsyncValue<ThemeType>>((ref) {
-  return ThemeProvider(ref.read);
-});
+    StateNotifierProvider<ThemeProvider, AsyncValue<ThemeType>>(
+        ThemeProvider.new);
 
 class ThemeProvider extends StateNotifier<AsyncValue<ThemeType>> {
-  ThemeProvider(Reader read) : super(const AsyncLoading()) {
-    read(sharedPrefsProvider.future).then((sharedPrefs) {
+  ThemeProvider(Ref ref) : super(const AsyncLoading()) {
+    ref.read(sharedPrefsProvider.future).then((sharedPrefs) {
       _sharedPreferences = sharedPrefs;
       _init();
     });

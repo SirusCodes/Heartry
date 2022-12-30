@@ -10,8 +10,9 @@ class ImageColorHandler extends ConsumerWidget {
   const ImageColorHandler({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context, ScopedReader watch) {
-    final gradientList = watch(colorGradientListProvider);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final gradientList = ref.watch(colorGradientListProvider);
+
     return SizedBox(
       height: 300,
       child: ReorderableListView(
@@ -28,7 +29,7 @@ class ImageColorHandler extends ConsumerWidget {
                 onPressed: () => showColorPicker(
                   context: context,
                   currentColor: Colors.white,
-                  onColorChanged: (color) => context
+                  onColorChanged: (color) => ref
                       .read(colorGradientListProvider.notifier)
                       .addColor(color),
                 ),
@@ -39,7 +40,7 @@ class ImageColorHandler extends ConsumerWidget {
         ),
         onReorder: (oldIndex, newIndex) {
           if (oldIndex != newIndex)
-            context.read(colorGradientListProvider.notifier).reorderColors(
+            ref.read(colorGradientListProvider.notifier).reorderColors(
                   oldIndex,
                   oldIndex > newIndex ? newIndex : newIndex - 1,
                 );
@@ -64,7 +65,7 @@ class ImageColorHandler extends ConsumerWidget {
                             : Colors.black,
                       ),
                       onPressed: () {
-                        context
+                        ref
                             .read(colorGradientListProvider.notifier)
                             .removeColor(i);
                       },
@@ -73,7 +74,7 @@ class ImageColorHandler extends ConsumerWidget {
               onTap: () => showColorPicker(
                 context: context,
                 currentColor: gradientList[i],
-                onColorChanged: (color) => context
+                onColorChanged: (color) => ref
                     .read(colorGradientListProvider.notifier)
                     .changeColor(color, i),
               ),
