@@ -2,13 +2,16 @@ import 'dart:io';
 
 import 'package:badges/badges.dart';
 import 'package:flutter/material.dart' hide Badge;
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
 
 import '../../database/config.dart';
 import '../../init_get_it.dart';
 import '../../widgets/c_screen_title.dart';
 import '../../widgets/only_back_button_bottom_app_bar.dart';
-import '../../widgets/profile_update_dialog.dart';
 
 const String noNameError = "Please enter your name...";
 
@@ -43,6 +46,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isIOS = theme.platform == TargetPlatform.iOS;
+    final isAndroid = theme.platform == TargetPlatform.android;
 
     return Scaffold(
       body: WillPopScope(
@@ -77,7 +81,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         Icons.camera_alt_rounded,
                         color: theme.colorScheme.background,
                       ),
-                      onPressed: () => _showChangeProfileDialog(context),
+                      onPressed: _showChangeProfileDialog,
                     ),
                     position: BadgePosition.bottomEnd(bottom: 6, end: 6),
                     toAnimate: false,
@@ -86,13 +90,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       minRadius: 80,
                       backgroundImage:
                           imagePath != null ? FileImage(File(imagePath)) : null,
-                      child: imagePath == null
-                          ? Icon(
-                              Icons.person,
-                              size: 100,
-                              color: theme.colorScheme.onPrimaryContainer,
+                      child: isAndroid
+                          ? FutureBuilder(
+                              future: _retriveImage(),
+                              builder: (context, snapshot) {
+                                if (snapshot.connectionState ==
+                                    ConnectionState.done) {
+                                  return imagePath == null
+                                      ? const Icon(Icons.person, size: 100)
+                                      : const SizedBox.shrink();
+                                }
+                                return const CircularProgressIndicator();
+                              },
                             )
-                          : null,
+                          : imagePath == null
+                              ? const Icon(Icons.person, size: 100)
+                              : null,
                     ),
                   );
                 },
@@ -122,10 +135,116 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Future _showChangeProfileDialog(BuildContext context) {
-    return showDialog<void>(
+  Future<void> _retriveImage() async {
+    final config = context.read(configProvider.notifier);
+    final retrievedImage = await ImagePicker().retrieveLostData();
+
+    if (retrievedImage.isEmpty) return;
+
+    final image = retrievedImage.file;
+    if (image == null) return;
+
+    config.profile = await _saveImageInAppStorage(image);
+  }
+
+  Future<void> _showChangeProfileDialog() async {
+    final config = context.read(configProvider.notifier);
+    final file = await showDialog<XFile>(
       context: context,
-      builder: (context) => const ProfileUpdateDialog(),
+      builder: (context) => const _ProfileUpdateDialog(),
     );
+
+    if (file == null) return;
+
+    config.profile = await _saveImageInAppStorage(file);
+  }
+
+  Future<String> _saveImageInAppStorage(XFile pickedImage) async {
+    imageCache.clear();
+
+    final directory = await getApplicationDocumentsDirectory();
+    final file = p.basename(pickedImage.path);
+
+    final imageSaved = p.join(directory.path, file);
+    final image = await File(imageSaved).writeAsBytes(
+      await pickedImage.readAsBytes(),
+    );
+
+    return image.path;
+  }
+}
+
+class _ProfileUpdateDialog extends ConsumerWidget {
+  const _ProfileUpdateDialog({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context, ScopedReader watch) {
+    final image = watch(configProvider);
+    return SimpleDialog(
+      contentPadding: const EdgeInsets.symmetric(
+        horizontal: 24.0,
+        vertical: 10,
+      ),
+      children: [
+        _buildDialogButton(
+          context,
+          onPressed: () => _updateImage(context, ImageSource.gallery),
+          icon: const Icon(Icons.photo_library),
+          text: "Add from gallery",
+        ),
+        _buildDialogButton(
+          context,
+          onPressed: () => _updateImage(context, ImageSource.camera),
+          icon: const Icon(Icons.camera_alt),
+          text: "Capture from camera",
+        ),
+        if (image.profile != null)
+          _buildDialogButton(
+            context,
+            onPressed: () {
+              context.read(configProvider).profile = null;
+              Navigator.pop(context);
+            },
+            icon: const Icon(Icons.remove_circle),
+            text: "Remove profile",
+          ),
+      ],
+    );
+  }
+
+  ElevatedButton _buildDialogButton(
+    BuildContext context, {
+    required VoidCallback onPressed,
+    required Icon icon,
+    required String text,
+  }) {
+    return ElevatedButton(
+      onPressed: onPressed,
+      child: Row(
+        children: <Widget>[
+          icon,
+          const Spacer(),
+          Text(text),
+          const Spacer(),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _updateImage(BuildContext context, ImageSource source) async {
+    final navigator = Navigator.of(context);
+    final picker = ImagePicker();
+    try {
+      final pickedImage = await picker.pickImage(
+        source: source,
+        requestFullMetadata: false,
+      );
+
+      navigator.pop(pickedImage);
+    } on PlatformException {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Permission denied")),
+      );
+    }
   }
 }

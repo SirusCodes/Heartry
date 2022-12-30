@@ -198,24 +198,10 @@ You can share poem in 2 ways.
 1. As Text 🆎 (For Messages)
 2. As Photos 📷 (For Stories)""");
 
-    await _insertPoem(
-      db,
+    await db.insertPoem(PoemModel(
       title: "Welcome!!🎉",
       poem: buffer.toString(),
-    );
-  }
-
-  Future<void> _insertPoem(
-    Database db, {
-    required String title,
-    required String poem,
-  }) async {
-    await db.insertPoem(
-      PoemModel(
-        title: title,
-        poem: poem,
-      ),
-    );
+    ));
   }
 }
 
@@ -224,6 +210,8 @@ class _ProfilePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isAndroid = Theme.of(context).platform == TargetPlatform.android;
+
     return Container(
       color: Colors.deepPurple.shade300,
       child: Center(
@@ -249,9 +237,22 @@ class _ProfilePage extends StatelessWidget {
                   minRadius: 80,
                   backgroundImage:
                       imagePath != null ? FileImage(File(imagePath)) : null,
-                  child: imagePath == null
-                      ? const Icon(Icons.person, size: 100)
-                      : null,
+                  child: isAndroid
+                      ? FutureBuilder(
+                          future: _retriveImage(context),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.done) {
+                              return imagePath == null
+                                  ? const Icon(Icons.person, size: 100)
+                                  : const SizedBox.shrink();
+                            }
+                            return const CircularProgressIndicator();
+                          },
+                        )
+                      : imagePath == null
+                          ? const Icon(Icons.person, size: 100)
+                          : null,
                 );
               },
             ),
@@ -281,6 +282,18 @@ class _ProfilePage extends StatelessWidget {
     );
   }
 
+  Future<void> _retriveImage(BuildContext context) async {
+    final config = context.read(configProvider.notifier);
+    final retrievedImage = await ImagePicker().retrieveLostData();
+
+    if (retrievedImage.isEmpty) return;
+
+    final image = retrievedImage.file;
+    if (image == null) return;
+
+    config.profile = await _saveImageInAppStorage(image);
+  }
+
   ElevatedButton _buildDialogButton(
     BuildContext context, {
     required VoidCallback onPressed,
@@ -301,15 +314,16 @@ class _ProfilePage extends StatelessWidget {
   }
 
   Future<void> _updateImage(BuildContext context, ImageSource source) async {
-    final navigator = Navigator.of(context);
     final config = context.read(configProvider.notifier);
     final picker = ImagePicker();
     try {
-      final pickedImage = await picker.getImage(source: source);
+      final pickedImage = await picker.pickImage(
+        source: source,
+        requestFullMetadata: false,
+      );
       if (pickedImage == null) return;
 
       config.profile = await _saveImageInAppStorage(pickedImage);
-      navigator.pop();
     } on PlatformException {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Permission denied")),
@@ -317,7 +331,7 @@ class _ProfilePage extends StatelessWidget {
     }
   }
 
-  Future<String> _saveImageInAppStorage(PickedFile pickedImage) async {
+  Future<String> _saveImageInAppStorage(XFile pickedImage) async {
     imageCache.clear();
 
     final directory = await getApplicationDocumentsDirectory();
