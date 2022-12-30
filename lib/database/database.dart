@@ -32,7 +32,8 @@ class Database extends _$Database {
   }
 
   Future<int> updatePoem(PoemModel model) {
-    return (update(poem)..where((tbl) => tbl.id.equals(model.id))).write(model);
+    return (update(poem)..where((tbl) => tbl.id.equals(model.id!)))
+        .write(model);
   }
 
   Future<int> deletePoem(PoemModel model) {

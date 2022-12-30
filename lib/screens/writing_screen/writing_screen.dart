@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:drift/drift.dart' show Value;
 
 import '../../database/database.dart';
 import '../../init_get_it.dart';
@@ -200,12 +201,12 @@ class _WritingScreenState extends State<WritingScreen>
       poem: undoRedo.textEditingController.text.trim(),
     );
     final id = await poemDB.insertPoem(_poemModel!);
-    _poemModel = _poemModel!.copyWith(id: id);
+    _poemModel = _poemModel!.copyWith(id: Value(id));
   }
 
   void _update() {
     _poemModel = _poemModel!.copyWith(
-      lastEdit: DateTime.now(),
+      lastEdit: Value(DateTime.now()),
       title: _titleTextController.text.trim(),
       poem: undoRedo.textEditingController.text.trim(),
     );
