@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:share/share.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../../widgets/c_screen_title.dart';
 import '../../widgets/only_back_button_bottom_app_bar.dart';
@@ -34,7 +34,9 @@ class ShareImagesScreen extends StatelessWidget {
                     .map(
                       (path) => InkWell(
                         onTap: () {
-                          Share.shareFiles([path], mimeTypes: ["image/png"]);
+                          Share.shareXFiles([
+                            XFile(path, mimeType: 'image/png'),
+                          ]);
                         },
                         child: Image.file(File(path)),
                       ),

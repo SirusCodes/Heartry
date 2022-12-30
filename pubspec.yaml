@@ -33,11 +33,11 @@ dependencies:
   get_it: ^7.2.0
   image_picker: ^0.8.6
   liquid_swipe: ^3.0.0
-  package_info: ^2.0.2
+  package_info_plus: ^3.0.2
   path: ^1.8.1
   path_provider: ^2.0.8
   screenshot: ^1.2.3
-  share: ^2.0.4
+  share_plus: ^6.3.0
   shared_preferences: ^2.0.12
   sqlite3_flutter_libs: ^0.5.3
   url_launcher: ^6.0.18

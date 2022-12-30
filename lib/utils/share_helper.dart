@@ -1,5 +1,5 @@
 import 'package:flutter/cupertino.dart';
-import 'package:share/share.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../database/config.dart';
 import '../init_get_it.dart';

@@ -5,7 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:screenshot/screenshot.dart';
-import 'package:share/share.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../../providers/text_providers.dart';
 import '../../utils/contants.dart';
@@ -188,12 +188,8 @@ class _ImageScreenState extends State<ImageScreen> {
   }
 
   Future<void> _shareAll(List<String> images) async {
-    await Share.shareFiles(
-      images,
-      mimeTypes: List.generate(
-        poemLines.length,
-        (index) => "image/png",
-      ),
+    await Share.shareXFiles(
+      images.map((path) => XFile(path, mimeType: "image/png")).toList(),
     );
   }
 
