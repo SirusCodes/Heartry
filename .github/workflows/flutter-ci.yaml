@@ -35,7 +35,6 @@ jobs:
           echo "APP_VERSION=$(grep -Po '(?<=version: )(.*)(?=\+)' pubspec.yaml)" >> $GITHUB_ENV
 
           flutter pub get
-          flutter pub run build_runner build
 
       - name: Lint and Analyze code
         run: |
