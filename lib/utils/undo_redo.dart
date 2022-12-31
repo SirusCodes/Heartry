@@ -44,8 +44,6 @@ class UndoRedo extends ChangeNotifier {
     final result = undoStack.removeFirst();
     redoStack.addFirst(result);
 
-    printStacks();
-
     notifyListeners();
     textEditingController.text = undoStack.first;
     textEditingController.selection = TextSelection.fromPosition(
@@ -59,17 +57,10 @@ class UndoRedo extends ChangeNotifier {
     final result = redoStack.removeFirst();
     undoStack.addFirst(result);
 
-    printStacks();
-
     notifyListeners();
     textEditingController.text = result;
     textEditingController.selection = TextSelection.fromPosition(
       TextPosition(offset: result.length),
     );
-  }
-
-  void printStacks() {
-    debugPrint("Undo $undoStack");
-    debugPrint("Redo $redoStack");
   }
 }
