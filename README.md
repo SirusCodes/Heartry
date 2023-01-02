@@ -24,27 +24,21 @@
             <img src='images/intro.png' alt='Intro Screen'>
         </td>
         <td>
-            <img src='images/home_grid.png' alt='Home Screen with grid enabled'>
-        </td>
-        <td>
-            <img src='images/home_list.png' alt='Home Screen with grid enabled'>
+            <img src='images/home.png' alt='Home Screen'>
         </td>
         <td>
             <img src='images/writing.png' alt='Writing Screen'>
         </td>
         <td>
-            <img src='images/image.png' alt='Screen to get image'>
+            <img src='images/share_image.png' alt='Screen to get image'>
         </td>
     </tr>
     <tr>
         <td>
-            <img src='images/color_picker.png' alt='Can modify background gradient'>
+            <img src='images/customize_color.png' alt='Can modify background gradient'>
         </td>
         <td>
             <img src='images/share_in_parts.png' alt='Sharing more than 1 image at a time'>
-        </td>
-        <td>
-            <img src='images/toolbar.png' alt='Toolbar'>
         </td>
         <td>
             <img src='images/reader_mode.png' alt='Reader mode so keyboard won\'t disturb you '>
@@ -60,4 +54,3 @@
 
 - Contributions are always welcomed.
 - Please check [CONTRIBUTING.md](https://github.com/SirusCodes/Heartry/blob/main/CONTRIBUTING.md)
-
