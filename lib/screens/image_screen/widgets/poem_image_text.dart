@@ -27,12 +27,15 @@ class PoemImageText extends ConsumerWidget {
         Text(
           title,
           textAlign: TextAlign.center,
-          textScaleFactor: scale,
+          textScaleFactor: scale <= 1.2 ? scale : 1.2,
           style: TextStyle(
             fontSize: TITLE_TEXT_SIZE,
             color: color,
             fontFamily: "Caveat",
+            fontWeight: FontWeight.bold,
           ),
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
         ),
         ...poem.map(
           (e) => Text(

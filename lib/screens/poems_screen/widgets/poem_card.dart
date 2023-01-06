@@ -89,6 +89,8 @@ class _PoemCardState extends State<PoemCard>
                           widget.model.title,
                           textAlign: TextAlign.start,
                           style: Theme.of(context).textTheme.headlineSmall,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       const SizedBox(height: 5),
                       if (widget.model.poem.isNotEmpty)

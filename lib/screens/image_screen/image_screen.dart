@@ -243,7 +243,7 @@ class _ImageScreenState extends State<ImageScreen> {
       constraints,
       widget.title!,
       TITLE_TEXT_SIZE,
-      textScale,
+      textScale <= 1.2 ? textScale : 1.2,
     ).height;
 
     // getting poet height
