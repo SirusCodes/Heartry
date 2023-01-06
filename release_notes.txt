@@ -1,1 +1,1 @@
-Add Material 3 support 💜
+Fix crash caused by title height issue in image share screen.
