@@ -1,3 +1,7 @@
+## 2.1.0 - 23/02/2023
+
+Add dynamic Material You theme to the app 💜
+
 ## 2.0.1 - 06/01/2023
 
 Fix crash caused by title height issue in image share screen.
