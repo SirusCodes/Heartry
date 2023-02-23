@@ -29,44 +29,49 @@ enum ThemeType {
   }
 }
 
-final lightTheme = ThemeData(
-  useMaterial3: true,
-  colorScheme: _lightColorScheme,
-  outlinedButtonTheme: OutlinedButtonThemeData(
-    style: OutlinedButton.styleFrom(
-      padding: const EdgeInsets.all(10.0),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-      side: BorderSide(color: _lightColorScheme.primary),
-      backgroundColor: _lightColorScheme.secondaryContainer,
-    ),
-  ),
-);
+ThemeData getLightTheme(ColorScheme colorScheme) => ThemeData(
+      useMaterial3: true,
+      colorScheme: colorScheme,
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: OutlinedButton.styleFrom(
+          padding: const EdgeInsets.all(10.0),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+          side: BorderSide(color: colorScheme.primary),
+          backgroundColor: colorScheme.secondaryContainer,
+        ),
+      ),
+    );
 
-final darkTheme = ThemeData(
-  useMaterial3: true,
-  colorScheme: _darkColorScheme,
-  outlinedButtonTheme: OutlinedButtonThemeData(
-    style: OutlinedButton.styleFrom(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-      padding: const EdgeInsets.all(10.0),
-      backgroundColor: _darkColorScheme.secondaryContainer,
-    ),
-  ),
-);
+ThemeData getDarkTheme(ColorScheme colorScheme) => ThemeData(
+      useMaterial3: true,
+      colorScheme: colorScheme,
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: OutlinedButton.styleFrom(
+          padding: const EdgeInsets.all(10.0),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+          side: BorderSide(color: colorScheme.primary),
+          backgroundColor: colorScheme.secondaryContainer,
+        ),
+      ),
+    );
 
-final blackTheme = ThemeData(
-  useMaterial3: true,
-  colorScheme: _blackColorScheme,
-  outlinedButtonTheme: OutlinedButtonThemeData(
-    style: OutlinedButton.styleFrom(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-      padding: const EdgeInsets.all(10.0),
-      side: BorderSide(color: _blackColorScheme.secondaryContainer, width: 2),
-    ),
-  ),
-);
+ThemeData getBlackTheme(ColorScheme colorScheme) => ThemeData(
+      useMaterial3: true,
+      colorScheme: colorScheme,
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: OutlinedButton.styleFrom(
+          padding: const EdgeInsets.all(10.0),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+          side: BorderSide(
+              color: heartryBlackColorScheme.secondaryContainer, width: 2),
+        ),
+      ),
+    );
 
-const _lightColorScheme = ColorScheme(
+const heartryLightColorScheme = ColorScheme(
   brightness: Brightness.light,
   primary: Color(0xFF714BA5),
   onPrimary: Color(0xFFFFFFFF),
@@ -100,7 +105,7 @@ const _lightColorScheme = ColorScheme(
   scrim: Color(0xFF000000),
 );
 
-const _darkColorScheme = ColorScheme(
+const heartryDarkColorScheme = ColorScheme(
   brightness: Brightness.dark,
   primary: Color(0xFFD8B9FF),
   onPrimary: Color(0xFF411774),
@@ -134,7 +139,7 @@ const _darkColorScheme = ColorScheme(
   scrim: Color(0xFF000000),
 );
 
-const _blackColorScheme = ColorScheme(
+const heartryBlackColorScheme = ColorScheme(
   brightness: Brightness.dark,
   primary: Color(0xFFD8B9FF),
   onPrimary: Color(0xFF411774),

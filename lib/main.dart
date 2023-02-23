@@ -1,4 +1,5 @@
 import 'package:catcher/catcher.dart';
+import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -57,30 +58,49 @@ class _MyAppState extends State<MyApp> {
       builder: (context, ref, child) {
         final theme = ref.watch(themeProvider);
         return theme.when(
-          data: (theme) => MaterialApp(
-            title: "Heartry",
-            navigatorKey: Catcher.navigatorKey,
-            themeMode: _getThemeMode(theme),
-            theme: lightTheme,
-            darkTheme: _getDarkTheme(theme),
-            home: FutureBuilder(
-              future: _initSharedPrefs,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.done) {
-                  final name = locator<Config>().name;
+          data: (theme) => DynamicColorBuilder(
+            builder: (lightDynamic, darkDynamic) {
+              ColorScheme lightColorScheme, darkColorScheme, blackColorScheme;
 
-                  if (name != null) return const PoemScreen();
-
-                  return const IntroScreen();
-                }
-
-                return const Material(
-                  child: Center(
-                    child: CircularProgressIndicator(),
-                  ),
+              if (lightDynamic != null && darkDynamic != null) {
+                lightColorScheme = lightDynamic.harmonized();
+                darkColorScheme = darkDynamic.harmonized();
+                blackColorScheme = darkColorScheme.copyWith(
+                  background: const Color(0xFF000000),
                 );
-              },
-            ),
+              } else {
+                lightColorScheme = heartryLightColorScheme;
+                darkColorScheme = heartryDarkColorScheme;
+                blackColorScheme = heartryBlackColorScheme;
+              }
+              return MaterialApp(
+                title: "Heartry",
+                navigatorKey: Catcher.navigatorKey,
+                themeMode: _getThemeMode(theme),
+                theme: getLightTheme(lightColorScheme),
+                darkTheme: theme == ThemeType.dark
+                    ? getDarkTheme(darkColorScheme)
+                    : getBlackTheme(blackColorScheme),
+                home: FutureBuilder(
+                  future: _initSharedPrefs,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.done) {
+                      final name = locator<Config>().name;
+
+                      if (name != null) return const PoemScreen();
+
+                      return const IntroScreen();
+                    }
+
+                    return const Material(
+                      child: Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                    );
+                  },
+                ),
+              );
+            },
           ),
           loading: () => const Material(
             child: Center(
@@ -105,10 +125,5 @@ class _MyAppState extends State<MyApp> {
       default:
         return ThemeMode.system;
     }
-  }
-
-  ThemeData _getDarkTheme(ThemeType theme) {
-    if (theme == ThemeType.dark) return darkTheme;
-    return blackTheme;
   }
 }

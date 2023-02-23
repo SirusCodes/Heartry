@@ -31,7 +31,7 @@ class _IntroScreenState extends State<IntroScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Theme(
-        data: lightTheme,
+        data: getLightTheme(heartryLightColorScheme),
         child: LiquidSwipe(
           pages: const [
             _WelcomePage(),
