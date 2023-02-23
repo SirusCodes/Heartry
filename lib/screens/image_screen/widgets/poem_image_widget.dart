@@ -26,6 +26,8 @@ class PoemImageWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final primaryColor = Theme.of(context).colorScheme.primary;
+
     return AspectRatio(
       aspectRatio: 9 / 16,
       child: SizedBox.expand(
@@ -39,7 +41,8 @@ class PoemImageWidget extends StatelessWidget {
             children: [
               Consumer(
                 builder: (context, ref, child) {
-                  final gradientList = ref.watch(colorGradientListProvider);
+                  final gradientList =
+                      ref.watch(colorGradientListProvider(primaryColor));
 
                   return Container(
                     decoration: BoxDecoration(

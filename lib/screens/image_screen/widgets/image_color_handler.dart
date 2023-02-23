@@ -11,7 +11,8 @@ class ImageColorHandler extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final gradientList = ref.watch(colorGradientListProvider);
+    final primaryColor = Theme.of(context).colorScheme.primary;
+    final gradientList = ref.watch(colorGradientListProvider(primaryColor));
 
     return SizedBox(
       height: 300,
@@ -30,7 +31,7 @@ class ImageColorHandler extends ConsumerWidget {
                   context: context,
                   currentColor: Colors.white,
                   onColorChanged: (color) => ref
-                      .read(colorGradientListProvider.notifier)
+                      .read(colorGradientListProvider(primaryColor).notifier)
                       .addColor(color),
                 ),
                 icon: const Icon(Icons.add),
@@ -40,7 +41,9 @@ class ImageColorHandler extends ConsumerWidget {
         ),
         onReorder: (oldIndex, newIndex) {
           if (oldIndex != newIndex)
-            ref.read(colorGradientListProvider.notifier).reorderColors(
+            ref
+                .read(colorGradientListProvider(primaryColor).notifier)
+                .reorderColors(
                   oldIndex,
                   oldIndex > newIndex ? newIndex : newIndex - 1,
                 );
@@ -64,18 +67,17 @@ class ImageColorHandler extends ConsumerWidget {
                             ? Colors.white
                             : Colors.black,
                       ),
-                      onPressed: () {
-                        ref
-                            .read(colorGradientListProvider.notifier)
-                            .removeColor(i);
-                      },
+                      onPressed: () => ref
+                          .read(
+                              colorGradientListProvider(primaryColor).notifier)
+                          .removeColor(i),
                     )
                   : null,
               onTap: () => showColorPicker(
                 context: context,
                 currentColor: gradientList[i],
                 onColorChanged: (color) => ref
-                    .read(colorGradientListProvider.notifier)
+                    .read(colorGradientListProvider(primaryColor).notifier)
                     .changeColor(color, i),
               ),
             ),
