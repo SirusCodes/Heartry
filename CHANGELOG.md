@@ -1,4 +1,8 @@
-## 2.1.0 - 23/02/2023
+## 2.2.0-beta - 15/03/2023
+
+Added custom themes, now you can change you application theme from Settings > Personalize > Accent Color 💙 
+
+## 2.1.0-beta - 23/02/2023
 
 Add dynamic Material You theme to the app 💜
 

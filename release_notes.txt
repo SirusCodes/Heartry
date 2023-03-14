@@ -1,1 +1,1 @@
-Add dynamic Material You theme to the app 💜
+Added custom themes, now you can change you application theme from Settings > Personalize > Accent Color 💙 
