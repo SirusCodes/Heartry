@@ -30,7 +30,7 @@ class ImageColorHandler extends ConsumerWidget {
                 onPressed: () => showColorPicker(
                   context: context,
                   currentColor: Colors.white,
-                  onColorChanged: (color) => ref
+                  onOkPressed: (color) => ref
                       .read(colorGradientListProvider(primaryColor).notifier)
                       .addColor(color),
                 ),
@@ -76,7 +76,7 @@ class ImageColorHandler extends ConsumerWidget {
               onTap: () => showColorPicker(
                 context: context,
                 currentColor: gradientList[i],
-                onColorChanged: (color) => ref
+                onOkPressed: (color) => ref
                     .read(colorGradientListProvider(primaryColor).notifier)
                     .changeColor(color, i),
               ),

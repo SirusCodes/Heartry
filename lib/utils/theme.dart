@@ -51,7 +51,7 @@ ThemeData getDarkTheme(ColorScheme colorScheme) => ThemeData(
           padding: const EdgeInsets.all(10.0),
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-          side: BorderSide(color: colorScheme.primary),
+          side: BorderSide.none,
           backgroundColor: colorScheme.secondaryContainer,
         ),
       ),
@@ -59,14 +59,13 @@ ThemeData getDarkTheme(ColorScheme colorScheme) => ThemeData(
 
 ThemeData getBlackTheme(ColorScheme colorScheme) => ThemeData(
       useMaterial3: true,
-      colorScheme: colorScheme,
+      colorScheme: colorScheme.copyWith(background: Colors.black),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
           padding: const EdgeInsets.all(10.0),
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-          side: BorderSide(
-              color: heartryBlackColorScheme.secondaryContainer, width: 2),
+          side: BorderSide(color: colorScheme.secondaryContainer, width: 2),
         ),
       ),
     );
@@ -124,40 +123,6 @@ const heartryDarkColorScheme = ColorScheme(
   onError: Color(0xFF690005),
   onErrorContainer: Color(0xFFFFDAD6),
   background: Color(0xFF1D1B1E),
-  onBackground: Color(0xFFE7E1E5),
-  surface: Color(0xFF1D1B1E),
-  onSurface: Color(0xFFE7E1E5),
-  surfaceVariant: Color(0xFF4A454E),
-  onSurfaceVariant: Color(0xFFCCC4CF),
-  outline: Color(0xFF958E99),
-  onInverseSurface: Color(0xFF1D1B1E),
-  inverseSurface: Color(0xFFE7E1E5),
-  inversePrimary: Color(0xFF714BA5),
-  shadow: Color(0xFF000000),
-  surfaceTint: Color(0xFFD8B9FF),
-  outlineVariant: Color(0xFF4A454E),
-  scrim: Color(0xFF000000),
-);
-
-const heartryBlackColorScheme = ColorScheme(
-  brightness: Brightness.dark,
-  primary: Color(0xFFD8B9FF),
-  onPrimary: Color(0xFF411774),
-  primaryContainer: Color(0xFF59328C),
-  onPrimaryContainer: Color(0xFFEDDCFF),
-  secondary: Color(0xFFCFC2DA),
-  onSecondary: Color(0xFF352D40),
-  secondaryContainer: Color(0xFF4C4357),
-  onSecondaryContainer: Color(0xFFEBDDF7),
-  tertiary: Color(0xFFF2B7C1),
-  onTertiary: Color(0xFF4B252D),
-  tertiaryContainer: Color(0xFF653B43),
-  onTertiaryContainer: Color(0xFFFFD9DF),
-  error: Color(0xFFFFB4AB),
-  errorContainer: Color(0xFF93000A),
-  onError: Color(0xFF690005),
-  onErrorContainer: Color(0xFFFFDAD6),
-  background: Color(0xFF000000),
   onBackground: Color(0xFFE7E1E5),
   surface: Color(0xFF1D1B1E),
   onSurface: Color(0xFFE7E1E5),

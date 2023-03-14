@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:heartry/widgets/color_picker_dialog.dart';
 
 import '../../providers/theme_provider.dart';
 import '../../utils/theme.dart';
@@ -33,21 +34,39 @@ class _Body extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final theme = ref.watch(themeProvider);
-    return theme.when(
+    final themeDetail = ref.watch(themeProvider);
+
+    return themeDetail.when(
       data: (currentTheme) => BaseInfoWidget(
         title: "THEME",
         children: [
           ListTile(
             leading: const CircleAvatar(child: Icon(Icons.palette)),
             title: const Text("Theme"),
-            subtitle: Text(currentTheme.toString()),
+            subtitle: Text(currentTheme.themeType.toString()),
             onTap: () async {
               final theme = ref.read(themeProvider.notifier);
               final selectedTheme =
-                  await _showThemeDialog(context, currentTheme);
+                  await _showThemeDialog(context, currentTheme.themeType);
               if (selectedTheme != null) theme.setTheme(selectedTheme);
             },
+          ),
+          ListTile(
+            leading: const CircleAvatar(
+              child: Icon(Icons.format_color_fill_rounded),
+            ),
+            title: const Text("Accent Color"),
+            onTap: () => showColorPickerWithDynamic(
+              context: context,
+              currentColor: currentTheme.accentColor,
+              onOkPressed: (color, isDynamic) {
+                final theme = ref.read(themeProvider.notifier);
+                if (isDynamic)
+                  theme.setToDynamicColor();
+                else
+                  theme.setAccentColor(color);
+              },
+            ),
           ),
         ],
       ),

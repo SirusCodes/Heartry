@@ -31,7 +31,7 @@ class ImageTextHandler extends ConsumerWidget {
             onTap: () => showColorPicker(
               context: context,
               currentColor: color,
-              onColorChanged: (color) =>
+              onOkPressed: (color) =>
                   ref.read(textColorProvider.notifier).state = color,
             ),
             child: Container(

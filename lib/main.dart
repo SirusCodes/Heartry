@@ -1,5 +1,4 @@
 import 'package:catcher/catcher.dart';
-import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -11,6 +10,7 @@ import 'screens/intro_screen/intro_screen.dart';
 import 'screens/poems_screen/poems_screen.dart';
 import 'utils/custom_email_report_handler.dart';
 import 'utils/theme.dart';
+import 'widgets/color_scheme_builder.dart';
 
 Future<void> main() async {
   initGetIt();
@@ -56,31 +56,20 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return Consumer(
       builder: (context, ref, child) {
-        final theme = ref.watch(themeProvider);
-        return theme.when(
-          data: (theme) => DynamicColorBuilder(
-            builder: (lightDynamic, darkDynamic) {
-              ColorScheme lightColorScheme, darkColorScheme, blackColorScheme;
+        final themeDetail = ref.watch(themeProvider);
 
-              if (lightDynamic != null && darkDynamic != null) {
-                lightColorScheme = lightDynamic.harmonized();
-                darkColorScheme = darkDynamic.harmonized();
-                blackColorScheme = darkColorScheme.copyWith(
-                  background: const Color(0xFF000000),
-                );
-              } else {
-                lightColorScheme = heartryLightColorScheme;
-                darkColorScheme = heartryDarkColorScheme;
-                blackColorScheme = heartryBlackColorScheme;
-              }
+        return themeDetail.when(
+          data: (theme) => ColorSchemeBuilder(
+            accentColor: theme.accentColor,
+            builder: (lightColorScheme, darkColorScheme) {
               return MaterialApp(
                 title: "Heartry",
                 navigatorKey: Catcher.navigatorKey,
-                themeMode: _getThemeMode(theme),
+                themeMode: _getThemeMode(theme.themeType),
                 theme: getLightTheme(lightColorScheme),
-                darkTheme: theme == ThemeType.dark
+                darkTheme: theme.themeType == ThemeType.dark
                     ? getDarkTheme(darkColorScheme)
-                    : getBlackTheme(blackColorScheme),
+                    : getBlackTheme(darkColorScheme),
                 home: FutureBuilder(
                   future: _initSharedPrefs,
                   builder: (context, snapshot) {
