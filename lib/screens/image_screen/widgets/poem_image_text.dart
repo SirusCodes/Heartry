@@ -34,7 +34,7 @@ class PoemImageText extends ConsumerWidget {
             fontFamily: "Caveat",
             fontWeight: FontWeight.bold,
           ),
-          maxLines: 2,
+          maxLines: POEM_TITLE_MAX_LINES,
           overflow: TextOverflow.ellipsis,
         ),
         ...poem.map(
@@ -52,12 +52,14 @@ class PoemImageText extends ConsumerWidget {
         Text(
           "-$poet",
           textAlign: TextAlign.center,
-          textScaleFactor: scale,
+          textScaleFactor: scale <= 1.2 ? scale : 1.2,
           style: TextStyle(
             fontSize: POET_TEXT_SIZE,
             color: color,
             fontFamily: "Caveat",
           ),
+          maxLines: POET_NAME_MAX_LINES,
+          overflow: TextOverflow.ellipsis,
         ),
       ],
     );

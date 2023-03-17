@@ -244,6 +244,7 @@ class _ImageScreenState extends State<ImageScreen> {
       widget.title!,
       TITLE_TEXT_SIZE,
       textScale <= 1.2 ? textScale : 1.2,
+      POEM_TITLE_MAX_LINES,
     ).height;
 
     // getting poet height
@@ -252,7 +253,8 @@ class _ImageScreenState extends State<ImageScreen> {
       constraints,
       widget.poet!,
       POET_TEXT_SIZE,
-      textScale,
+      textScale <= 1.2 ? textScale : 1.2,
+      POET_NAME_MAX_LINES,
     ).height;
 
     final double availableHeight = constraints.maxHeight -
@@ -294,8 +296,9 @@ class _ImageScreenState extends State<ImageScreen> {
     BoxConstraints constraints,
     String text,
     double fontSize,
-    double scale,
-  ) {
+    double scale, [
+    int? maxLines,
+  ]) {
     final painter = TextPainter(
       text: TextSpan(
         text: text,
@@ -304,6 +307,7 @@ class _ImageScreenState extends State<ImageScreen> {
           fontFamily: "Caveat",
         ),
       ),
+      maxLines: maxLines,
       textScaleFactor: scale,
       textDirection: TextDirection.ltr,
     )..layout(maxWidth: constraints.maxWidth - 140);
