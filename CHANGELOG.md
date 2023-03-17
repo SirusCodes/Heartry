@@ -1,3 +1,7 @@
+## 2.2.1 - 18/03/2023
+
+Fix crash caused during image creation 🐛🔨
+
 ## 2.2.0-beta - 15/03/2023
 
 Added custom themes, now you can change you application theme from Settings > Personalize > Accent Color 💙 

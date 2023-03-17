@@ -1,1 +1,1 @@
-Added custom themes, now you can change you application theme from Settings > Personalize > Accent Color 💙 
+Fix crash caused during image creation 🐛🔨
