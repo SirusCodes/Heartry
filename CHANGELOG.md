@@ -1,10 +1,15 @@
+## 2.3.0 - 01/07/2023
+
+- Show changelog dialog when app is updated
+- Add Telegram group joining link
+
 ## 2.2.1 - 18/03/2023
 
 Fix crash caused during image creation 🐛🔨
 
 ## 2.2.0-beta - 15/03/2023
 
-Added custom themes, now you can change you application theme from Settings > Personalize > Accent Color 💙 
+Added custom themes, now you can change you application theme from Settings > Personalize > Accent Color 💙
 
 ## 2.1.0-beta - 23/02/2023
 

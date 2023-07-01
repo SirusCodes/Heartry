@@ -1,1 +1,2 @@
-Fix crash caused during image creation 🐛🔨
+- Show changelog dialog when app is updated
+- Add Telegram group joining link
