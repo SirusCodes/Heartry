@@ -60,7 +60,7 @@ class _ImageScreenState extends State<ImageScreen> {
                     textScale,
                   );
 
-                  return Screenshot<void>(
+                  return Screenshot(
                     controller: _screenshot,
                     child: PageView.builder(
                       controller: _pageController,

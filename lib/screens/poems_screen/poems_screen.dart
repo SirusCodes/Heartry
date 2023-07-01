@@ -2,10 +2,14 @@ import 'dart:io';
 
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 import '../../database/config.dart';
+import '../../providers/app_version_manager_provider.dart';
+import '../../providers/changelog_provider.dart';
 import '../../providers/list_grid_provider.dart';
 import '../../providers/stream_poem_provider.dart';
 import '../profile_screen/profile_screen.dart';
@@ -13,8 +17,25 @@ import '../settings_screen/settings_screen.dart';
 import '../writing_screen/writing_screen.dart';
 import 'widgets/poem_card.dart';
 
-class PoemScreen extends StatelessWidget {
+class PoemScreen extends ConsumerStatefulWidget {
   const PoemScreen({Key? key}) : super(key: key);
+
+  @override
+  ConsumerState<PoemScreen> createState() => _PoemScreenState();
+}
+
+class _PoemScreenState extends ConsumerState<PoemScreen> {
+  @override
+  void initState() {
+    super.initState();
+    final appVersionManager = ref.read(appVersionManagerProvider);
+    appVersionManager.isAppUpdated().then(
+      (value) {
+        if (!value) return;
+        _showChangelogs();
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -59,6 +80,82 @@ class PoemScreen extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  void _showChangelogs() {
+    showDialog(
+      context: context,
+      builder: (_) => const Dialog(child: _ChangelogDialog()),
+    );
+  }
+}
+
+class _ChangelogDialog extends StatelessWidget {
+  const _ChangelogDialog();
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(20.0),
+      child: Column(
+        children: [
+          Expanded(
+            child: Consumer(
+              builder: (context, ref, child) {
+                final changelog = ref.watch(changelogProvider);
+                return changelog.when(
+                  data: (value) => Column(
+                    children: [
+                      Text(
+                        "Changelogs",
+                        style: Theme.of(context).textTheme.headlineMedium,
+                      ),
+                      const Divider(),
+                      Markdown(
+                        data: value,
+                        shrinkWrap: true,
+                      ),
+                    ],
+                  ),
+                  error: (Object error, StackTrace stackTrace) => Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text("Cannot fetch changelogs"),
+                      ElevatedButton(
+                        onPressed: () {
+                          const githubChangelogUrl =
+                              "https://github.com/SirusCodes/Heartry/blob/main/CHANGELOG.md";
+                          launchUrlString(githubChangelogUrl);
+                        },
+                        child: const Text("Open changelogs in browser"),
+                      )
+                    ],
+                  ),
+                  loading: () => const Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                );
+              },
+            ),
+          ),
+          Row(
+            children: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text("Close"),
+              ),
+              FilledButton(
+                onPressed: () => launchUrlString(
+                  "https://t.me/heartry",
+                  mode: LaunchMode.externalApplication,
+                ),
+                child: const Text("Join Telegram Group"),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
