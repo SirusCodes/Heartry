@@ -37,6 +37,15 @@ class SupportDevelopment extends StatelessWidget {
             "https://play.google.com/store/apps/details?id=com.darshan.heartry",
           ),
         ),
+        ListTile(
+          title: const Text("Join Telegram Group"),
+          subtitle: const Text("Help us by saying what's important to you."),
+          leading: const CircleAvatar(child: Icon(Icons.groups_2_rounded)),
+          onTap: () => launchUrlString(
+            "https://t.me/heartry",
+            mode: LaunchMode.externalApplication,
+          ),
+        ),
         // ListTile(
         //   title: const Text("Donate"),
         //   subtitle: const Text(
