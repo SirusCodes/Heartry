@@ -75,7 +75,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 builder: (context, ref, child) {
                   final imagePath = ref.watch(configProvider).profile;
                   return Badge(
-                    badgeColor: theme.colorScheme.onPrimaryContainer,
+                    badgeStyle: BadgeStyle(
+                      badgeColor: theme.colorScheme.onPrimaryContainer,
+                    ),
                     badgeContent: IconButton(
                       icon: Icon(
                         Icons.camera_alt_rounded,
@@ -84,7 +86,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       onPressed: () => _showChangeProfileDialog(ref),
                     ),
                     position: BadgePosition.bottomEnd(bottom: 6, end: 6),
-                    toAnimate: false,
+                    badgeAnimation: const BadgeAnimation.scale(
+                      toAnimate: false,
+                    ),
                     child: CircleAvatar(
                       maxRadius: 100,
                       minRadius: 80,
