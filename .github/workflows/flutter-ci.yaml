@@ -28,7 +28,7 @@ jobs:
 
       - uses: subosito/flutter-action@v1
         with:
-          channel: "beta"
+          channel: "stable"
 
       - name: Setup project
         run: |
@@ -38,7 +38,7 @@ jobs:
 
       - name: Lint and Analyze code
         run: |
-          flutter format --set-exit-if-changed .
+          dart format --set-exit-if-changed .
           flutter analyze .
 
       # - name: Run Tests
