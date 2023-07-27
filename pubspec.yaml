@@ -32,6 +32,8 @@ dependencies:
   flutter_markdown: ^0.6.14
   flutter_riverpod: ^2.1.3
   get_it: ^7.2.0
+  google_sign_in: ^6.1.4
+  googleapis: ^11.2.0
   image_picker: ^1.0.0
   liquid_swipe: ^3.0.0
   package_info_plus: ^4.0.2

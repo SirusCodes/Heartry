@@ -14,6 +14,7 @@ import 'package:url_launcher/url_launcher_string.dart';
 import '../../database/config.dart';
 import '../../database/database.dart';
 import '../../init_get_it.dart';
+import '../../providers/auth_provider.dart';
 import '../../utils/theme.dart';
 import '../poems_screen/poems_screen.dart';
 
@@ -27,32 +28,48 @@ class IntroScreen extends StatefulWidget {
 class _IntroScreenState extends State<IntroScreen> {
   bool _enableSlideIcon = true;
 
+  final liquidController = LiquidController();
+
   @override
   Widget build(BuildContext context) {
+    const pages = [
+      _WelcomePage(),
+      _ProfilePage(),
+      _NamePage(),
+    ];
+
     return Scaffold(
       body: Theme(
         data: getLightTheme(heartryLightColorScheme),
-        child: LiquidSwipe(
-          pages: const [
-            _WelcomePage(),
-            _ProfilePage(),
-            _NamePage(),
-          ],
-          enableLoop: false,
-          onPageChangeCallback: (activePageIndex) {
-            setState(() {
-              _enableSlideIcon = activePageIndex != 2;
+        child: Consumer(
+          builder: (context, ref, child) {
+            ref.listen(authProvider, (previous, next) {
+              if (next.value != null) {
+                final currentPage = liquidController.currentPage;
+                liquidController.animateToPage(page: currentPage + 1);
+              }
             });
+            return child!;
           },
-          positionSlideIcon: .5,
-          ignoreUserGestureWhileAnimating: true,
-          slideIconWidget: _enableSlideIcon
-              ? const Icon(
-                  Icons.chevron_left_rounded,
-                  color: Colors.white,
-                  size: 40,
-                )
-              : null,
+          child: LiquidSwipe(
+            pages: pages,
+            enableLoop: false,
+            liquidController: liquidController,
+            onPageChangeCallback: (activePageIndex) {
+              setState(() {
+                _enableSlideIcon = activePageIndex != pages.length - 1;
+              });
+            },
+            positionSlideIcon: .5,
+            ignoreUserGestureWhileAnimating: true,
+            slideIconWidget: _enableSlideIcon
+                ? const Icon(
+                    Icons.chevron_left_rounded,
+                    color: Colors.white,
+                    size: 40,
+                  )
+                : null,
+          ),
         ),
       ),
     );
@@ -67,10 +84,8 @@ class _NamePage extends StatefulWidget {
 }
 
 class _NamePageState extends State<_NamePage> {
-  final GlobalKey<FormState> _formKey = GlobalKey();
   final TextEditingController _nameController = TextEditingController();
 
-  bool _showButton = true;
   @override
   void dispose() {
     _nameController.dispose();
@@ -81,96 +96,91 @@ class _NamePageState extends State<_NamePage> {
   Widget build(BuildContext context) {
     return Container(
       color: Colors.deepPurple.shade100,
-      child: Form(
-        key: _formKey,
-        child: Padding(
-          padding: const EdgeInsets.all(15.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: <Widget>[
-              const Spacer(),
-              const Text(
-                "Write your name",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 50,
-                  color: Colors.deepPurple,
-                  fontWeight: FontWeight.w600,
-                  fontFamily: "Caveat",
-                ),
+      child: Padding(
+        padding: const EdgeInsets.all(15.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            const Spacer(),
+            const Text(
+              "Write your name",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 50,
+                color: Colors.deepPurple,
+                fontWeight: FontWeight.w600,
+                fontFamily: "Caveat",
               ),
-              const SizedBox(height: 35),
-              TextFormField(
-                autovalidateMode: AutovalidateMode.onUserInteraction,
-                controller: _nameController,
-                validator: (value) {
-                  if (value == null || value.isEmpty)
-                    return "Please enter your name";
+            ),
+            const SizedBox(height: 35),
+            TextFormField(
+              autovalidateMode: AutovalidateMode.onUserInteraction,
+              controller: _nameController,
+              validator: (value) {
+                if (value == null || value.isEmpty)
+                  return "Please enter your name";
 
-                  return null;
-                },
-                onSaved: (newValue) {
-                  locator<Config>().name = newValue;
-                },
-                textCapitalization: TextCapitalization.words,
-                decoration: const InputDecoration(
-                  hintText: "Your Name",
-                  labelText: "Name",
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              const Spacer(),
-              RichText(
-                textAlign: TextAlign.center,
-                text: TextSpan(
-                  style: TextStyle(
-                    color: Colors.deepPurple.shade400,
-                    fontSize: 10,
+                return null;
+              },
+              onSaved: (newValue) {
+                locator<Config>().name = newValue;
+              },
+              textCapitalization: TextCapitalization.words,
+              decoration: InputDecoration(
+                hintText: "Your Name",
+                labelText: "Name",
+                border: const OutlineInputBorder(),
+                suffixIcon: ValueListenableBuilder(
+                  valueListenable: _nameController,
+                  builder: (context, value, child) => IconButton(
+                    color: Colors.deepPurple,
+                    onPressed: value.text.isNotEmpty //
+                        ? _onNameFeildSubmitted
+                        : null,
+                    icon: const Icon(Icons.chevron_right_rounded),
                   ),
-                  children: <InlineSpan>[
-                    const TextSpan(text: "By continuing you accept our "),
-                    TextSpan(
-                      text: "Privacy Statement",
-                      style: TextStyle(
-                        color: Colors.deepPurple.shade700,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      recognizer: TapGestureRecognizer()
-                        ..onTap = () {
-                          launchUrlString(
-                            "https://heartry.darshanrander.com/policy",
-                          );
-                        },
-                    )
-                  ],
                 ),
               ),
-              const SizedBox(height: 15),
-              _showButton
-                  ? ElevatedButton(
-                      onPressed: () async {
-                        final navigator = Navigator.of(context);
-                        if (_formKey.currentState!.validate()) {
-                          _formKey.currentState!.save();
-                          setState(() {
-                            _showButton = false;
-                          });
-                          await _addDetailsInDB();
-                          navigator.pushReplacement<void, void>(
-                            CupertinoPageRoute(
-                              builder: (_) => const PoemScreen(),
-                            ),
-                          );
-                        }
-                      },
-                      child: const Text("Let's Go!"),
-                    )
-                  : const Center(
-                      child: CircularProgressIndicator(),
+            ),
+            const Spacer(),
+            RichText(
+              textAlign: TextAlign.center,
+              text: TextSpan(
+                style: TextStyle(
+                  color: Colors.deepPurple.shade400,
+                  fontSize: 10,
+                ),
+                children: <InlineSpan>[
+                  const TextSpan(text: "By continuing you accept our "),
+                  TextSpan(
+                    text: "Privacy Statement",
+                    style: TextStyle(
+                      color: Colors.deepPurple.shade700,
+                      fontWeight: FontWeight.bold,
                     ),
-            ],
-          ),
+                    recognizer: TapGestureRecognizer()
+                      ..onTap = () {
+                        launchUrlString(
+                          "https://heartry.darshanrander.com/policy",
+                        );
+                      },
+                  )
+                ],
+              ),
+            ),
+            const SizedBox(height: 15),
+            Consumer(
+              builder: (context, ref, child) {
+                return ElevatedButton(
+                  onPressed: () {
+                    ref.read(authProvider.notifier).signIn();
+                  },
+                  child: const Text("Continue with Google"),
+                );
+              },
+            ),
+          ],
         ),
       ),
     );
@@ -202,6 +212,16 @@ You can share poem in 2 ways.
       title: "Welcome!!🎉",
       poem: buffer.toString(),
     ));
+  }
+
+  Future<void> _onNameFeildSubmitted() async {
+    final navigator = Navigator.of(context);
+    await _addDetailsInDB();
+    navigator.pushReplacement<void, void>(
+      CupertinoPageRoute(
+        builder: (_) => const PoemScreen(),
+      ),
+    );
   }
 }
 
