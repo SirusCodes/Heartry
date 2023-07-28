@@ -4,3 +4,6 @@ targets:
       drift_dev|drift_dev:
         generate_for:
           - "**/database/**"
+      json_serializable|json_serializable:
+        generate_for:
+          - "**/models/**"

@@ -15,6 +15,10 @@ class AuthProvider extends StateNotifier<AsyncAccount> {
 
   final GoogleSignIn _googleSignIn = GoogleSignIn(scopes: accessScopes);
 
+  GoogleSignInAccount? getAccount() {
+    return _googleSignIn.currentUser;
+  }
+
   Future<void> signIn() async {
     try {
       final account = await _googleSignIn.signIn();
