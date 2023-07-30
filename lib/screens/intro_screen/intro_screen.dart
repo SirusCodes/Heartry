@@ -5,6 +5,8 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:heartry/providers/backup_restore_manager_provider.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:liquid_swipe/liquid_swipe.dart';
 import 'package:path/path.dart' as p;
@@ -76,14 +78,14 @@ class _IntroScreenState extends State<IntroScreen> {
   }
 }
 
-class _NamePage extends StatefulWidget {
+class _NamePage extends ConsumerStatefulWidget {
   const _NamePage({Key? key}) : super(key: key);
 
   @override
   _NamePageState createState() => _NamePageState();
 }
 
-class _NamePageState extends State<_NamePage> {
+class _NamePageState extends ConsumerState<_NamePage> {
   final TextEditingController _nameController = TextEditingController();
 
   @override
@@ -94,6 +96,9 @@ class _NamePageState extends State<_NamePage> {
 
   @override
   Widget build(BuildContext context) {
+    ref.listen(authProvider, _onUserAuthenticated);
+    ref.listen(restoreManagerProvider, _onRestoreResult);
+
     return Container(
       color: Colors.deepPurple.shade100,
       child: Padding(
@@ -170,15 +175,11 @@ class _NamePageState extends State<_NamePage> {
               ),
             ),
             const SizedBox(height: 15),
-            Consumer(
-              builder: (context, ref, child) {
-                return ElevatedButton(
-                  onPressed: () {
-                    ref.read(authProvider.notifier).signIn();
-                  },
-                  child: const Text("Continue with Google"),
-                );
+            ElevatedButton(
+              onPressed: () {
+                ref.read(authProvider.notifier).signIn();
               },
+              child: const Text("Continue with Google"),
             ),
           ],
         ),
@@ -217,11 +218,101 @@ You can share poem in 2 ways.
   Future<void> _onNameFeildSubmitted() async {
     final navigator = Navigator.of(context);
     await _addDetailsInDB();
+    _saveName(_nameController.text);
     navigator.pushReplacement<void, void>(
       CupertinoPageRoute(
         builder: (_) => const PoemScreen(),
       ),
     );
+  }
+
+  void _saveName(String name) {
+    final config = ref.read(configProvider.notifier);
+    config.name = name;
+  }
+
+  Future<void> _onUserAuthenticated(
+    AsyncAccount? previous,
+    AsyncAccount next,
+  ) async {
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+
+    if (next.value != null) {
+      _saveName(next.value!.displayName ?? "User");
+      final backupRestoreManager = ref.read(backupRestoreManagerProvider);
+
+      if (await backupRestoreManager.hasBackup()) _showRestoreOptionDialog();
+      return;
+    }
+
+    scaffoldMessenger.showSnackBar(
+      const SnackBar(content: Text("Authentication failed")),
+    );
+  }
+
+  _showRestoreOptionDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Restore from backup?"),
+        content: RichText(
+          text: const TextSpan(
+            text: "We found a backup of your poems from Google Drive."
+                " Do you want to restore it?",
+            children: [
+              TextSpan(
+                text: " (This will delete all your poems)",
+                style: TextStyle(
+                  color: Colors.red,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+        ),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text("No"),
+          ),
+          FilledButton(
+            onPressed: () =>
+                ref.read(restoreManagerProvider.notifier).restore(),
+            child: const Text("Yes"),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _onRestoreResult(BackupRestoreState? previous, BackupRestoreState next) {
+    if (next == BackupRestoreState.restoring) {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => const Dialog(
+          child: Column(
+            children: [
+              CircularProgressIndicator(),
+              Padding(
+                padding: EdgeInsets.all(15.0),
+                child: Text("Restoring..."),
+              ),
+            ],
+          ),
+        ),
+      );
+    } else if (next == BackupRestoreState.success) {
+      Navigator.of(context).pop();
+      Navigator.of(context).pushReplacement(
+        CupertinoPageRoute(builder: (_) => const PoemScreen()),
+      );
+    } else if (next == BackupRestoreState.error) {
+      Navigator.of(context).pop();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Restore failed, try again.")),
+      );
+    }
   }
 }
 

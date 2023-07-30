@@ -3,15 +3,75 @@ import 'dart:io' as io;
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:googleapis/drive/v3.dart' as gapis;
-import 'package:heartry/database/database.dart';
-import 'package:heartry/init_get_it.dart';
-import 'package:heartry/providers/theme_provider.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 
 import '../database/config.dart';
+import '../database/database.dart';
+import '../init_get_it.dart';
 import '../models/backup_model/backup_model.dart';
 import 'auth_provider.dart';
+import 'theme_provider.dart';
+
+enum BackupRestoreState {
+  idle,
+  backingUp,
+  restoring,
+  success,
+  error,
+}
+
+final backupManagerProvider =
+    StateNotifierProvider<BackupManagerProvider, BackupRestoreState>(
+  BackupManagerProvider.new,
+);
+
+class BackupManagerProvider extends StateNotifier<BackupRestoreState> {
+  BackupManagerProvider(Ref ref)
+      : _ref = ref,
+        super(BackupRestoreState.idle);
+
+  final Ref _ref;
+
+  Future<void> backup() async {
+    state = BackupRestoreState.backingUp;
+    try {
+      final dateTime = await _ref.read(backupRestoreManagerProvider).backup();
+      state = BackupRestoreState.success;
+      _ref.read(configProvider.notifier).lastBackup = dateTime;
+    } catch (e) {
+      state = BackupRestoreState.error;
+    }
+  }
+}
+
+final restoreManagerProvider =
+    StateNotifierProvider<RestoreManagerProvider, BackupRestoreState>(
+  RestoreManagerProvider.new,
+);
+
+class RestoreManagerProvider extends StateNotifier<BackupRestoreState> {
+  RestoreManagerProvider(Ref ref)
+      : _ref = ref,
+        super(BackupRestoreState.idle);
+
+  final Ref _ref;
+
+  Future<void> restore() async {
+    state = BackupRestoreState.restoring;
+    try {
+      final dateTime = await _ref.read(backupRestoreManagerProvider).restore();
+      state = BackupRestoreState.success;
+      _ref.read(configProvider.notifier).lastBackup = dateTime;
+    } catch (e) {
+      state = BackupRestoreState.error;
+    }
+  }
+}
+
+final backupRestoreManagerProvider = Provider<BackupRestoreManagerProvider>(
+  (ref) => BackupRestoreManagerProvider(ref),
+);
 
 class BackupRestoreManagerProvider {
   const BackupRestoreManagerProvider(this.ref);
@@ -83,6 +143,20 @@ class BackupRestoreManagerProvider {
     return DateTime.now();
   }
 
+  Future<bool> hasBackup() async {
+    final drive = await _getDrive();
+    final files = await drive.files.list(
+      orderBy: "createdTime desc",
+      q: "name contains 'backup-'",
+    );
+    final backupFiles = files.files;
+    if (backupFiles == null || backupFiles.isEmpty) {
+      return false;
+    }
+
+    return true;
+  }
+
   Future<io.File> _downloadFromDrive() async {
     final drive = await _getDrive();
     final files = await drive.files.list(
@@ -123,7 +197,27 @@ class BackupRestoreManagerProvider {
     );
     final uploadedFile = await drive.files.create(file, uploadMedia: media);
 
+    await _deleteOldBackups(drive);
+
     return uploadedFile;
+  }
+
+  Future<void> _deleteOldBackups(gapis.DriveApi drive) async {
+    final backups = await drive.files.list(
+      orderBy: "createdTime desc",
+      q: "name contains 'backup-'",
+    );
+
+    final backupFiles = backups.files;
+    if (backupFiles == null || backupFiles.isEmpty) {
+      return;
+    }
+    for (int i = 0; i < backupFiles.length; i++) {
+      // Don't delete the latest 3 backups
+      if (i > 3) {
+        drive.files.delete(backupFiles[i].id!);
+      }
+    }
   }
 
   Future<gapis.DriveApi> _getDrive() async {
