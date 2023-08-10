@@ -5,8 +5,6 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_sign_in/google_sign_in.dart';
-import 'package:heartry/providers/backup_restore_manager_provider.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:liquid_swipe/liquid_swipe.dart';
 import 'package:path/path.dart' as p;
@@ -17,6 +15,7 @@ import '../../database/config.dart';
 import '../../database/database.dart';
 import '../../init_get_it.dart';
 import '../../providers/auth_provider.dart';
+import '../../providers/backup_restore_manager_provider.dart';
 import '../../utils/theme.dart';
 import '../poems_screen/poems_screen.dart';
 
@@ -236,12 +235,25 @@ You can share poem in 2 ways.
     AsyncAccount next,
   ) async {
     final scaffoldMessenger = ScaffoldMessenger.of(context);
+    final navigator = Navigator.of(context);
 
     if (next.value != null) {
       _saveName(next.value!.displayName ?? "User");
       final backupRestoreManager = ref.read(backupRestoreManagerProvider);
 
-      if (await backupRestoreManager.hasBackup()) _showRestoreOptionDialog();
+      if (await backupRestoreManager.hasBackup())
+        _showRestoreOptionDialog();
+      else {
+        scaffoldMessenger.showSnackBar(
+          const SnackBar(content: Text("Could not find backup")),
+        );
+        await _addDetailsInDB();
+        navigator.pushReplacement<void, void>(
+          CupertinoPageRoute(
+            builder: (_) => const PoemScreen(),
+          ),
+        );
+      }
       return;
     }
 
@@ -255,21 +267,8 @@ You can share poem in 2 ways.
       context: context,
       builder: (context) => AlertDialog(
         title: const Text("Restore from backup?"),
-        content: RichText(
-          text: const TextSpan(
-            text: "We found a backup of your poems from Google Drive."
-                " Do you want to restore it?",
-            children: [
-              TextSpan(
-                text: " (This will delete all your poems)",
-                style: TextStyle(
-                  color: Colors.red,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ),
-        ),
+        content: const Text("We found a backup of your poems from Google Drive."
+            " Do you want to restore it?"),
         actions: <Widget>[
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
