@@ -39,6 +39,15 @@ class SettingsScreen extends StatelessWidget {
               ),
             ),
             ListTile(
+              leading: const CircleAvatar(child: Icon(Icons.cloud_sync)),
+              title: const Text("Backup and Restore"),
+              subtitle: const Text("Theme and defaults"),
+              onTap: () => Navigator.push<void>(
+                context,
+                MaterialPageRoute(builder: (_) => const PersonalizeScreen()),
+              ),
+            ),
+            ListTile(
               leading: const CircleAvatar(child: Icon(Icons.info)),
               title: const Text("About"),
               subtitle: const Text("App info and development"),
