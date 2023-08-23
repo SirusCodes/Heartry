@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:heartry/screens/backup_setting_screen/backup_setting_screen.dart';
 
 import '../../widgets/c_screen_title.dart';
 import '../../widgets/only_back_button_bottom_app_bar.dart';
@@ -44,7 +45,7 @@ class SettingsScreen extends StatelessWidget {
               subtitle: const Text("Theme and defaults"),
               onTap: () => Navigator.push<void>(
                 context,
-                MaterialPageRoute(builder: (_) => const PersonalizeScreen()),
+                MaterialPageRoute(builder: (_) => const BackupSettingScreen()),
               ),
             ),
             ListTile(

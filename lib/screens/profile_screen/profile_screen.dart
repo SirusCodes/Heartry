@@ -242,6 +242,7 @@ class _ProfileUpdateDialog extends ConsumerWidget {
       final pickedImage = await picker.pickImage(
         source: source,
         requestFullMetadata: false,
+        imageQuality: 20,
       );
 
       navigator.pop(pickedImage);

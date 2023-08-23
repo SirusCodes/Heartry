@@ -257,6 +257,13 @@ You can share poem in 2 ways.
       return;
     }
 
+    if (next is AsyncError) {
+      scaffoldMessenger.showSnackBar(
+        SnackBar(content: Text(next.error.toString())),
+      );
+      return;
+    }
+
     scaffoldMessenger.showSnackBar(
       const SnackBar(content: Text("Authentication failed")),
     );

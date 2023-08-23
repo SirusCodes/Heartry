@@ -67,8 +67,6 @@ class _PoemScreenState extends ConsumerState<PoemScreen> {
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endContained,
       bottomNavigationBar: BottomAppBar(
-        shape: const CircularNotchedRectangle(),
-        notchMargin: 6,
         child: Row(
           children: [
             IconButton(

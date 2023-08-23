@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import 'package:intl/intl.dart';
-import 'package:heartry/database/config.dart';
-import 'package:heartry/providers/auth_provider.dart';
-import 'package:heartry/screens/about_screen/widgets/base_info_widget.dart';
-import 'package:heartry/widgets/c_screen_title.dart';
-import 'package:heartry/widgets/only_back_button_bottom_app_bar.dart';
 
+import '../../database/config.dart';
+import '../../providers/auth_provider.dart';
 import '../../providers/backup_restore_manager_provider.dart';
+import '../../widgets/c_screen_title.dart';
+import '../../widgets/only_back_button_bottom_app_bar.dart';
+import '../about_screen/widgets/base_info_widget.dart';
 
 class BackupSettingScreen extends ConsumerWidget {
   const BackupSettingScreen({Key? key}) : super(key: key);
@@ -102,8 +101,16 @@ class BackupSettingScreen extends ConsumerWidget {
       context: context,
       barrierDismissible: false,
       builder: (context) => const AlertDialog(
-        title: Text("Backup in progress, don't close the app"),
-        content: CircularProgressIndicator(),
+        title: Text("Backup in progress..."),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SizedBox(height: 16),
+            CircularProgressIndicator(),
+            SizedBox(height: 16),
+            Text("Please don't close the app"),
+          ],
+        ),
       ),
     );
   }

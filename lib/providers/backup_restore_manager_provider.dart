@@ -102,9 +102,12 @@ class BackupRestoreManagerProvider {
     final file = io.File('${tempDir.path}/backup-$dateTime.json')
       ..writeAsStringSync(data);
 
-    final uploadedFile = await _uploadToDrive(file);
+    final drive = await _getDrive();
 
-    return uploadedFile.createdTime!;
+    await _uploadToDrive(file, drive);
+    await _deleteOldBackups(drive);
+
+    return DateTime.now();
   }
 
   Future<DateTime> restore() async {
@@ -148,6 +151,7 @@ class BackupRestoreManagerProvider {
     final files = await drive.files.list(
       orderBy: "createdTime desc",
       q: "name contains 'backup-'",
+      spaces: "appDataFolder",
     );
     final backupFiles = files.files;
     if (backupFiles == null || backupFiles.isEmpty) {
@@ -186,18 +190,26 @@ class BackupRestoreManagerProvider {
     return downloadedFile;
   }
 
-  Future<gapis.File> _uploadToDrive(io.File ioFile) async {
-    final drive = await _getDrive();
-    final file = gapis.File()..name = ioFile.path.split('/').last;
+  Future<gapis.File> _uploadToDrive(
+    io.File ioFile,
+    gapis.DriveApi drive,
+  ) async {
+    final file = gapis.File()
+      ..name = ioFile.path.split('/').last
+      ..copyRequiresWriterPermission = true
+      ..createdTime = DateTime.now()
+      ..parents = ['appDataFolder'];
 
     final media = gapis.Media(
       ioFile.openRead(),
       ioFile.lengthSync(),
       contentType: 'application/json',
     );
-    final uploadedFile = await drive.files.create(file, uploadMedia: media);
-
-    await _deleteOldBackups(drive);
+    final uploadedFile = await drive.files.create(
+      file,
+      uploadMedia: media,
+      enforceSingleParent: true,
+    );
 
     return uploadedFile;
   }
@@ -206,6 +218,7 @@ class BackupRestoreManagerProvider {
     final backups = await drive.files.list(
       orderBy: "createdTime desc",
       q: "name contains 'backup-'",
+      spaces: "appDataFolder",
     );
 
     final backupFiles = backups.files;
@@ -214,7 +227,7 @@ class BackupRestoreManagerProvider {
     }
     for (int i = 0; i < backupFiles.length; i++) {
       // Don't delete the latest 3 backups
-      if (i > 3) {
+      if (i >= 3) {
         drive.files.delete(backupFiles[i].id!);
       }
     }
