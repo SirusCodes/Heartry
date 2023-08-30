@@ -1,2 +1,1 @@
-- Show changelog dialog when app is updated
-- Add Telegram group joining link
+Updated Android target API (minor fix)

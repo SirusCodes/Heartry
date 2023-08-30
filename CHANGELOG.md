@@ -1,3 +1,7 @@
+## 2.3.1-beta - 30/08/2023
+
+Updated Android target API (minor fix)
+
 ## 2.3.0 - 01/07/2023
 
 - Show changelog dialog when app is updated
