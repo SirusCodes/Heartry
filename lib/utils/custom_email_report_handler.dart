@@ -1,5 +1,5 @@
-import 'package:catcher/catcher.dart';
-import 'package:catcher/model/platform_type.dart';
+import 'package:catcher_2/catcher_2.dart';
+import 'package:catcher_2/model/platform_type.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
