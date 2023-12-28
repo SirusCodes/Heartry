@@ -19,14 +19,9 @@ final authProvider = StateNotifierProvider<AuthProvider, AsyncAccount>(
 class AuthProvider extends StateNotifier<AsyncAccount> {
   AuthProvider(Ref ref)
       : _ref = ref,
-        super(const AsyncAccount.data(null)) {
-    userState = _googleSignIn.onCurrentUserChanged.listen((account) {
-      state = AsyncAccount.data(account);
-    });
-  }
+        super(const AsyncAccount.data(null));
 
   final Ref _ref;
-  late final StreamSubscription<GoogleSignInAccount?> userState;
 
   GoogleSignIn get _googleSignIn => _ref.read(_googleSignInProvider);
 
@@ -34,8 +29,8 @@ class AuthProvider extends StateNotifier<AsyncAccount> {
     return _googleSignIn.currentUser;
   }
 
-  Future<bool> isSignedIn() async {
-    return _googleSignIn.isSignedIn();
+  void init() {
+    AsyncAccount.data(getAccount());
   }
 
   Future<void> signIn() async {
@@ -59,11 +54,5 @@ class AuthProvider extends StateNotifier<AsyncAccount> {
     } catch (e, st) {
       state = AsyncAccount.error(e, st);
     }
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    userState.cancel();
   }
 }

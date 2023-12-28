@@ -166,16 +166,17 @@ class BackupRestoreManagerProvider {
     final files = await drive.files.list(
       orderBy: "createdTime desc",
       q: "name contains 'backup-'",
+      spaces: "appDataFolder",
     );
     final backup = files.files?.first;
     if (backup == null) {
       throw BackupRestoreException('No backup found');
     }
 
-    final file = drive.files.get(
+    final file = (await drive.files.get(
       backup.id!,
       downloadOptions: gapis.DownloadOptions.fullMedia,
-    ) as gapis.Media;
+    )) as gapis.Media;
 
     final tempDir = await getTemporaryDirectory();
     final downloadedFile = io.File('${tempDir.path}/${backup.name}');

@@ -44,6 +44,8 @@ class _IntroScreenState extends State<IntroScreen> {
         data: getLightTheme(heartryLightColorScheme),
         child: Consumer(
           builder: (context, ref, child) {
+            ref.read(authProvider.notifier).init();
+
             ref.listen(authProvider, (previous, next) {
               if (next.value != null) {
                 final currentPage = liquidController.currentPage;
@@ -86,6 +88,8 @@ class _NamePage extends ConsumerStatefulWidget {
 
 class _NamePageState extends ConsumerState<_NamePage> {
   final TextEditingController _nameController = TextEditingController();
+
+  bool showingDialog = false;
 
   @override
   void dispose() {
@@ -269,8 +273,11 @@ You can share poem in 2 ways.
     );
   }
 
-  _showRestoreOptionDialog() {
-    showDialog(
+  _showRestoreOptionDialog() async {
+    if (showingDialog) return;
+
+    showingDialog = true;
+    await showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text("Restore from backup?"),
@@ -282,13 +289,16 @@ You can share poem in 2 ways.
             child: const Text("No"),
           ),
           FilledButton(
-            onPressed: () =>
-                ref.read(restoreManagerProvider.notifier).restore(),
+            onPressed: () => ref //
+                .read(restoreManagerProvider.notifier)
+                .restore(),
             child: const Text("Yes"),
           ),
         ],
       ),
     );
+
+    showingDialog = false;
   }
 
   void _onRestoreResult(BackupRestoreState? previous, BackupRestoreState next) {
@@ -297,14 +307,19 @@ You can share poem in 2 ways.
         context: context,
         barrierDismissible: false,
         builder: (context) => const Dialog(
-          child: Column(
-            children: [
-              CircularProgressIndicator(),
-              Padding(
-                padding: EdgeInsets.all(15.0),
-                child: Text("Restoring..."),
-              ),
-            ],
+          child: Padding(
+            padding: EdgeInsets.all(14.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                CircularProgressIndicator(),
+                Padding(
+                  padding: EdgeInsets.all(15.0),
+                  child: Text("Restoring..."),
+                ),
+              ],
+            ),
           ),
         ),
       );

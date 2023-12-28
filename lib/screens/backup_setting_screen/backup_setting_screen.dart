@@ -24,6 +24,8 @@ class BackupSettingScreen extends ConsumerWidget {
       (previous, next) => _onBackupManagerUpdate(previous, next, context),
     );
 
+    ref.read(authProvider.notifier).init();
+
     return SafeArea(
       child: Scaffold(
         body: ListView(
@@ -54,9 +56,11 @@ class BackupSettingScreen extends ConsumerWidget {
                     subtitle: const Text(
                       "Backup your data to Google Drive immediately.",
                     ),
-                    onTap: () {
-                      ref.read(backupManagerProvider.notifier).backup();
-                    },
+                    onTap: user != null
+                        ? () {
+                            ref.read(backupManagerProvider.notifier).backup();
+                          }
+                        : null,
                   ),
                   ListTile(
                     title: const Text("Last Backup"),
