@@ -3,6 +3,94 @@
 part of 'database.dart';
 
 // ignore_for_file: type=lint
+class $PoemTable extends Poem with TableInfo<$PoemTable, PoemModel> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $PoemTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+      'id', aliasedName, true,
+      hasAutoIncrement: true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+  static const VerificationMeta _lastEditMeta =
+      const VerificationMeta('lastEdit');
+  @override
+  late final GeneratedColumn<DateTime> lastEdit = GeneratedColumn<DateTime>(
+      'last_edit', aliasedName, true,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: false,
+      defaultValue: Constant(DateTime.now()));
+  static const VerificationMeta _titleMeta = const VerificationMeta('title');
+  @override
+  late final GeneratedColumn<String> title = GeneratedColumn<String>(
+      'title', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(""));
+  static const VerificationMeta _poemMeta = const VerificationMeta('poem');
+  @override
+  late final GeneratedColumn<String> poem = GeneratedColumn<String>(
+      'poem', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  @override
+  List<GeneratedColumn> get $columns => [id, lastEdit, title, poem];
+  @override
+  String get aliasedName => _alias ?? 'poem';
+  @override
+  String get actualTableName => 'poem';
+  @override
+  VerificationContext validateIntegrity(Insertable<PoemModel> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('last_edit')) {
+      context.handle(_lastEditMeta,
+          lastEdit.isAcceptableOrUnknown(data['last_edit']!, _lastEditMeta));
+    }
+    if (data.containsKey('title')) {
+      context.handle(
+          _titleMeta, title.isAcceptableOrUnknown(data['title']!, _titleMeta));
+    }
+    if (data.containsKey('poem')) {
+      context.handle(
+          _poemMeta, poem.isAcceptableOrUnknown(data['poem']!, _poemMeta));
+    } else if (isInserting) {
+      context.missing(_poemMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  PoemModel map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return PoemModel(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}id']),
+      lastEdit: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}last_edit']),
+      title: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}title'])!,
+      poem: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}poem'])!,
+    );
+  }
+
+  @override
+  $PoemTable createAlias(String alias) {
+    return $PoemTable(attachedDatabase, alias);
+  }
+}
+
 class PoemModel extends DataClass implements Insertable<PoemModel> {
   final int? id;
   final DateTime? lastEdit;
@@ -161,94 +249,6 @@ class PoemCompanion extends UpdateCompanion<PoemModel> {
           ..write('poem: $poem')
           ..write(')'))
         .toString();
-  }
-}
-
-class $PoemTable extends Poem with TableInfo<$PoemTable, PoemModel> {
-  @override
-  final GeneratedDatabase attachedDatabase;
-  final String? _alias;
-  $PoemTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _idMeta = const VerificationMeta('id');
-  @override
-  late final GeneratedColumn<int> id = GeneratedColumn<int>(
-      'id', aliasedName, true,
-      hasAutoIncrement: true,
-      type: DriftSqlType.int,
-      requiredDuringInsert: false,
-      defaultConstraints:
-          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
-  static const VerificationMeta _lastEditMeta =
-      const VerificationMeta('lastEdit');
-  @override
-  late final GeneratedColumn<DateTime> lastEdit = GeneratedColumn<DateTime>(
-      'last_edit', aliasedName, true,
-      type: DriftSqlType.dateTime,
-      requiredDuringInsert: false,
-      defaultValue: Constant(DateTime.now()));
-  static const VerificationMeta _titleMeta = const VerificationMeta('title');
-  @override
-  late final GeneratedColumn<String> title = GeneratedColumn<String>(
-      'title', aliasedName, false,
-      type: DriftSqlType.string,
-      requiredDuringInsert: false,
-      defaultValue: const Constant(""));
-  static const VerificationMeta _poemMeta = const VerificationMeta('poem');
-  @override
-  late final GeneratedColumn<String> poem = GeneratedColumn<String>(
-      'poem', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
-  @override
-  List<GeneratedColumn> get $columns => [id, lastEdit, title, poem];
-  @override
-  String get aliasedName => _alias ?? 'poem';
-  @override
-  String get actualTableName => 'poem';
-  @override
-  VerificationContext validateIntegrity(Insertable<PoemModel> instance,
-      {bool isInserting = false}) {
-    final context = VerificationContext();
-    final data = instance.toColumns(true);
-    if (data.containsKey('id')) {
-      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
-    }
-    if (data.containsKey('last_edit')) {
-      context.handle(_lastEditMeta,
-          lastEdit.isAcceptableOrUnknown(data['last_edit']!, _lastEditMeta));
-    }
-    if (data.containsKey('title')) {
-      context.handle(
-          _titleMeta, title.isAcceptableOrUnknown(data['title']!, _titleMeta));
-    }
-    if (data.containsKey('poem')) {
-      context.handle(
-          _poemMeta, poem.isAcceptableOrUnknown(data['poem']!, _poemMeta));
-    } else if (isInserting) {
-      context.missing(_poemMeta);
-    }
-    return context;
-  }
-
-  @override
-  Set<GeneratedColumn> get $primaryKey => {id};
-  @override
-  PoemModel map(Map<String, dynamic> data, {String? tablePrefix}) {
-    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return PoemModel(
-      id: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}id']),
-      lastEdit: attachedDatabase.typeMapping
-          .read(DriftSqlType.dateTime, data['${effectivePrefix}last_edit']),
-      title: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}title'])!,
-      poem: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}poem'])!,
-    );
-  }
-
-  @override
-  $PoemTable createAlias(String alias) {
-    return $PoemTable(attachedDatabase, alias);
   }
 }
 

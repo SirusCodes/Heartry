@@ -27,6 +27,18 @@ class Database extends _$Database {
         ))
       .watch();
 
+  Future<List<PoemModel>> getPoems() => (select(poem)
+        ..orderBy(
+          [(u) => OrderingTerm.desc(u.lastEdit)],
+        ))
+      .get();
+
+  Future<void> insertBatchPoems(List<PoemModel> models) => batch((batch) {
+        batch.insertAll(poem, models);
+      });
+
+  Future<int> deleteAllPoems() => delete(poem).go();
+
   Future<int> insertPoem(PoemModel model) {
     return into(poem).insert(model);
   }

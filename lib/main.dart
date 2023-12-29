@@ -1,4 +1,4 @@
-import 'package:catcher/catcher.dart';
+import 'package:catcher_2/catcher_2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -15,16 +15,17 @@ import 'widgets/color_scheme_builder.dart';
 Future<void> main() async {
   initGetIt();
 
-  final releaseCatcher = CatcherOptions(
+  final releaseCatcher = Catcher2Options(
     DialogReportMode(),
     [
       CustomEmailReportHandler(),
     ],
   );
 
-  Catcher(
+  Catcher2(
     releaseConfig: releaseCatcher,
     profileConfig: releaseCatcher,
+    ensureInitialized: true,
     rootWidget: const ProviderScope(child: MyApp()),
   );
 
@@ -64,7 +65,7 @@ class _MyAppState extends State<MyApp> {
             builder: (lightColorScheme, darkColorScheme) {
               return MaterialApp(
                 title: "Heartry",
-                navigatorKey: Catcher.navigatorKey,
+                navigatorKey: Catcher2.navigatorKey,
                 themeMode: _getThemeMode(theme.themeType),
                 theme: getLightTheme(lightColorScheme),
                 darkTheme: theme.themeType == ThemeType.dark

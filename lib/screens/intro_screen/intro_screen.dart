@@ -14,6 +14,8 @@ import 'package:url_launcher/url_launcher_string.dart';
 import '../../database/config.dart';
 import '../../database/database.dart';
 import '../../init_get_it.dart';
+import '../../providers/auth_provider.dart';
+import '../../providers/backup_restore_manager_provider.dart';
 import '../../utils/theme.dart';
 import '../poems_screen/poems_screen.dart';
 
@@ -29,48 +31,157 @@ class _IntroScreenState extends State<IntroScreen> {
 
   @override
   Widget build(BuildContext context) {
+    const pages = [
+      _WelcomePage(),
+      _ProfilePage(),
+      _NamePage(),
+    ];
+
     return Scaffold(
       body: Theme(
         data: getLightTheme(heartryLightColorScheme),
-        child: LiquidSwipe(
-          pages: const [
-            _WelcomePage(),
-            _ProfilePage(),
-            _NamePage(),
-          ],
-          enableLoop: false,
-          onPageChangeCallback: (activePageIndex) {
-            setState(() {
-              _enableSlideIcon = activePageIndex != 2;
-            });
+        child: Consumer(
+          builder: (_, ref, child) {
+            ref.listen(
+              authProvider,
+              (prev, next) => _onUserAuthenticated(prev, next, ref),
+            );
+            ref.listen(restoreManagerProvider, _onRestoreResult);
+
+            return child!;
           },
-          positionSlideIcon: .5,
-          ignoreUserGestureWhileAnimating: true,
-          slideIconWidget: _enableSlideIcon
-              ? const Icon(
-                  Icons.chevron_left_rounded,
-                  color: Colors.white,
-                  size: 40,
-                )
-              : null,
+          child: LiquidSwipe(
+            pages: pages,
+            enableLoop: false,
+            onPageChangeCallback: (activePageIndex) {
+              setState(() {
+                _enableSlideIcon = activePageIndex != pages.length - 1;
+              });
+            },
+            positionSlideIcon: .5,
+            ignoreUserGestureWhileAnimating: true,
+            slideIconWidget: _enableSlideIcon
+                ? const Icon(
+                    Icons.chevron_left_rounded,
+                    color: Colors.white,
+                    size: 40,
+                  )
+                : null,
+          ),
         ),
       ),
     );
   }
+
+  Future<void> _onUserAuthenticated(
+    AsyncAccount? previous,
+    AsyncAccount next,
+    WidgetRef ref,
+  ) async {
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+    final navigator = Navigator.of(context);
+
+    if (next.asData?.valueOrNull != null) {
+      final name = next.value!.displayName ?? "User";
+      _saveName(name);
+      final backupRestoreManager = ref.read(backupRestoreManagerProvider);
+
+      if (await backupRestoreManager.hasBackup()) {
+        _showRestoreOptionDialog(ref);
+      } else {
+        scaffoldMessenger.showSnackBar(
+          const SnackBar(content: Text("Could not find backup")),
+        );
+        await _addDetailsInDB(name);
+        navigator.pushReplacement<void, void>(
+          CupertinoPageRoute(
+            builder: (_) => const PoemScreen(),
+          ),
+        );
+      }
+      return;
+    }
+
+    if (next is AsyncError) {
+      scaffoldMessenger.showSnackBar(
+        SnackBar(content: Text(next.error.toString())),
+      );
+      return;
+    }
+
+    scaffoldMessenger.showSnackBar(
+      const SnackBar(content: Text("Authentication failed")),
+    );
+  }
+
+  _showRestoreOptionDialog(WidgetRef ref) {
+    return showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Restore from backup?"),
+        content: const Text("We found a backup of your poems from Google Drive."
+            " Do you want to restore it?"),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text("No"),
+          ),
+          FilledButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              ref.read(restoreManagerProvider.notifier).restore();
+            },
+            child: const Text("Yes"),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _onRestoreResult(BackupRestoreState? previous, BackupRestoreState next) {
+    if (next == BackupRestoreState.restoring) {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => const AlertDialog(
+          title: Text("Restoring in progress..."),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SizedBox(height: 16),
+              CircularProgressIndicator(),
+              SizedBox(height: 16),
+              Text("Please don't close the app"),
+            ],
+          ),
+        ),
+      );
+    } else if (next == BackupRestoreState.success) {
+      Navigator.of(context).pop();
+      Navigator.of(context).pushReplacement(
+        CupertinoPageRoute(builder: (_) => const PoemScreen()),
+      );
+    } else if (next == BackupRestoreState.error) {
+      Navigator.of(context).pop();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Restore failed, try again.")),
+      );
+    }
+  }
 }
 
-class _NamePage extends StatefulWidget {
+class _NamePage extends ConsumerStatefulWidget {
   const _NamePage({Key? key}) : super(key: key);
 
   @override
   _NamePageState createState() => _NamePageState();
 }
 
-class _NamePageState extends State<_NamePage> {
-  final GlobalKey<FormState> _formKey = GlobalKey();
+class _NamePageState extends ConsumerState<_NamePage> {
   final TextEditingController _nameController = TextEditingController();
 
-  bool _showButton = true;
+  bool showingDialog = false;
+
   @override
   void dispose() {
     _nameController.dispose();
@@ -81,128 +192,135 @@ class _NamePageState extends State<_NamePage> {
   Widget build(BuildContext context) {
     return Container(
       color: Colors.deepPurple.shade100,
-      child: Form(
-        key: _formKey,
-        child: Padding(
-          padding: const EdgeInsets.all(15.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: <Widget>[
-              const Spacer(),
-              const Text(
-                "Write your name",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 50,
-                  color: Colors.deepPurple,
-                  fontWeight: FontWeight.w600,
-                  fontFamily: "Caveat",
-                ),
+      child: Padding(
+        padding: const EdgeInsets.all(15.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            const Spacer(),
+            const Text(
+              "Write your name",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 50,
+                color: Colors.deepPurple,
+                fontWeight: FontWeight.w600,
+                fontFamily: "Caveat",
               ),
-              const SizedBox(height: 35),
-              TextFormField(
-                autovalidateMode: AutovalidateMode.onUserInteraction,
-                controller: _nameController,
-                validator: (value) {
-                  if (value == null || value.isEmpty)
-                    return "Please enter your name";
+            ),
+            const SizedBox(height: 35),
+            TextFormField(
+              autovalidateMode: AutovalidateMode.onUserInteraction,
+              controller: _nameController,
+              validator: (value) {
+                if (value == null || value.isEmpty)
+                  return "Please enter your name";
 
-                  return null;
-                },
-                onSaved: (newValue) {
-                  locator<Config>().name = newValue;
-                },
-                textCapitalization: TextCapitalization.words,
-                decoration: const InputDecoration(
-                  hintText: "Your Name",
-                  labelText: "Name",
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              const Spacer(),
-              RichText(
-                textAlign: TextAlign.center,
-                text: TextSpan(
-                  style: TextStyle(
-                    color: Colors.deepPurple.shade400,
-                    fontSize: 10,
+                return null;
+              },
+              onSaved: (newValue) {
+                locator<Config>().name = newValue;
+              },
+              textCapitalization: TextCapitalization.words,
+              decoration: InputDecoration(
+                hintText: "Your Name",
+                labelText: "Name",
+                border: const OutlineInputBorder(),
+                suffixIcon: ValueListenableBuilder(
+                  valueListenable: _nameController,
+                  builder: (context, value, child) => IconButton(
+                    color: Colors.deepPurple,
+                    onPressed: value.text.isNotEmpty //
+                        ? _onNameFeildSubmitted
+                        : null,
+                    icon: const Icon(Icons.chevron_right_rounded),
                   ),
-                  children: <InlineSpan>[
-                    const TextSpan(text: "By continuing you accept our "),
-                    TextSpan(
-                      text: "Privacy Statement",
-                      style: TextStyle(
-                        color: Colors.deepPurple.shade700,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      recognizer: TapGestureRecognizer()
-                        ..onTap = () {
-                          launchUrlString(
-                            "https://heartry.darshanrander.com/policy",
-                          );
-                        },
-                    )
-                  ],
                 ),
               ),
-              const SizedBox(height: 15),
-              _showButton
-                  ? ElevatedButton(
-                      onPressed: () async {
-                        final navigator = Navigator.of(context);
-                        if (_formKey.currentState!.validate()) {
-                          _formKey.currentState!.save();
-                          setState(() {
-                            _showButton = false;
-                          });
-                          await _addDetailsInDB();
-                          navigator.pushReplacement<void, void>(
-                            CupertinoPageRoute(
-                              builder: (_) => const PoemScreen(),
-                            ),
-                          );
-                        }
-                      },
-                      child: const Text("Let's Go!"),
-                    )
-                  : const Center(
-                      child: CircularProgressIndicator(),
+            ),
+            const Spacer(),
+            RichText(
+              textAlign: TextAlign.center,
+              text: TextSpan(
+                style: TextStyle(
+                  color: Colors.deepPurple.shade400,
+                  fontSize: 10,
+                ),
+                children: <InlineSpan>[
+                  const TextSpan(text: "By continuing you accept our "),
+                  TextSpan(
+                    text: "Privacy Statement",
+                    style: TextStyle(
+                      color: Colors.deepPurple.shade700,
+                      fontWeight: FontWeight.bold,
                     ),
-            ],
-          ),
+                    recognizer: TapGestureRecognizer()
+                      ..onTap = () {
+                        launchUrlString(
+                          "https://heartry.darshanrander.com/policy",
+                        );
+                      },
+                  )
+                ],
+              ),
+            ),
+            const SizedBox(height: 15),
+            ElevatedButton(
+              onPressed: () {
+                ref.read(authProvider.notifier).signIn();
+              },
+              child: const Text("Continue with Google"),
+            ),
+          ],
         ),
       ),
     );
   }
 
-  Future<void> _addDetailsInDB() async {
-    final db = locator<Database>();
+  Future<void> _onNameFeildSubmitted() async {
+    final navigator = Navigator.of(context);
+    await _addDetailsInDB(_nameController.text);
+    _saveName(_nameController.text);
+    navigator.pushReplacement<void, void>(
+      CupertinoPageRoute(
+        builder: (_) => const PoemScreen(),
+      ),
+    );
+  }
+}
 
-    StringBuffer buffer = StringBuffer();
+void _saveName(String name) {
+  final config = locator<Config>();
+  config.name = name;
+}
 
-    buffer.writeln("Hey ${_nameController.text}, thanks for using Heartry. 🤗");
-    buffer.writeln();
-    buffer.writeln("Everything that you ✍ will be auto saved.");
-    buffer.writeln();
-    buffer.writeln("""Press and hold this card to access toolbar. 😊
+Future<void> _addDetailsInDB(String name) async {
+  final db = locator<Database>();
+
+  StringBuffer buffer = StringBuffer();
+
+  buffer.writeln("Hey $name, thanks for using Heartry. 🤗");
+  buffer.writeln();
+  buffer.writeln("Everything that you ✍ will be auto saved.");
+  buffer.writeln();
+  buffer.writeln("""Press and hold this card to access toolbar. 😊
 You can access Reader Mode, Share and Edit from it.""");
-    buffer.writeln();
-    buffer.writeln("""**Reader Mode**
+  buffer.writeln();
+  buffer.writeln("""**Reader Mode**
 Sometimes keyboards can be annoying.
 Press and hold on card, and click on eye button.
 Now that keyboard will never disturb you. 😇""");
-    buffer.writeln();
-    buffer.writeln("""**Share**
+  buffer.writeln();
+  buffer.writeln("""**Share**
 You can share poem in 2 ways.
 1. As Text 🆎 (For Messages)
 2. As Photos 📷 (For Stories)""");
 
-    await db.insertPoem(PoemModel(
-      title: "Welcome!!🎉",
-      poem: buffer.toString(),
-    ));
-  }
+  await db.insertPoem(PoemModel(
+    title: "Welcome!!🎉",
+    poem: buffer.toString(),
+  ));
 }
 
 class _ProfilePage extends ConsumerWidget {

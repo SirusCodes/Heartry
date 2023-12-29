@@ -11,9 +11,22 @@ class Config extends ChangeNotifier {
 
   static const String _nameKey = "name";
   static const String _profileKey = "profile";
+  static const String _lastBackupKey = "lastBackup";
 
   Future<void> init() async {
     _sharedPrefs = await SharedPreferences.getInstance();
+  }
+
+  set lastBackup(DateTime? dateTime) {
+    _sharedPrefs.setString(_lastBackupKey, dateTime!.toIso8601String());
+    notifyListeners();
+  }
+
+  DateTime? get lastBackup {
+    final lastBackup = _sharedPrefs.getString(_lastBackupKey);
+    if (lastBackup == null) return null;
+
+    return DateTime.parse(lastBackup);
   }
 
   set name(String? value) {
