@@ -42,7 +42,7 @@ class SettingsScreen extends StatelessWidget {
             ListTile(
               leading: const CircleAvatar(child: Icon(Icons.cloud_sync)),
               title: const Text("Backup and Restore"),
-              subtitle: const Text("Theme and defaults"),
+              subtitle: const Text("Info on your Google Drive backup"),
               onTap: () => Navigator.push<void>(
                 context,
                 MaterialPageRoute(builder: (_) => const BackupSettingScreen()),

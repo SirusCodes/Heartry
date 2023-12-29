@@ -1,3 +1,9 @@
+## 2.4.0-beta - 30/12/2023
+
+Backup to Google Drive is now available!
+
+Setting > Backup and Restore and then enable "Backup to Google Drive"
+
 ## 2.3.1-beta - 30/08/2023
 
 Updated Android target API (minor fix)
