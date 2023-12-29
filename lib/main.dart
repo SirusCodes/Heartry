@@ -25,6 +25,7 @@ Future<void> main() async {
   Catcher2(
     releaseConfig: releaseCatcher,
     profileConfig: releaseCatcher,
+    ensureInitialized: true,
     rootWidget: const ProviderScope(child: MyApp()),
   );
 

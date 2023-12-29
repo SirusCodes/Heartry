@@ -29,8 +29,6 @@ class IntroScreen extends StatefulWidget {
 class _IntroScreenState extends State<IntroScreen> {
   bool _enableSlideIcon = true;
 
-  final liquidController = LiquidController();
-
   @override
   Widget build(BuildContext context) {
     const pages = [
@@ -43,21 +41,18 @@ class _IntroScreenState extends State<IntroScreen> {
       body: Theme(
         data: getLightTheme(heartryLightColorScheme),
         child: Consumer(
-          builder: (context, ref, child) {
-            ref.read(authProvider.notifier).init();
+          builder: (_, ref, child) {
+            ref.listen(
+              authProvider,
+              (prev, next) => _onUserAuthenticated(prev, next, ref),
+            );
+            ref.listen(restoreManagerProvider, _onRestoreResult);
 
-            ref.listen(authProvider, (previous, next) {
-              if (next.value != null) {
-                final currentPage = liquidController.currentPage;
-                liquidController.animateToPage(page: currentPage + 1);
-              }
-            });
             return child!;
           },
           child: LiquidSwipe(
             pages: pages,
             enableLoop: false,
-            liquidController: liquidController,
             onPageChangeCallback: (activePageIndex) {
               setState(() {
                 _enableSlideIcon = activePageIndex != pages.length - 1;
@@ -76,6 +71,102 @@ class _IntroScreenState extends State<IntroScreen> {
         ),
       ),
     );
+  }
+
+  Future<void> _onUserAuthenticated(
+    AsyncAccount? previous,
+    AsyncAccount next,
+    WidgetRef ref,
+  ) async {
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+    final navigator = Navigator.of(context);
+
+    if (next.asData?.valueOrNull != null) {
+      final name = next.value!.displayName ?? "User";
+      _saveName(name);
+      final backupRestoreManager = ref.read(backupRestoreManagerProvider);
+
+      if (await backupRestoreManager.hasBackup()) {
+        _showRestoreOptionDialog(ref);
+      } else {
+        scaffoldMessenger.showSnackBar(
+          const SnackBar(content: Text("Could not find backup")),
+        );
+        await _addDetailsInDB(name);
+        navigator.pushReplacement<void, void>(
+          CupertinoPageRoute(
+            builder: (_) => const PoemScreen(),
+          ),
+        );
+      }
+      return;
+    }
+
+    if (next is AsyncError) {
+      scaffoldMessenger.showSnackBar(
+        SnackBar(content: Text(next.error.toString())),
+      );
+      return;
+    }
+
+    scaffoldMessenger.showSnackBar(
+      const SnackBar(content: Text("Authentication failed")),
+    );
+  }
+
+  _showRestoreOptionDialog(WidgetRef ref) {
+    return showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Restore from backup?"),
+        content: const Text("We found a backup of your poems from Google Drive."
+            " Do you want to restore it?"),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text("No"),
+          ),
+          FilledButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              ref.read(restoreManagerProvider.notifier).restore();
+            },
+            child: const Text("Yes"),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _onRestoreResult(BackupRestoreState? previous, BackupRestoreState next) {
+    if (next == BackupRestoreState.restoring) {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => const AlertDialog(
+          title: Text("Restoring in progress..."),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SizedBox(height: 16),
+              CircularProgressIndicator(),
+              SizedBox(height: 16),
+              Text("Please don't close the app"),
+            ],
+          ),
+        ),
+      );
+    } else if (next == BackupRestoreState.success) {
+      Navigator.of(context).pop();
+      Navigator.of(context).pushReplacement(
+        CupertinoPageRoute(builder: (_) => const PoemScreen()),
+      );
+    } else if (next == BackupRestoreState.error) {
+      Navigator.of(context).pop();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Restore failed, try again.")),
+      );
+    }
   }
 }
 
@@ -99,9 +190,6 @@ class _NamePageState extends ConsumerState<_NamePage> {
 
   @override
   Widget build(BuildContext context) {
-    ref.listen(authProvider, _onUserAuthenticated);
-    ref.listen(restoreManagerProvider, _onRestoreResult);
-
     return Container(
       color: Colors.deepPurple.shade100,
       child: Padding(
@@ -190,37 +278,9 @@ class _NamePageState extends ConsumerState<_NamePage> {
     );
   }
 
-  Future<void> _addDetailsInDB() async {
-    final db = locator<Database>();
-
-    StringBuffer buffer = StringBuffer();
-
-    buffer.writeln("Hey ${_nameController.text}, thanks for using Heartry. 🤗");
-    buffer.writeln();
-    buffer.writeln("Everything that you ✍ will be auto saved.");
-    buffer.writeln();
-    buffer.writeln("""Press and hold this card to access toolbar. 😊
-You can access Reader Mode, Share and Edit from it.""");
-    buffer.writeln();
-    buffer.writeln("""**Reader Mode**
-Sometimes keyboards can be annoying.
-Press and hold on card, and click on eye button.
-Now that keyboard will never disturb you. 😇""");
-    buffer.writeln();
-    buffer.writeln("""**Share**
-You can share poem in 2 ways.
-1. As Text 🆎 (For Messages)
-2. As Photos 📷 (For Stories)""");
-
-    await db.insertPoem(PoemModel(
-      title: "Welcome!!🎉",
-      poem: buffer.toString(),
-    ));
-  }
-
   Future<void> _onNameFeildSubmitted() async {
     final navigator = Navigator.of(context);
-    await _addDetailsInDB();
+    await _addDetailsInDB(_nameController.text);
     _saveName(_nameController.text);
     navigator.pushReplacement<void, void>(
       CupertinoPageRoute(
@@ -228,113 +288,39 @@ You can share poem in 2 ways.
       ),
     );
   }
+}
 
-  void _saveName(String name) {
-    final config = ref.read(configProvider.notifier);
-    config.name = name;
-  }
+void _saveName(String name) {
+  final config = locator<Config>();
+  config.name = name;
+}
 
-  Future<void> _onUserAuthenticated(
-    AsyncAccount? previous,
-    AsyncAccount next,
-  ) async {
-    final scaffoldMessenger = ScaffoldMessenger.of(context);
-    final navigator = Navigator.of(context);
+Future<void> _addDetailsInDB(String name) async {
+  final db = locator<Database>();
 
-    if (next.value != null) {
-      _saveName(next.value!.displayName ?? "User");
-      final backupRestoreManager = ref.read(backupRestoreManagerProvider);
+  StringBuffer buffer = StringBuffer();
 
-      if (await backupRestoreManager.hasBackup())
-        _showRestoreOptionDialog();
-      else {
-        scaffoldMessenger.showSnackBar(
-          const SnackBar(content: Text("Could not find backup")),
-        );
-        await _addDetailsInDB();
-        navigator.pushReplacement<void, void>(
-          CupertinoPageRoute(
-            builder: (_) => const PoemScreen(),
-          ),
-        );
-      }
-      return;
-    }
+  buffer.writeln("Hey $name, thanks for using Heartry. 🤗");
+  buffer.writeln();
+  buffer.writeln("Everything that you ✍ will be auto saved.");
+  buffer.writeln();
+  buffer.writeln("""Press and hold this card to access toolbar. 😊
+You can access Reader Mode, Share and Edit from it.""");
+  buffer.writeln();
+  buffer.writeln("""**Reader Mode**
+Sometimes keyboards can be annoying.
+Press and hold on card, and click on eye button.
+Now that keyboard will never disturb you. 😇""");
+  buffer.writeln();
+  buffer.writeln("""**Share**
+You can share poem in 2 ways.
+1. As Text 🆎 (For Messages)
+2. As Photos 📷 (For Stories)""");
 
-    if (next is AsyncError) {
-      scaffoldMessenger.showSnackBar(
-        SnackBar(content: Text(next.error.toString())),
-      );
-      return;
-    }
-
-    scaffoldMessenger.showSnackBar(
-      const SnackBar(content: Text("Authentication failed")),
-    );
-  }
-
-  _showRestoreOptionDialog() async {
-    if (showingDialog) return;
-
-    showingDialog = true;
-    await showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text("Restore from backup?"),
-        content: const Text("We found a backup of your poems from Google Drive."
-            " Do you want to restore it?"),
-        actions: <Widget>[
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text("No"),
-          ),
-          FilledButton(
-            onPressed: () => ref //
-                .read(restoreManagerProvider.notifier)
-                .restore(),
-            child: const Text("Yes"),
-          ),
-        ],
-      ),
-    );
-
-    showingDialog = false;
-  }
-
-  void _onRestoreResult(BackupRestoreState? previous, BackupRestoreState next) {
-    if (next == BackupRestoreState.restoring) {
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (context) => const Dialog(
-          child: Padding(
-            padding: EdgeInsets.all(14.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                CircularProgressIndicator(),
-                Padding(
-                  padding: EdgeInsets.all(15.0),
-                  child: Text("Restoring..."),
-                ),
-              ],
-            ),
-          ),
-        ),
-      );
-    } else if (next == BackupRestoreState.success) {
-      Navigator.of(context).pop();
-      Navigator.of(context).pushReplacement(
-        CupertinoPageRoute(builder: (_) => const PoemScreen()),
-      );
-    } else if (next == BackupRestoreState.error) {
-      Navigator.of(context).pop();
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Restore failed, try again.")),
-      );
-    }
-  }
+  await db.insertPoem(PoemModel(
+    title: "Welcome!!🎉",
+    poem: buffer.toString(),
+  ));
 }
 
 class _ProfilePage extends ConsumerWidget {

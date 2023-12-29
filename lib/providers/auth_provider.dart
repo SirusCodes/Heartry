@@ -12,25 +12,15 @@ final _googleSignInProvider = Provider(
   (_) => GoogleSignIn(scopes: _accessScopes),
 );
 
-final authProvider = StateNotifierProvider<AuthProvider, AsyncAccount>(
+final authProvider = AsyncNotifierProvider<AuthProvider, GoogleSignInAccount?>(
   AuthProvider.new,
 );
 
-class AuthProvider extends StateNotifier<AsyncAccount> {
-  AuthProvider(Ref ref)
-      : _ref = ref,
-        super(const AsyncAccount.data(null));
-
-  final Ref _ref;
-
-  GoogleSignIn get _googleSignIn => _ref.read(_googleSignInProvider);
+class AuthProvider extends AsyncNotifier<GoogleSignInAccount?> {
+  GoogleSignIn get _googleSignIn => ref.read(_googleSignInProvider);
 
   GoogleSignInAccount? getAccount() {
     return _googleSignIn.currentUser;
-  }
-
-  void init() {
-    AsyncAccount.data(getAccount());
   }
 
   Future<void> signIn() async {
@@ -54,5 +44,10 @@ class AuthProvider extends StateNotifier<AsyncAccount> {
     } catch (e, st) {
       state = AsyncAccount.error(e, st);
     }
+  }
+
+  @override
+  FutureOr<GoogleSignInAccount?> build() {
+    return getAccount();
   }
 }

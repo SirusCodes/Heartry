@@ -24,8 +24,6 @@ class BackupSettingScreen extends ConsumerWidget {
       (previous, next) => _onBackupManagerUpdate(previous, next, context),
     );
 
-    ref.read(authProvider.notifier).init();
-
     return SafeArea(
       child: Scaffold(
         body: ListView(
