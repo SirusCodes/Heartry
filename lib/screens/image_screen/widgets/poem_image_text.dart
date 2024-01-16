@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -27,7 +29,7 @@ class PoemImageText extends ConsumerWidget {
         Text(
           title,
           textAlign: TextAlign.center,
-          textScaleFactor: scale <= 1.2 ? scale : 1.2,
+          textScaler: TextScaler.linear(math.min(scale, 1.2)),
           style: TextStyle(
             fontSize: TITLE_TEXT_SIZE,
             color: color,
@@ -40,7 +42,7 @@ class PoemImageText extends ConsumerWidget {
         ...poem.map(
           (e) => Text(
             e,
-            textScaleFactor: scale,
+            textScaler: TextScaler.linear(scale),
             style: TextStyle(
               fontSize: POEM_TEXT_SIZE,
               color: color,
@@ -52,7 +54,7 @@ class PoemImageText extends ConsumerWidget {
         Text(
           "-$poet",
           textAlign: TextAlign.center,
-          textScaleFactor: scale <= 1.2 ? scale : 1.2,
+          textScaler: TextScaler.linear(math.min(scale, 1.2)),
           style: TextStyle(
             fontSize: POET_TEXT_SIZE,
             color: color,

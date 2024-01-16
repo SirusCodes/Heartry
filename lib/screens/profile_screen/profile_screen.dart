@@ -49,20 +49,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final isAndroid = theme.platform == TargetPlatform.android;
 
     return Scaffold(
-      body: WillPopScope(
-        onWillPop: () {
+      body: PopScope(
+        canPop: false,
+        onPopInvoked: (didPop) {
+          if (didPop) return;
+
           final name = _nameController.text;
           if (name.isEmpty) {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text(noNameError)),
             );
-
-            return Future.value(false);
+            return;
           }
           if (_name != _nameController.text)
             _config.name = _nameController.text;
 
-          return Future.value(true);
+          Navigator.pop(context);
         },
         child: SafeArea(
           child: Column(
@@ -238,6 +240,7 @@ class _ProfileUpdateDialog extends ConsumerWidget {
   Future<void> _updateImage(BuildContext context, ImageSource source) async {
     final navigator = Navigator.of(context);
     final picker = ImagePicker();
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
     try {
       final pickedImage = await picker.pickImage(
         source: source,
@@ -247,7 +250,7 @@ class _ProfileUpdateDialog extends ConsumerWidget {
 
       navigator.pop(pickedImage);
     } on PlatformException {
-      ScaffoldMessenger.of(context).showSnackBar(
+      scaffoldMessenger.showSnackBar(
         const SnackBar(content: Text("Permission denied")),
       );
     }

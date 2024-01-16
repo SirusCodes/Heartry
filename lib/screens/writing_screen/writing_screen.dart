@@ -74,12 +74,10 @@ class _WritingScreenState extends State<WritingScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: WillPopScope(
-        onWillPop: () {
+      body: PopScope(
+        onPopInvoked: (_) {
           if (_isEmpty && widget.model != null)
             poemDB.deletePoem(widget.model!);
-
-          return Future.value(true);
         },
         child: SafeArea(
           child: Stack(

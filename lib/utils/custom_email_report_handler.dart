@@ -15,8 +15,8 @@ class CustomEmailReportHandler extends ReportHandler {
       ];
 
   @override
-  Future<bool> handle(Report error, BuildContext? context) async {
-    return _sendMail(_getBody(error), "Error <${error.error}>");
+  Future<bool> handle(Report report, BuildContext? context) async {
+    return _sendMail(_getBody(report), "Error <${report.error}>");
   }
 
   String _getBody(Report report) {

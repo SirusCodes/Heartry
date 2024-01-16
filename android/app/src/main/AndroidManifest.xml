@@ -6,6 +6,7 @@
    <uses-permission android:name="android.permission.INTERNET"/>
    <application
         android:label="Heartry"
+        android:enableOnBackInvokedCallback="true"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"

@@ -308,7 +308,7 @@ class _ImageScreenState extends State<ImageScreen> {
         ),
       ),
       maxLines: maxLines,
-      textScaleFactor: scale,
+      textScaler: TextScaler.linear(scale),
       textDirection: TextDirection.ltr,
     )..layout(maxWidth: constraints.maxWidth - 140);
 

@@ -437,6 +437,8 @@ class _ProfilePage extends ConsumerWidget {
       WidgetRef ref, BuildContext context, ImageSource source) async {
     final config = ref.read(configProvider.notifier);
     final picker = ImagePicker();
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+
     try {
       final pickedImage = await picker.pickImage(
         source: source,
@@ -446,7 +448,7 @@ class _ProfilePage extends ConsumerWidget {
 
       config.profile = await _saveImageInAppStorage(pickedImage);
     } on PlatformException {
-      ScaffoldMessenger.of(context).showSnackBar(
+      scaffoldMessenger.showSnackBar(
         const SnackBar(content: Text("Permission denied")),
       );
     }
