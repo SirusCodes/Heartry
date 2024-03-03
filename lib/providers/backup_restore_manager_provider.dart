@@ -12,7 +12,7 @@ import '../database/config.dart';
 import '../database/database.dart';
 import '../init_get_it.dart';
 import '../models/backup_model/backup_model.dart';
-import 'auth_provider.dart';
+import 'token_manager.dart';
 
 enum BackupRestoreState {
   idle,
@@ -227,12 +227,9 @@ class BackupRestoreManagerProvider {
   }
 
   Future<gapis.DriveApi> _getDrive() async {
-    final account = ref.read(authProvider.notifier).getAccount();
-    if (account == null) {
-      throw BackupRestoreException('No account found');
-    }
-    final headers = await account.authHeaders;
-    return gapis.DriveApi(GoogleAuthClient(headers));
+    final accessToken = await ref.read(tokenManagerProvider).getAccessToken();
+
+    return gapis.DriveApi(GoogleAuthClient(accessToken));
   }
 
   Future<Map<String, dynamic>> _getAllSharedPrefs() async {
@@ -261,14 +258,17 @@ class BackupRestoreManagerProvider {
 }
 
 class GoogleAuthClient extends http.BaseClient {
-  final Map<String, String> _headers;
   final _client = http.Client();
+  final String accessToken;
 
-  GoogleAuthClient(this._headers);
+  GoogleAuthClient(this.accessToken);
 
   @override
   Future<http.StreamedResponse> send(http.BaseRequest request) {
-    request.headers.addAll(_headers);
+    request.headers.addAll({
+      'Authorization': 'Bearer $accessToken',
+      'X-Goog-AuthUser': '0',
+    });
     return _client.send(request);
   }
 }
