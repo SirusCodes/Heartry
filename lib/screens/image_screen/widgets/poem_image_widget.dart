@@ -4,13 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../database/config.dart';
-import '../../../init_get_it.dart';
 import '../../../providers/color_gradient_provider.dart';
 import '../../../providers/text_providers.dart';
 import 'poem_image_card.dart';
 
 class PoemImageWidget extends StatelessWidget {
-  PoemImageWidget({
+  const PoemImageWidget({
     Key? key,
     required this.title,
     required this.poem,
@@ -18,11 +17,10 @@ class PoemImageWidget extends StatelessWidget {
     required this.total,
     required this.poet,
   }) : super(key: key);
+
   final List<String> poem;
   final int page, total;
   final String title, poet;
-
-  final _imagePath = locator<Config>().profile;
 
   @override
   Widget build(BuildContext context) {
@@ -105,15 +103,28 @@ class PoemImageWidget extends StatelessWidget {
                   poet: poet,
                 ),
               ),
-              if (_imagePath != null)
-                Positioned(
-                  bottom: 20,
-                  right: 20,
-                  child: CircleAvatar(
-                    radius: 30,
-                    backgroundImage: FileImage(File(_imagePath!)),
-                  ),
-                ),
+              Consumer(
+                builder: (context, ref, child) {
+                  final config = ref.watch(configProvider);
+
+                  return config.maybeWhen(
+                    data: (data) {
+                      if (data.profile != null)
+                        return Positioned(
+                          bottom: 20,
+                          right: 20,
+                          child: CircleAvatar(
+                            radius: 30,
+                            backgroundImage: FileImage(File(data.profile!)),
+                          ),
+                        );
+
+                      return const SizedBox.shrink();
+                    },
+                    orElse: () => const SizedBox.shrink(),
+                  );
+                },
+              ),
             ],
           ),
         ),

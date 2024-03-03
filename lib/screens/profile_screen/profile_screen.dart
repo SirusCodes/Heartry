@@ -9,30 +9,27 @@ import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
 import '../../database/config.dart';
-import '../../init_get_it.dart';
 import '../../widgets/c_screen_title.dart';
 import '../../widgets/only_back_button_bottom_app_bar.dart';
 
 const String noNameError = "Please enter your name...";
 
-class ProfileScreen extends StatefulWidget {
+class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({Key? key}) : super(key: key);
 
   @override
-  State<ProfileScreen> createState() => _ProfileScreenState();
+  ConsumerState<ProfileScreen> createState() => _ProfileScreenState();
 }
 
-class _ProfileScreenState extends State<ProfileScreen> {
+class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   late TextEditingController _nameController;
 
   late String _name;
 
-  final Config _config = locator<Config>();
-
   @override
   void initState() {
     super.initState();
-    _name = _config.name!;
+    _name = ref.read(configProvider).requireValue.name!;
     _nameController = TextEditingController(text: _name);
   }
 
@@ -62,7 +59,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             return;
           }
           if (_name != _nameController.text)
-            _config.name = _nameController.text;
+            ref.read(configProvider.notifier).name = _nameController.text;
 
           Navigator.pop(context);
         },
@@ -75,7 +72,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
               Consumer(
                 builder: (context, ref, child) {
-                  final imagePath = ref.watch(configProvider).profile;
+                  final imagePath = ref //
+                      .watch(configProvider)
+                      .requireValue
+                      .profile;
+
                   return Badge(
                     badgeStyle: BadgeStyle(
                       badgeColor: theme.colorScheme.onPrimaryContainer,
@@ -180,12 +181,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 }
 
-class _ProfileUpdateDialog extends ConsumerWidget {
+class _ProfileUpdateDialog extends StatelessWidget {
   const _ProfileUpdateDialog({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final image = ref.watch(configProvider);
+  Widget build(BuildContext context) {
     return SimpleDialog(
       contentPadding: const EdgeInsets.symmetric(
         horizontal: 24.0,
@@ -204,16 +204,27 @@ class _ProfileUpdateDialog extends ConsumerWidget {
           icon: const Icon(Icons.camera_alt),
           text: "Capture from camera",
         ),
-        if (image.profile != null)
-          _buildDialogButton(
-            context,
-            onPressed: () {
-              ref.read(configProvider).profile = null;
-              Navigator.pop(context);
-            },
-            icon: const Icon(Icons.remove_circle),
-            text: "Remove profile",
-          ),
+        Consumer(
+          builder: (context, ref, child) {
+            return ref.watch(configProvider).when(
+                  data: (image) {
+                    if (image.profile != null)
+                      return _buildDialogButton(
+                        context,
+                        onPressed: () {
+                          ref.read(configProvider.notifier).profile = null;
+                          Navigator.pop(context);
+                        },
+                        icon: const Icon(Icons.remove_circle),
+                        text: "Remove profile",
+                      );
+                    return const SizedBox.shrink();
+                  },
+                  loading: () => const SizedBox.shrink(),
+                  error: (error, stack) => const SizedBox.shrink(),
+                );
+          },
+        ),
       ],
     );
   }

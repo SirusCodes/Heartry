@@ -37,8 +37,6 @@ class Config extends AsyncNotifier<ConfigModel> {
     state = state.whenData((data) => data.copyWith(profile: value));
   }
 
-  String? get profile => _sharedPrefs.getString(_profileKey);
-
   @override
   FutureOr<ConfigModel> build() async {
     _sharedPrefs = await SharedPreferences.getInstance();
