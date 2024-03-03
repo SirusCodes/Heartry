@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../database/config.dart';
 import '../../../database/database.dart';
 import '../../../init_get_it.dart';
 import '../../../providers/list_grid_provider.dart';
@@ -144,16 +145,26 @@ class _PoemCardState extends State<PoemCard>
   void _shareClicked() {
     showModalBottomSheet<void>(
       context: context,
-      builder: (context) => ShareOptionList(
-        onShareAsImage: () => ShareHelper.shareAsImage(
-          context,
-          title: widget.model.title,
-          poem: widget.model.poem,
-        ),
-        onShareAsText: () => ShareHelper.shareAsText(
-          title: widget.model.title,
-          poem: widget.model.poem,
-        ),
+      builder: (context) => Consumer(
+        builder: (context, ref, child) {
+          final poet = ref //
+              .watch(configProvider)
+              .whenOrNull(data: (data) => data.name);
+
+          return ShareOptionList(
+            onShareAsImage: () => ShareHelper.shareAsImage(
+              context,
+              title: widget.model.title,
+              poem: widget.model.poem,
+              poet: poet ?? "Unknown",
+            ),
+            onShareAsText: () => ShareHelper.shareAsText(
+              title: widget.model.title,
+              poem: widget.model.poem,
+              poet: poet ?? "Unknown",
+            ),
+          );
+        },
       ),
     );
   }

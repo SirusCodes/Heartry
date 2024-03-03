@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:drift/drift.dart' show Value;
 
+import '../../database/config.dart';
 import '../../database/database.dart';
 import '../../init_get_it.dart';
 import '../../utils/share_helper.dart';
@@ -126,31 +127,41 @@ class _WritingScreenState extends State<WritingScreen>
               Positioned(
                 bottom: 0,
                 width: MediaQuery.of(context).size.width,
-                child: _WritingBottomAppBar(
-                  showSharePanel: () {
-                    if (undoRedo.textEditingController.text.isNotEmpty)
-                      return true;
+                child: Consumer(
+                  builder: (context, ref, child) {
+                    final poet = ref
+                        .watch(configProvider)
+                        .whenOrNull(data: (data) => data.name);
+                    return _WritingBottomAppBar(
+                      showSharePanel: () {
+                        if (undoRedo.textEditingController.text.isNotEmpty)
+                          return true;
 
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text("Please write something!")),
-                    );
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                              content: Text("Please write something!")),
+                        );
 
-                    return false;
-                  },
-                  onShareAsText: () {
-                    ShareHelper.shareAsText(
-                      title: _titleTextController.text,
-                      poem: undoRedo.textEditingController.text,
+                        return false;
+                      },
+                      onShareAsText: () {
+                        ShareHelper.shareAsText(
+                          title: _titleTextController.text,
+                          poem: undoRedo.textEditingController.text,
+                          poet: poet ?? "Anonymous",
+                        );
+                        _handleDBChanges();
+                      },
+                      onShareAsImage: () {
+                        ShareHelper.shareAsImage(
+                          context,
+                          title: _titleTextController.text,
+                          poem: undoRedo.textEditingController.text,
+                          poet: poet ?? "Anonymous",
+                        );
+                        _handleDBChanges();
+                      },
                     );
-                    _handleDBChanges();
-                  },
-                  onShareAsImage: () {
-                    ShareHelper.shareAsImage(
-                      context,
-                      title: _titleTextController.text,
-                      poem: undoRedo.textEditingController.text,
-                    );
-                    _handleDBChanges();
                   },
                 ),
               )

@@ -1,31 +1,21 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/theme_detail_model/theme_detail_model.dart';
 import '../utils/theme.dart';
-import 'shared_prefs_provider.dart';
 
-final themeProvider =
-    StateNotifierProvider<ThemeProvider, AsyncValue<ThemeDetailModel>>(
-        ThemeProvider.new);
+final themeProvider = AsyncNotifierProvider<ThemeProvider, ThemeDetailModel>(
+  () => ThemeProvider(),
+);
 
-class ThemeProvider extends StateNotifier<AsyncValue<ThemeDetailModel>> {
-  ThemeProvider(Ref ref) : super(const AsyncLoading()) {
-    ref.read(sharedPrefsProvider.future).then((sharedPrefs) {
-      _sharedPreferences = sharedPrefs;
-      _init();
-    });
-  }
-
+class ThemeProvider extends AsyncNotifier<ThemeDetailModel> {
   static const _themeKey = "theme";
   static const _accentColorKey = "accentColor";
 
   late SharedPreferences _sharedPreferences;
-
-  void _init() {
-    state = AsyncData(getThemeDetails());
-  }
 
   ThemeDetailModel getThemeDetails() {
     final accentColor = _sharedPreferences.getInt(_accentColorKey);
@@ -48,5 +38,12 @@ class ThemeProvider extends StateNotifier<AsyncValue<ThemeDetailModel>> {
   void setToDynamicColor() {
     _sharedPreferences.remove(_accentColorKey);
     state = AsyncData(state.asData!.value.removeAccentColor());
+  }
+
+  @override
+  FutureOr<ThemeDetailModel> build() async {
+    _sharedPreferences = await SharedPreferences.getInstance();
+
+    return getThemeDetails();
   }
 }

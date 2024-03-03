@@ -1,6 +1,7 @@
 import 'package:catcher_2/catcher_2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'database/config.dart';
@@ -10,10 +11,14 @@ import 'screens/intro_screen/intro_screen.dart';
 import 'screens/poems_screen/poems_screen.dart';
 import 'utils/custom_email_report_handler.dart';
 import 'utils/theme.dart';
+import 'utils/workmanager_helper.dart';
 import 'widgets/color_scheme_builder.dart';
 
 Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
   initGetIt();
+  initWorkmanager();
 
   final releaseCatcher = Catcher2Options(
     DialogReportMode(),
@@ -45,12 +50,15 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  late Future<void> _initSharedPrefs;
-
   @override
   void initState() {
     super.initState();
-    _initSharedPrefs = locator<Config>().init();
+    FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+        FlutterLocalNotificationsPlugin();
+    flutterLocalNotificationsPlugin
+        .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>()!
+        .requestNotificationsPermission();
   }
 
   @override
@@ -71,22 +79,23 @@ class _MyAppState extends State<MyApp> {
                 darkTheme: theme.themeType == ThemeType.dark
                     ? getDarkTheme(darkColorScheme)
                     : getBlackTheme(darkColorScheme),
-                home: FutureBuilder(
-                  future: _initSharedPrefs,
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.done) {
-                      final name = locator<Config>().name;
+                home: Consumer(
+                  builder: (context, ref, _) {
+                    return ref.watch(configProvider).when(
+                          data: (config) {
+                            if (config.name != null) return const PoemScreen();
 
-                      if (name != null) return const PoemScreen();
-
-                      return const IntroScreen();
-                    }
-
-                    return const Material(
-                      child: Center(
-                        child: CircularProgressIndicator(),
-                      ),
-                    );
+                            return const IntroScreen();
+                          },
+                          error: (err, st) => Center(
+                            child: Text("$err\n${"_" * 25}\n$st"),
+                          ),
+                          loading: () => const Material(
+                            child: Center(
+                              child: CircularProgressIndicator(),
+                            ),
+                          ),
+                        );
                   },
                 ),
               );

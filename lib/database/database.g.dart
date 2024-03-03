@@ -40,9 +40,10 @@ class $PoemTable extends Poem with TableInfo<$PoemTable, PoemModel> {
   @override
   List<GeneratedColumn> get $columns => [id, lastEdit, title, poem];
   @override
-  String get aliasedName => _alias ?? 'poem';
+  String get aliasedName => _alias ?? actualTableName;
   @override
-  String get actualTableName => 'poem';
+  String get actualTableName => $name;
+  static const String $name = 'poem';
   @override
   VerificationContext validateIntegrity(Insertable<PoemModel> instance,
       {bool isInserting = false}) {

@@ -349,12 +349,15 @@ class _ProfilePage extends ConsumerWidget {
             const SizedBox(height: 45),
             Consumer(
               builder: (context, ref, child) {
-                final imagePath = ref.watch(configProvider).profile;
+                final imagePath = ref
+                    .watch(configProvider)
+                    .whenOrNull(data: (data) => data.profile);
                 return CircleAvatar(
                   maxRadius: 100,
                   minRadius: 80,
-                  backgroundImage:
-                      imagePath != null ? FileImage(File(imagePath)) : null,
+                  backgroundImage: imagePath != null //
+                      ? FileImage(File(imagePath))
+                      : null,
                   child: isAndroid
                       ? FutureBuilder(
                           future: _retriveImage(ref, context),

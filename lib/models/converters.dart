@@ -3,6 +3,16 @@ import 'package:json_annotation/json_annotation.dart';
 
 import '../database/database.dart';
 
+class DateTimeConverter extends JsonConverter<DateTime, String> {
+  const DateTimeConverter();
+
+  @override
+  DateTime fromJson(String json) => DateTime.parse(json);
+
+  @override
+  String toJson(DateTime object) => object.toIso8601String();
+}
+
 class NullableColorConverter extends JsonConverter<Color?, int?> {
   const NullableColorConverter();
 

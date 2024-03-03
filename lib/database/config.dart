@@ -1,53 +1,54 @@
-import 'package:flutter/foundation.dart';
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:heartry/models/config_model/config_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../init_get_it.dart';
+final configProvider =
+    AsyncNotifierProvider<Config, ConfigModel>(() => Config());
 
-final configProvider = ChangeNotifierProvider<Config>((_) => locator<Config>());
-
-class Config extends ChangeNotifier {
+class Config extends AsyncNotifier<ConfigModel> {
   static late SharedPreferences _sharedPrefs;
 
   static const String _nameKey = "name";
   static const String _profileKey = "profile";
   static const String _lastBackupKey = "lastBackup";
 
-  Future<void> init() async {
-    _sharedPrefs = await SharedPreferences.getInstance();
-  }
-
   set lastBackup(DateTime? dateTime) {
     _sharedPrefs.setString(_lastBackupKey, dateTime!.toIso8601String());
-    notifyListeners();
-  }
-
-  DateTime? get lastBackup {
-    final lastBackup = _sharedPrefs.getString(_lastBackupKey);
-    if (lastBackup == null) return null;
-
-    return DateTime.parse(lastBackup);
+    state = state.whenData((value) => value.copyWith(lastBackup: dateTime));
   }
 
   set name(String? value) {
     if (value == null) return;
 
     _sharedPrefs.setString(_nameKey, value);
-    notifyListeners();
+    state = state.whenData((data) => data.copyWith(name: value));
   }
-
-  String? get name => _sharedPrefs.getString(_nameKey);
 
   set profile(String? value) {
     if (value == null) {
       _sharedPrefs.remove(_profileKey);
-      notifyListeners();
+      state = state.whenData((data) => data.copyWith(profile: null));
 
       return;
     }
     _sharedPrefs.setString(_profileKey, value);
-    notifyListeners();
+    state = state.whenData((data) => data.copyWith(profile: value));
   }
 
   String? get profile => _sharedPrefs.getString(_profileKey);
+
+  @override
+  FutureOr<ConfigModel> build() async {
+    _sharedPrefs = await SharedPreferences.getInstance();
+
+    return ConfigModel(
+      name: _sharedPrefs.getString(_nameKey) ?? "User",
+      profile: _sharedPrefs.getString(_profileKey),
+      lastBackup: _sharedPrefs.getString(_lastBackupKey) != null
+          ? DateTime.parse(_sharedPrefs.getString(_lastBackupKey)!)
+          : null,
+    );
+  }
 }

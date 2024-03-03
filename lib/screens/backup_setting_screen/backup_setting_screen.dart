@@ -62,18 +62,21 @@ class BackupSettingScreen extends ConsumerWidget {
                   ),
                   ListTile(
                     title: const Text("Last Backup"),
-                    subtitle: config.lastBackup == null
-                        ? const Text("Have no backup yet")
-                        : Text(
-                            DateFormat.yMEd()
-                                .add_jm()
-                                .format(config.lastBackup!),
-                          ),
+                    subtitle: config.when(
+                        data: (data) => data.lastBackup == null
+                            ? const Text("Have no backup yet")
+                            : Text(
+                                DateFormat.yMEd()
+                                    .add_jm()
+                                    .format(data.lastBackup!),
+                              ),
+                        error: (err, st) => Text("$err"),
+                        loading: () => const Text("Loading...")),
                   )
                 ],
               ),
               loading: () => const Center(child: CircularProgressIndicator()),
-              error: (e, s) => Center(child: Text(e.toString())),
+              error: (e, s) => Center(child: Text("Error: $e\n$s")),
             ),
           ],
         ),

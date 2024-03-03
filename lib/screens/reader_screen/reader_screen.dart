@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../database/config.dart';
 import '../../database/database.dart';
 import '../../utils/share_helper.dart';
 import '../../widgets/c_screen_title.dart';
@@ -60,16 +62,26 @@ class ReaderScreen extends StatelessWidget {
   Future<void> _showShareBottomSheet(BuildContext context) {
     return showModalBottomSheet(
       context: context,
-      builder: (context) => ShareOptionList(
-        onShareAsImage: () => ShareHelper.shareAsImage(
-          context,
-          title: model.title,
-          poem: model.poem,
-        ),
-        onShareAsText: () => ShareHelper.shareAsText(
-          title: model.title,
-          poem: model.poem,
-        ),
+      builder: (context) => Consumer(
+        builder: (context, ref, child) {
+          final poet = ref //
+              .watch(configProvider)
+              .whenOrNull(data: (data) => data.name);
+
+          return ShareOptionList(
+            onShareAsImage: () => ShareHelper.shareAsImage(
+              context,
+              title: model.title,
+              poem: model.poem,
+              poet: poet ?? "Unknown",
+            ),
+            onShareAsText: () => ShareHelper.shareAsText(
+              title: model.title,
+              poem: model.poem,
+              poet: poet ?? "Unknown",
+            ),
+          );
+        },
       ),
     );
   }

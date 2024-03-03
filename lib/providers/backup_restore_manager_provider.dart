@@ -1,17 +1,18 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io' as io;
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:googleapis/drive/v3.dart' as gapis;
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../database/config.dart';
 import '../database/database.dart';
 import '../init_get_it.dart';
 import '../models/backup_model/backup_model.dart';
 import 'auth_provider.dart';
-import 'theme_provider.dart';
 
 enum BackupRestoreState {
   idle,
@@ -60,10 +61,10 @@ class RestoreManagerProvider extends StateNotifier<BackupRestoreState> {
   Future<void> restore() async {
     state = BackupRestoreState.restoring;
     try {
-      final dateTime = await _ref.read(backupRestoreManagerProvider).restore();
+      await _ref.read(backupRestoreManagerProvider).restore();
       state = BackupRestoreState.success;
-      _ref.read(configProvider.notifier).lastBackup = dateTime;
-    } catch (e) {
+    } catch (e, st) {
+      log("Restore failed: $e", error: e, stackTrace: st);
       state = BackupRestoreState.error;
     }
   }
@@ -80,20 +81,16 @@ class BackupRestoreManagerProvider {
 
   Future<DateTime> backup() async {
     final poems = await locator.get<Database>().getPoems();
-    final config = ref.read(configProvider);
-    final theme = ref.read(themeProvider.notifier).getThemeDetails();
+    final allPrefs = await _getAllSharedPrefs();
 
     List<int>? imageBytes;
-    if (config.profile != null) {
-      imageBytes = io.File(config.profile!).readAsBytesSync();
+    if (allPrefs["profile"] != null) {
+      imageBytes = io.File(allPrefs["profile"]).readAsBytesSync();
     }
     final backup = BackupModel(
       poems: poems,
-      config: ConfigModel(
-        name: config.name ?? '',
-        image: imageBytes,
-      ),
-      theme: theme,
+      prefs: allPrefs,
+      image: imageBytes,
     );
 
     final data = json.encode(backup);
@@ -119,29 +116,24 @@ class BackupRestoreManagerProvider {
 
     final db = locator.get<Database>();
     final config = ref.read(configProvider.notifier);
-    final theme = ref.read(themeProvider.notifier);
 
     await db.deleteAllPoems();
     await db.insertBatchPoems(backup.poems);
 
-    config.name = backup.config.name;
-    if (backup.config.image != null) {
+    await _setAllSharedPrefs(backup.prefs);
+
+    if (backup.image != null) {
       final appDir = await getApplicationDocumentsDirectory();
       final file = io.File('${appDir.path}/profile.png')
-        ..writeAsBytesSync(backup.config.image!);
+        ..writeAsBytesSync(backup.image!);
       config.profile = file.path;
     } else {
       config.profile = null;
     }
 
-    if (backup.theme.accentColor == null) {
-      theme.setToDynamicColor();
-    } else {
-      theme.setAccentColor(backup.theme.accentColor!);
-    }
-    theme.setTheme(backup.theme.themeType);
-
     await downloadedFile.delete();
+
+    ref.invalidate(configProvider);
 
     return DateTime.now();
   }
@@ -241,6 +233,30 @@ class BackupRestoreManagerProvider {
     }
     final headers = await account.authHeaders;
     return gapis.DriveApi(GoogleAuthClient(headers));
+  }
+
+  Future<Map<String, dynamic>> _getAllSharedPrefs() async {
+    final sharedPrefs = await SharedPreferences.getInstance();
+    final keys = sharedPrefs.getKeys();
+    final prefs = <String, dynamic>{};
+    for (final key in keys) {
+      prefs[key] = sharedPrefs.get(key);
+    }
+    return prefs;
+  }
+
+  Future<void> _setAllSharedPrefs(Map<String, dynamic> prefs) async {
+    final sharedPrefs = await SharedPreferences.getInstance();
+    for (final key in prefs.keys) {
+      final _ = switch (prefs[key]) {
+        int() => sharedPrefs.setInt(key, prefs[key]),
+        double() => sharedPrefs.setDouble(key, prefs[key]),
+        String() => sharedPrefs.setString(key, prefs[key]),
+        bool() => sharedPrefs.setBool(key, prefs[key]),
+        List<String>() => sharedPrefs.setStringList(key, prefs[key]),
+        _ => throw BackupRestoreException('Unknown type'),
+      };
+    }
   }
 }
 

@@ -164,7 +164,9 @@ class _CAppBar extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final imagePath = ref.watch(configProvider).profile;
+    final imagePath = ref //
+        .watch(configProvider)
+        .whenOrNull(data: (data) => data.profile);
     final isList = ref.watch(listGridProvider);
 
     return Padding(
