@@ -33,7 +33,10 @@ class TokenManager {
 
   Future<void> getAndSaveTokensFromAuthCode(String serverAuthCode) async {
     final response = await http.post(
-      _uri,
+      _uri.replace(path: '/api/oauth'),
+      headers: {
+        'Content-Type': 'application/json',
+      },
       body: jsonEncode({'code': serverAuthCode}),
     );
 
@@ -48,7 +51,7 @@ class TokenManager {
       Duration(seconds: json['expires_in']),
     );
 
-    if (json['scope'] != DriveApi.driveAppdataScope) {
+    if (!json['scope'].toString().contains(DriveApi.driveAppdataScope)) {
       throw Exception('Invalid scope');
     }
 
@@ -76,7 +79,10 @@ class TokenManager {
     }
 
     final response = await http.post(
-      _uri,
+      _uri.replace(path: '/api/refresh_token'),
+      headers: {
+        'Content-Type': 'application/json',
+      },
       body: jsonEncode({'refresh_token': refreshToken}),
     );
 

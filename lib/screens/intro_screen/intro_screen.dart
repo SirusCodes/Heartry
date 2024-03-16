@@ -79,25 +79,21 @@ class _IntroScreenState extends State<IntroScreen> {
     WidgetRef ref,
   ) async {
     final scaffoldMessenger = ScaffoldMessenger.of(context);
-    final navigator = Navigator.of(context);
 
     if (next.asData?.valueOrNull != null) {
-      final name = next.value!.displayName ?? "User";
-      _saveName(name);
       final backupRestoreManager = ref.read(backupRestoreManagerProvider);
+      final name = next.value!.displayName ?? "User";
 
       if (await backupRestoreManager.hasBackup()) {
-        _showRestoreOptionDialog(ref);
+        final hasRestored = await _showRestoreOptionDialog(ref);
+        if (hasRestored == false) {
+          await _addDefaultData(name, ref);
+        }
       } else {
         scaffoldMessenger.showSnackBar(
           const SnackBar(content: Text("Could not find backup")),
         );
-        await _addDetailsInDB(name);
-        navigator.pushReplacement<void, void>(
-          CupertinoPageRoute(
-            builder: (_) => const PoemScreen(),
-          ),
-        );
+        await _addDefaultData(name, ref);
       }
       return;
     }
@@ -114,8 +110,13 @@ class _IntroScreenState extends State<IntroScreen> {
     );
   }
 
-  _showRestoreOptionDialog(WidgetRef ref) {
-    return showDialog(
+  Future<void> _addDefaultData(String name, WidgetRef ref) async {
+    ref.read(configProvider.notifier).name = name;
+    await _addDetailsInDB(name);
+  }
+
+  Future<bool?> _showRestoreOptionDialog(WidgetRef ref) {
+    return showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text("Restore from backup?"),
@@ -123,12 +124,12 @@ class _IntroScreenState extends State<IntroScreen> {
             " Do you want to restore it?"),
         actions: <Widget>[
           TextButton(
-            onPressed: () => Navigator.of(context).pop(),
+            onPressed: () => Navigator.of(context).pop(false),
             child: const Text("No"),
           ),
           FilledButton(
             onPressed: () {
-              Navigator.of(context).pop();
+              Navigator.of(context).pop(true);
               ref.read(restoreManagerProvider.notifier).restore();
             },
             child: const Text("Yes"),
@@ -281,18 +282,13 @@ class _NamePageState extends ConsumerState<_NamePage> {
   Future<void> _onNameFeildSubmitted() async {
     final navigator = Navigator.of(context);
     await _addDetailsInDB(_nameController.text);
-    _saveName(_nameController.text);
+    ref.read(configProvider.notifier).name = _nameController.text;
     navigator.pushReplacement<void, void>(
       CupertinoPageRoute(
         builder: (_) => const PoemScreen(),
       ),
     );
   }
-}
-
-void _saveName(String name) {
-  final config = locator<Config>();
-  config.name = name;
 }
 
 Future<void> _addDetailsInDB(String name) async {

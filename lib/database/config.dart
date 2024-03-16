@@ -42,7 +42,7 @@ class Config extends AsyncNotifier<ConfigModel> {
     _sharedPrefs = await SharedPreferences.getInstance();
 
     return ConfigModel(
-      name: _sharedPrefs.getString(_nameKey) ?? "User",
+      name: _sharedPrefs.getString(_nameKey),
       profile: _sharedPrefs.getString(_profileKey),
       lastBackup: _sharedPrefs.getString(_lastBackupKey) != null
           ? DateTime.parse(_sharedPrefs.getString(_lastBackupKey)!)
