@@ -20,9 +20,9 @@ Future<Response> onRequest(RequestContext context) async {
       'client_secret': Platform.environment['GOOGLE_CLIENT_SECRET'],
       'code': body['code'],
       'grant_type': 'authorization_code',
-      'redirect_uri': null,
+      'redirect_uri': 'https://heartry.darshanrander.com/',
     },
   );
 
-  return Response(body: response.body);
+  return Response(body: response.body, statusCode: response.statusCode);
 }
