@@ -25,9 +25,6 @@ final authProvider = AsyncNotifierProvider<AuthProvider, GoogleSignInAccount?>(
 class AuthProvider extends AsyncNotifier<GoogleSignInAccount?> {
   GoogleSignIn get _googleSignIn => ref.read(_googleSignInProvider);
 
-  static const ACCESS_TOKEN = 'access_token';
-  static const REFRESH_TOKEN = 'refresh_token';
-
   GoogleSignInAccount? getAccount() {
     return _googleSignIn.currentUser;
   }
@@ -53,7 +50,10 @@ class AuthProvider extends AsyncNotifier<GoogleSignInAccount?> {
 
   Future<void> signOut() async {
     try {
-      await _googleSignIn.signOut();
+      await Future.wait([
+        _googleSignIn.signOut(),
+        ref.read(tokenManagerProvider).clearTokens(),
+      ]);
       state = const AsyncAccount.data(null);
     } catch (e, st) {
       state = AsyncAccount.error(e, st);

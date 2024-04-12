@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:heartry/providers/token_manager.dart';
 import 'package:intl/intl.dart';
 
 import '../../database/config.dart';
@@ -9,12 +10,16 @@ import '../../widgets/c_screen_title.dart';
 import '../../widgets/only_back_button_bottom_app_bar.dart';
 import '../about_screen/widgets/base_info_widget.dart';
 
+final isAuthenticatedProvider = FutureProvider<bool>((ref) {
+  return ref.read(tokenManagerProvider).hasRefreshToken();
+});
+
 class BackupSettingScreen extends ConsumerWidget {
   const BackupSettingScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isAuthenticated = ref.watch(authProvider);
+    final isAuthenticated = ref.watch(isAuthenticatedProvider);
     final config = ref.watch(configProvider);
 
     final isIOS = Theme.of(context).platform == TargetPlatform.iOS;
@@ -34,7 +39,7 @@ class BackupSettingScreen extends ConsumerWidget {
                 title: "BACKUP",
                 children: [
                   SwitchListTile(
-                    value: user != null,
+                    value: user,
                     title: const Text("Backup to Google Drive"),
                     subtitle: const Text(
                       "Enable auto backup your data to Google Drive. "
@@ -54,10 +59,10 @@ class BackupSettingScreen extends ConsumerWidget {
                     subtitle: const Text(
                       "Backup your data to Google Drive immediately.",
                     ),
-                    onTap: user != null
-                        ? () {
-                            ref.read(backupManagerProvider.notifier).backup();
-                          }
+                    onTap: user
+                        ? () => ref //
+                            .read(backupManagerProvider.notifier)
+                            .backup()
                         : null,
                   ),
                   ListTile(

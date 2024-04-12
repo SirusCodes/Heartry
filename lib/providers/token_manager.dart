@@ -64,6 +64,21 @@ class TokenManager {
     return;
   }
 
+  Future<void> clearTokens() {
+    return Future.wait([
+      storage.delete(key: _refreshToken),
+      storage.delete(key: _accessTokenKey),
+      storage.delete(key: _expireDate),
+    ]);
+  }
+
+  Future<bool> hasRefreshToken() {
+    return storage
+        .read(key: _refreshToken)
+        .then((value) => value != null)
+        .catchError((_) => false);
+  }
+
   Future<bool> _isTokenExpired() async {
     final expireDateString = await storage.read(key: _expireDate);
     if (expireDateString == null) return false;

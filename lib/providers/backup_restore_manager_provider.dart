@@ -1,5 +1,5 @@
+import 'dart:async';
 import 'dart:convert';
-import 'dart:developer';
 import 'dart:io' as io;
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -41,30 +41,6 @@ class BackupManagerProvider extends StateNotifier<BackupRestoreState> {
       state = BackupRestoreState.success;
       _ref.read(configProvider.notifier).lastBackup = dateTime;
     } catch (e) {
-      state = BackupRestoreState.error;
-    }
-  }
-}
-
-final restoreManagerProvider =
-    StateNotifierProvider<RestoreManagerProvider, BackupRestoreState>(
-  RestoreManagerProvider.new,
-);
-
-class RestoreManagerProvider extends StateNotifier<BackupRestoreState> {
-  RestoreManagerProvider(Ref ref)
-      : _ref = ref,
-        super(BackupRestoreState.idle);
-
-  final Ref _ref;
-
-  Future<void> restore() async {
-    state = BackupRestoreState.restoring;
-    try {
-      await _ref.read(backupRestoreManagerProvider).restore();
-      state = BackupRestoreState.success;
-    } catch (e, st) {
-      log("Restore failed: $e", error: e, stackTrace: st);
       state = BackupRestoreState.error;
     }
   }
@@ -139,6 +115,12 @@ class BackupRestoreManagerProvider {
   }
 
   Future<bool> hasBackup() async {
+    final lastestBackupDate = await getLastestBackupDate();
+
+    return lastestBackupDate != null;
+  }
+
+  Future<DateTime?> getLastestBackupDate() async {
     final drive = await _getDrive();
     final files = await drive.files.list(
       orderBy: "createdTime desc",
@@ -147,10 +129,15 @@ class BackupRestoreManagerProvider {
     );
     final backupFiles = files.files;
     if (backupFiles == null || backupFiles.isEmpty) {
-      return false;
+      return null;
     }
 
-    return true;
+    return _getDateFromName(backupFiles.first.name!);
+  }
+
+  DateTime _getDateFromName(String name) {
+    final date = name.split('backup-')[1].split('.json')[0];
+    return DateTime.parse(date);
   }
 
   Future<io.File> _downloadFromDrive() async {

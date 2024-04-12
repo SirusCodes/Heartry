@@ -5,6 +5,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:heartry/screens/restore_screen/restore_screen.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:liquid_swipe/liquid_swipe.dart';
 import 'package:path/path.dart' as p;
@@ -12,10 +13,8 @@ import 'package:path_provider/path_provider.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 import '../../database/config.dart';
-import '../../database/database.dart';
-import '../../init_get_it.dart';
 import '../../providers/auth_provider.dart';
-import '../../providers/backup_restore_manager_provider.dart';
+import '../../utils/initial_data_setup.dart';
 import '../../utils/theme.dart';
 import '../poems_screen/poems_screen.dart';
 
@@ -46,7 +45,6 @@ class _IntroScreenState extends State<IntroScreen> {
               authProvider,
               (prev, next) => _onUserAuthenticated(prev, next, ref),
             );
-            ref.listen(restoreManagerProvider, _onRestoreResult);
 
             return child!;
           },
@@ -81,20 +79,12 @@ class _IntroScreenState extends State<IntroScreen> {
     final scaffoldMessenger = ScaffoldMessenger.of(context);
 
     if (next.asData?.valueOrNull != null) {
-      final backupRestoreManager = ref.read(backupRestoreManagerProvider);
       final name = next.value!.displayName ?? "User";
+      ref.read(configProvider.notifier).name = name;
 
-      if (await backupRestoreManager.hasBackup()) {
-        final hasRestored = await _showRestoreOptionDialog(ref);
-        if (hasRestored == false) {
-          await _addDefaultData(name, ref);
-        }
-      } else {
-        scaffoldMessenger.showSnackBar(
-          const SnackBar(content: Text("Could not find backup")),
-        );
-        await _addDefaultData(name, ref);
-      }
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (_) => const RestoreScreen()),
+      );
       return;
     }
 
@@ -108,66 +98,6 @@ class _IntroScreenState extends State<IntroScreen> {
     scaffoldMessenger.showSnackBar(
       const SnackBar(content: Text("Authentication failed")),
     );
-  }
-
-  Future<void> _addDefaultData(String name, WidgetRef ref) async {
-    ref.read(configProvider.notifier).name = name;
-    await _addDetailsInDB(name);
-  }
-
-  Future<bool?> _showRestoreOptionDialog(WidgetRef ref) {
-    return showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text("Restore from backup?"),
-        content: const Text("We found a backup of your poems from Google Drive."
-            " Do you want to restore it?"),
-        actions: <Widget>[
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: const Text("No"),
-          ),
-          FilledButton(
-            onPressed: () {
-              Navigator.of(context).pop(true);
-              ref.read(restoreManagerProvider.notifier).restore();
-            },
-            child: const Text("Yes"),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _onRestoreResult(BackupRestoreState? previous, BackupRestoreState next) {
-    if (next == BackupRestoreState.restoring) {
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (context) => const AlertDialog(
-          title: Text("Restoring in progress..."),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              SizedBox(height: 16),
-              CircularProgressIndicator(),
-              SizedBox(height: 16),
-              Text("Please don't close the app"),
-            ],
-          ),
-        ),
-      );
-    } else if (next == BackupRestoreState.success) {
-      Navigator.of(context).pop();
-      Navigator.of(context).pushReplacement(
-        CupertinoPageRoute(builder: (_) => const PoemScreen()),
-      );
-    } else if (next == BackupRestoreState.error) {
-      Navigator.of(context).pop();
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Restore failed, try again.")),
-      );
-    }
   }
 }
 
@@ -221,7 +151,7 @@ class _NamePageState extends ConsumerState<_NamePage> {
                 return null;
               },
               onSaved: (newValue) {
-                locator<Config>().name = newValue;
+                ref.read(configProvider.notifier).name = newValue;
               },
               textCapitalization: TextCapitalization.words,
               decoration: InputDecoration(
@@ -281,7 +211,7 @@ class _NamePageState extends ConsumerState<_NamePage> {
 
   Future<void> _onNameFeildSubmitted() async {
     final navigator = Navigator.of(context);
-    await _addDetailsInDB(_nameController.text);
+    await InitialDataSetup.addDetailsInDB(_nameController.text);
     ref.read(configProvider.notifier).name = _nameController.text;
     navigator.pushReplacement<void, void>(
       CupertinoPageRoute(
@@ -289,34 +219,6 @@ class _NamePageState extends ConsumerState<_NamePage> {
       ),
     );
   }
-}
-
-Future<void> _addDetailsInDB(String name) async {
-  final db = locator<Database>();
-
-  StringBuffer buffer = StringBuffer();
-
-  buffer.writeln("Hey $name, thanks for using Heartry. 🤗");
-  buffer.writeln();
-  buffer.writeln("Everything that you ✍ will be auto saved.");
-  buffer.writeln();
-  buffer.writeln("""Press and hold this card to access toolbar. 😊
-You can access Reader Mode, Share and Edit from it.""");
-  buffer.writeln();
-  buffer.writeln("""**Reader Mode**
-Sometimes keyboards can be annoying.
-Press and hold on card, and click on eye button.
-Now that keyboard will never disturb you. 😇""");
-  buffer.writeln();
-  buffer.writeln("""**Share**
-You can share poem in 2 ways.
-1. As Text 🆎 (For Messages)
-2. As Photos 📷 (For Stories)""");
-
-  await db.insertPoem(PoemModel(
-    title: "Welcome!!🎉",
-    poem: buffer.toString(),
-  ));
 }
 
 class _ProfilePage extends ConsumerWidget {
