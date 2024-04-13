@@ -55,19 +55,22 @@ Future<void> initWorkmanager() async {
   print(sharedPrefs.getString("workmanger-running") ?? "not running");
 
   Workmanager().initialize(callbackDispatcher, isInDebugMode: kDebugMode);
-  registerBackupWorkmanager();
 }
 
 void registerBackupWorkmanager() {
-  // Workmanager().registerPeriodicTask(
-  //   "backup-task",
-  //   "backup",
-  //   frequency: const Duration(days: 1),
-  //   backoffPolicy: BackoffPolicy.linear,
-  //   backoffPolicyDelay: const Duration(seconds: 10),
-  //   constraints: Constraints(
-  //     networkType: NetworkType.connected,
-  //     requiresBatteryNotLow: true,
-  //   ),
-  // );
+  Workmanager().registerPeriodicTask(
+    "backup-task",
+    "backup",
+    frequency: const Duration(minutes: 2),
+    backoffPolicy: BackoffPolicy.linear,
+    backoffPolicyDelay: const Duration(seconds: 10),
+    constraints: Constraints(
+      networkType: NetworkType.connected,
+      requiresBatteryNotLow: true,
+    ),
+  );
+}
+
+void unregisterBackupWorkmanager() {
+  Workmanager().cancelByUniqueName("backup-task");
 }

@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:googleapis/drive/v3.dart';
 
+import '../utils/workmanager_helper.dart';
 import 'token_manager.dart';
 
 const _accessScopes = [DriveApi.driveAppdataScope];
@@ -43,6 +44,7 @@ class AuthProvider extends AsyncNotifier<GoogleSignInAccount?> {
           .getAndSaveTokensFromAuthCode(account.serverAuthCode!);
 
       state = AsyncAccount.data(account);
+      registerBackupWorkmanager();
     } catch (e, st) {
       state = AsyncAccount.error(e, st);
     }
@@ -55,6 +57,7 @@ class AuthProvider extends AsyncNotifier<GoogleSignInAccount?> {
         ref.read(tokenManagerProvider).clearTokens(),
       ]);
       state = const AsyncAccount.data(null);
+      unregisterBackupWorkmanager();
     } catch (e, st) {
       state = AsyncAccount.error(e, st);
     }

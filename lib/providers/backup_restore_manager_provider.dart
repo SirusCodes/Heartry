@@ -41,6 +41,7 @@ class BackupManagerProvider extends StateNotifier<BackupRestoreState> {
       state = BackupRestoreState.success;
       _ref.read(configProvider.notifier).lastBackup = dateTime;
     } catch (e) {
+      print(e);
       state = BackupRestoreState.error;
     }
   }
@@ -78,7 +79,7 @@ class BackupRestoreManagerProvider {
     final drive = await _getDrive();
 
     await _uploadToDrive(file, drive);
-    await _deleteOldBackups(drive);
+    // await _deleteOldBackups(drive);
 
     return DateTime.now();
   }

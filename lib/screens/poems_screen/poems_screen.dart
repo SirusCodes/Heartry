@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
@@ -28,6 +29,13 @@ class _PoemScreenState extends ConsumerState<PoemScreen> {
   @override
   void initState() {
     super.initState();
+    FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+        FlutterLocalNotificationsPlugin();
+    flutterLocalNotificationsPlugin
+        .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>()!
+        .requestNotificationsPermission();
+
     final appVersionManager = ref.read(appVersionManagerProvider);
     appVersionManager.isAppUpdated().then(
       (value) {
