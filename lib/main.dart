@@ -66,7 +66,8 @@ class MyApp extends StatelessWidget {
                   builder: (context, ref, _) {
                     return ref.watch(configProvider).when(
                           data: (config) {
-                            if (config.name != null) return const PoemScreen();
+                            if (config.hasCompletedOnboarding)
+                              return const PoemScreen();
 
                             return const IntroScreen();
                           },

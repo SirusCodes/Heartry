@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:heartry/providers/token_manager.dart';
 import 'package:intl/intl.dart';
 
 import '../../database/config.dart';
@@ -10,16 +9,11 @@ import '../../widgets/c_screen_title.dart';
 import '../../widgets/only_back_button_bottom_app_bar.dart';
 import '../about_screen/widgets/base_info_widget.dart';
 
-final isAuthenticatedProvider = FutureProvider<bool>((ref) {
-  return ref.read(tokenManagerProvider).hasRefreshToken();
-});
-
 class BackupSettingScreen extends ConsumerWidget {
   const BackupSettingScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isAuthenticated = ref.watch(isAuthenticatedProvider);
     final config = ref.watch(configProvider);
 
     final isIOS = Theme.of(context).platform == TargetPlatform.iOS;
@@ -28,58 +22,79 @@ class BackupSettingScreen extends ConsumerWidget {
       backupManagerProvider,
       (previous, next) => _onBackupManagerUpdate(previous, next, context),
     );
+    final dateTimeFormatter = DateFormat.yMMMEd().add_jm();
 
     return SafeArea(
       child: Scaffold(
         body: ListView(
           children: [
             const CScreenTitle(title: "Backup Setting"),
-            isAuthenticated.when(
-              data: (user) => BaseInfoWidget(
-                title: "BACKUP",
-                children: [
-                  SwitchListTile(
-                    value: user,
-                    title: const Text("Backup to Google Drive"),
-                    subtitle: const Text(
-                      "Enable auto backup your data to Google Drive. "
-                      "You can restore your data on another device.",
+            config.when(
+              data: (model) {
+                if (model.backupEmail == null) {
+                  return BaseInfoWidget(
+                    title: "BACKUP",
+                    children: [
+                      ListTile(
+                        title: const Text("Enable backup to Google Drive"),
+                        subtitle: const Text(
+                          "Click to login to Google and enable drive backup.",
+                        ),
+                        onTap: () {
+                          ref.read(authProvider.notifier).signIn();
+                        },
+                      ),
+                    ],
+                  );
+                }
+
+                return BaseInfoWidget(
+                  title: "BACKUP",
+                  children: [
+                    ListTile(
+                      title: const Text("Backup Email"),
+                      subtitle: Text(model.backupEmail!),
+                      trailing: TextButton(
+                        child: const Text("Sign Out"),
+                        onPressed: () {
+                          ref.read(authProvider.notifier).signOut();
+                        },
+                      ),
                     ),
-                    onChanged: (value) {
-                      if (value) {
-                        ref.read(authProvider.notifier).signIn();
-                      } else {
-                        ref.read(authProvider.notifier).signOut();
-                      }
-                    },
-                  ),
-                  const Divider(),
-                  ListTile(
-                    title: const Text("Backup Now"),
-                    subtitle: const Text(
-                      "Backup your data to Google Drive immediately.",
+                    SwitchListTile(
+                      value: model.isAutoBackupEnabled,
+                      title: const Text("Enable Auto backup to Google Drive"),
+                      subtitle: const Text(
+                        "Enable auto backup your data to Google Drive. "
+                        "You can restore your data on another device.",
+                      ),
+                      onChanged: (value) {
+                        ref.read(configProvider.notifier).isAutoBackupEnabled =
+                            value;
+                      },
                     ),
-                    onTap: user
-                        ? () => ref //
-                            .read(backupManagerProvider.notifier)
-                            .backup()
-                        : null,
-                  ),
-                  ListTile(
-                    title: const Text("Last Backup"),
-                    subtitle: config.when(
-                        data: (data) => data.lastBackup == null
-                            ? const Text("Have no backup yet")
-                            : Text(
-                                DateFormat.yMEd()
-                                    .add_jm()
-                                    .format(data.lastBackup!),
-                              ),
-                        error: (err, st) => Text("$err"),
-                        loading: () => const Text("Loading...")),
-                  )
-                ],
-              ),
+                    const Divider(),
+                    ListTile(
+                      title: const Text("Backup Now"),
+                      subtitle: const Text(
+                        "Backup your data to Google Drive immediately.",
+                      ),
+                      enabled: model.backupEmail != null,
+                      onTap: () => ref //
+                          .read(backupManagerProvider.notifier)
+                          .backup(),
+                    ),
+                    ListTile(
+                      title: const Text("Last Backup"),
+                      subtitle: model.lastBackup == null
+                          ? const Text("Have no backup yet.")
+                          : Text(
+                              dateTimeFormatter.format(model.lastBackup!),
+                            ),
+                    ),
+                  ],
+                );
+              },
               loading: () => const Center(child: CircularProgressIndicator()),
               error: (e, s) => Center(child: Text("Error: $e\n$s")),
             ),

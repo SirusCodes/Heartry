@@ -5,7 +5,6 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:heartry/screens/restore_screen/restore_screen.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:liquid_swipe/liquid_swipe.dart';
 import 'package:path/path.dart' as p;
@@ -17,6 +16,7 @@ import '../../providers/auth_provider.dart';
 import '../../utils/initial_data_setup.dart';
 import '../../utils/theme.dart';
 import '../poems_screen/poems_screen.dart';
+import '../restore_screen/restore_screen.dart';
 
 class IntroScreen extends StatefulWidget {
   const IntroScreen({Key? key}) : super(key: key);
@@ -212,7 +212,10 @@ class _NamePageState extends ConsumerState<_NamePage> {
   Future<void> _onNameFeildSubmitted() async {
     final navigator = Navigator.of(context);
     await InitialDataSetup.addDetailsInDB(_nameController.text);
-    ref.read(configProvider.notifier).name = _nameController.text;
+    final config = ref.read(configProvider.notifier);
+    config.name = _nameController.text;
+    config.hasCompletedOnboarding = true;
+
     navigator.pushReplacement<void, void>(
       CupertinoPageRoute(
         builder: (_) => const PoemScreen(),

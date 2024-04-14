@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../database/config.dart';
 import '../../providers/restore_manager_provider.dart';
 import '../poems_screen/poems_screen.dart';
 
@@ -49,16 +50,19 @@ class RestoreScreen extends ConsumerWidget {
       NotFoundBackupRestoreState() ||
       SuccessRestoreState() ||
       ErrorRestoreState() =>
-        _buildNextButton(context),
+        _buildNextButton(context, ref),
     };
   }
 
-  Widget _buildNextButton(BuildContext context) {
+  Widget _buildNextButton(BuildContext context, WidgetRef ref) {
     return FilledButton(
-      onPressed: () => Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const PoemScreen()),
-      ),
+      onPressed: () {
+        ref.read(configProvider.notifier).hasCompletedOnboarding = true;
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const PoemScreen()),
+        );
+      },
       child: const Text("Next"),
     );
   }
@@ -67,7 +71,7 @@ class RestoreScreen extends ConsumerWidget {
     return Row(
       mainAxisSize: MainAxisSize.max,
       children: [
-        Expanded(child: _skipButton(context)),
+        Expanded(child: _skipButton(context, ref)),
         const SizedBox(width: 8),
         Expanded(
           child: FilledButton(
@@ -85,7 +89,7 @@ class RestoreScreen extends ConsumerWidget {
     return Row(
       mainAxisSize: MainAxisSize.max,
       children: [
-        Expanded(child: _skipButton(context)),
+        Expanded(child: _skipButton(context, ref)),
         const SizedBox(width: 8),
         Expanded(
           child: FilledButton(
@@ -99,12 +103,15 @@ class RestoreScreen extends ConsumerWidget {
     );
   }
 
-  Widget _skipButton(BuildContext context) {
+  Widget _skipButton(BuildContext context, WidgetRef ref) {
     return FilledButton.tonal(
-      onPressed: () => Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const PoemScreen()),
-      ),
+      onPressed: () {
+        ref.read(configProvider.notifier).hasCompletedOnboarding = true;
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const PoemScreen()),
+        );
+      },
       child: const Text("Skip"),
     );
   }

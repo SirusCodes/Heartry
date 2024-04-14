@@ -71,7 +71,7 @@ class FoundBackupRestoreState extends RestoreState {
   final DateTime date;
 
   @override
-  String get message => "Found backup from ${DateFormat.yMEd().format(date)}";
+  String get message => "Found backup from ${DateFormat.yMMMEd().format(date)}";
 }
 
 class NotFoundBackupRestoreState extends RestoreState {

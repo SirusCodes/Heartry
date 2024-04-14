@@ -26,6 +26,10 @@ void callbackDispatcher() {
   Workmanager().executeTask((task, inputData) async {
     initGetIt();
     final sharedprefs = await SharedPreferences.getInstance();
+    if (sharedprefs.getBool("hasCompletedOnboarding") != true) {
+      return true;
+    }
+
     sharedprefs.setString("workmanger-running", "yes");
     final container = ProviderContainer();
     final backupManager = container.read(backupRestoreManagerProvider);

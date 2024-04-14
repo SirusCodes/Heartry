@@ -8,6 +8,9 @@ part of 'config_model.dart';
 
 ConfigModel _$ConfigModelFromJson(Map<String, dynamic> json) => ConfigModel(
       name: json['name'] as String?,
+      backupEmail: json['backupEmail'] as String?,
+      isAutoBackupEnabled: json['isAutoBackupEnabled'] as bool? ?? true,
+      hasCompletedOnboarding: json['hasCompletedOnboarding'] as bool? ?? false,
       profile: json['profile'] as String?,
       lastBackup: _$JsonConverterFromJson<String, DateTime>(
           json['lastBackup'], const DateTimeConverter().fromJson),
@@ -17,6 +20,9 @@ Map<String, dynamic> _$ConfigModelToJson(ConfigModel instance) =>
     <String, dynamic>{
       'name': instance.name,
       'profile': instance.profile,
+      'backupEmail': instance.backupEmail,
+      'isAutoBackupEnabled': instance.isAutoBackupEnabled,
+      'hasCompletedOnboarding': instance.hasCompletedOnboarding,
       'lastBackup': _$JsonConverterToJson<String, DateTime>(
           instance.lastBackup, const DateTimeConverter().toJson),
     };

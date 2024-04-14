@@ -4,6 +4,7 @@ import 'dart:io' as io;
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:googleapis/drive/v3.dart' as gapis;
+import 'package:heartry/providers/theme_provider.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -41,7 +42,6 @@ class BackupManagerProvider extends StateNotifier<BackupRestoreState> {
       state = BackupRestoreState.success;
       _ref.read(configProvider.notifier).lastBackup = dateTime;
     } catch (e) {
-      print(e);
       state = BackupRestoreState.error;
     }
   }
@@ -110,7 +110,7 @@ class BackupRestoreManagerProvider {
 
     await downloadedFile.delete();
 
-    ref.invalidate(configProvider);
+    ref.invalidate(themeProvider);
 
     return DateTime.now();
   }
@@ -119,6 +119,22 @@ class BackupRestoreManagerProvider {
     final lastestBackupDate = await getLastestBackupDate();
 
     return lastestBackupDate != null;
+  }
+
+  Future<List<(String id, DateTime dateTime)>?> getAllBackups() async {
+    final drive = await _getDrive();
+    final files = await drive.files.list(
+      orderBy: "createdTime desc",
+      q: "name contains 'backup-'",
+      spaces: "appDataFolder",
+    );
+
+    return files.files?.map((e) => (e.id!, _getDateFromName(e.name!))).toList();
+  }
+
+  removeBackup(String id) async {
+    final drive = await _getDrive();
+    await drive.files.delete(id);
   }
 
   Future<DateTime?> getLastestBackupDate() async {
