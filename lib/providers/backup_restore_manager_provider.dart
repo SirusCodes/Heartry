@@ -79,7 +79,7 @@ class BackupRestoreManagerProvider {
     final drive = await _getDrive();
 
     await _uploadToDrive(file, drive);
-    // await _deleteOldBackups(drive);
+    await _deleteOldBackups(drive);
 
     return DateTime.now();
   }

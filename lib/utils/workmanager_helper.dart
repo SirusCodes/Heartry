@@ -53,11 +53,6 @@ void callbackDispatcher() {
 }
 
 Future<void> initWorkmanager() async {
-  final sharedPrefs = await SharedPreferences.getInstance();
-  print("Backup status: ");
-  print(sharedPrefs.getString("backup") ?? "null");
-  print(sharedPrefs.getString("workmanger-running") ?? "not running");
-
   Workmanager().initialize(callbackDispatcher, isInDebugMode: kDebugMode);
 }
 
