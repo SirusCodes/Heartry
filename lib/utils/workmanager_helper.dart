@@ -1,23 +1,22 @@
-// ignore_for_file: depend_on_referenced_packages
-
 import 'dart:developer';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:heartry/providers/backup_restore_manager_provider.dart';
+import 'package:intl/intl.dart';
+// ignore: depend_on_referenced_packages
 import 'package:riverpod/riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:workmanager/workmanager.dart';
 
 import '../init_get_it.dart';
+import '../providers/backup_restore_manager_provider.dart';
 
 const AndroidNotificationDetails androidNotificationDetails =
     AndroidNotificationDetails(
-  'your_channel_id',
-  'Random channel',
-  importance: Importance.max,
-  priority: Priority.high,
-  ticker: 'ticker',
+  'heartry_backup',
+  'Backup Notifications',
+  importance: Importance.defaultImportance,
+  priority: Priority.defaultPriority,
   icon: "@mipmap/ic_launcher",
 );
 
@@ -30,12 +29,19 @@ void callbackDispatcher() {
       return true;
     }
 
-    sharedprefs.setString("workmanger-running", "yes");
     final container = ProviderContainer();
     final backupManager = container.read(backupRestoreManagerProvider);
     try {
-      await backupManager.backup();
-      sharedprefs.setString("backup", "pass");
+      final date = await backupManager.backup();
+      sharedprefs.setString("lastBackup", date.toIso8601String());
+
+      final dateFomatter = DateFormat.yMMMEd().add_jm();
+      FlutterLocalNotificationsPlugin().show(
+        0,
+        "Your data is safe! 🎉",
+        "Backup successful at ${dateFomatter.format(DateTime.now())}",
+        const NotificationDetails(android: androidNotificationDetails),
+      );
     } catch (e, st) {
       FlutterLocalNotificationsPlugin().show(
         0,
@@ -45,7 +51,6 @@ void callbackDispatcher() {
       );
 
       log("Backup failed: $e", error: e, stackTrace: st);
-      sharedprefs.setString("backup", "$e ${'-' * 25} $st");
       return false;
     }
     return true;
@@ -57,10 +62,15 @@ Future<void> initWorkmanager() async {
 }
 
 void registerBackupWorkmanager() {
+  final now = DateTime.now();
+  final day = now.hour > 2 ? now.day + 1 : now.day;
+  final startBackupAt = DateTime(now.year, now.month, day, 2, 0, 0);
+
   Workmanager().registerPeriodicTask(
     "backup-task",
     "backup",
-    frequency: const Duration(minutes: 2),
+    frequency: const Duration(minutes: 1),
+    initialDelay: startBackupAt.difference(now),
     backoffPolicy: BackoffPolicy.linear,
     backoffPolicyDelay: const Duration(seconds: 10),
     constraints: Constraints(

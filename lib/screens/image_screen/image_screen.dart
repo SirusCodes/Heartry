@@ -122,7 +122,7 @@ class _ImageScreenState extends State<ImageScreen> {
             return;
           }
 
-          if (!mounted) return;
+          if (!context.mounted) return;
 
           _showShareTypeDialog(context, images);
         },

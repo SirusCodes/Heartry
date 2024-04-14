@@ -119,10 +119,7 @@ class _ChangelogDialog extends StatelessWidget {
                         style: Theme.of(context).textTheme.headlineMedium,
                       ),
                       const Divider(),
-                      Markdown(
-                        data: value,
-                        shrinkWrap: true,
-                      ),
+                      Expanded(child: Markdown(data: value)),
                     ],
                   ),
                   error: (Object error, StackTrace stackTrace) => Column(

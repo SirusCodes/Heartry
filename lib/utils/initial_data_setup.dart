@@ -5,7 +5,7 @@ import '../database/database.dart';
 import '../init_get_it.dart';
 
 class InitialDataSetup {
- static Future<void> addDefaultData(String name, WidgetRef ref) async {
+  static Future<void> addDefaultData(String name, WidgetRef ref) async {
     ref.read(configProvider.notifier).name = name;
     await addDetailsInDB(name);
   }

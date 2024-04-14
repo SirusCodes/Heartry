@@ -19,8 +19,8 @@ class Config extends AsyncNotifier<ConfigModel> {
   static const String _isAutoBackupEnabledKey = "isAutoBackupEnabled";
   static const String _hasCompletedOnboardingKey = "hasCompletedOnboarding";
 
-  set lastBackup(DateTime? dateTime) {
-    _sharedPrefs.setString(_lastBackupKey, dateTime!.toIso8601String());
+  set lastBackup(DateTime dateTime) {
+    _sharedPrefs.setString(_lastBackupKey, dateTime.toIso8601String());
     state = state.whenData((value) => value.copyWith(lastBackup: dateTime));
   }
 

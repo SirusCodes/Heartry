@@ -110,10 +110,10 @@ class TokenManager {
     final expireDate = DateTime.now().add(
       Duration(seconds: json['expires_in']),
     );
-    final scope = json['scope'];
+    final scope = json['scope'].toString();
 
-    if (scope != DriveApi.driveAppdataScope) {
-      throw Exception('Invalid scope');
+    if (!scope.contains(DriveApi.driveAppdataScope)) {
+      throw Exception('Invalid scope: $scope');
     }
 
     await updateAccessToken(accessToken: accessToken, expireDate: expireDate);
