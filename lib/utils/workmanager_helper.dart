@@ -16,6 +16,7 @@ const AndroidNotificationDetails androidNotificationDetails =
   'heartry_backup',
   'Backup Notifications',
   importance: Importance.defaultImportance,
+  silent: true,
   priority: Priority.defaultPriority,
   icon: "@mipmap/ic_launcher",
 );

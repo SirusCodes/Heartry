@@ -1,1 +1,2 @@
-Updated Android target API (minor fix)
+- Improved backup and restore flows.
+- Fixed a lot of bugs.

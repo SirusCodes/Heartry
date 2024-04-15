@@ -1,3 +1,8 @@
+## 2.4.0-beta.1 - 15/04/2024
+
+- Improved backup and restore flows.
+- Fixed a lot of bugs.
+
 ## 2.4.0-beta - 30/12/2023
 
 Backup to Google Drive is now available!
