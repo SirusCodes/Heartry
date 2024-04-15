@@ -70,7 +70,7 @@ void registerBackupWorkmanager() {
   Workmanager().registerPeriodicTask(
     "backup-task",
     "backup",
-    frequency: const Duration(minutes: 1),
+    frequency: const Duration(days: 1),
     initialDelay: startBackupAt.difference(now),
     backoffPolicy: BackoffPolicy.linear,
     backoffPolicyDelay: const Duration(seconds: 10),

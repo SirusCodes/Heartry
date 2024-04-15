@@ -1,3 +1,7 @@
+## 2.4.0-beta.3 - 16/04/2024
+
+- Fix the frequency of backups - if you are facing issues re-login in the app.
+
 ## 2.4.0-beta.2 - 15/04/2024
 
 - Fix config issue

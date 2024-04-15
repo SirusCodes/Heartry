@@ -1,2 +1,1 @@
-- Improved backup and restore flows.
-- Fixed a lot of bugs.
+Fix the frequency of backups - if you are facing issues re-login in the app.
