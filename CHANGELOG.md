@@ -1,3 +1,7 @@
+## 2.4.0-beta.2 - 15/04/2024
+
+- Fix config issue
+
 ## 2.4.0-beta.1 - 15/04/2024
 
 - Improved backup and restore flows.
