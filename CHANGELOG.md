@@ -1,3 +1,7 @@
+## 2.4.0-beta.4 - 22/04/2024
+
+- Fix the re-login issue in devices that previously had this installed
+
 ## 2.4.0-beta.3 - 16/04/2024
 
 - Fix the frequency of backups - if you are facing issues re-login in the app.

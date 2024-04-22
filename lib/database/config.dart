@@ -76,7 +76,7 @@ class Config extends AsyncNotifier<ConfigModel> {
   FutureOr<ConfigModel> build() async {
     _sharedPrefs = await SharedPreferences.getInstance();
 
-    return ConfigModel(
+    final model = ConfigModel(
       name: _sharedPrefs.getString(_nameKey),
       profile: _sharedPrefs.getString(_profileKey),
       backupEmail: _sharedPrefs.getString(_backupEmailKey),
@@ -88,5 +88,13 @@ class Config extends AsyncNotifier<ConfigModel> {
           ? DateTime.parse(_sharedPrefs.getString(_lastBackupKey)!)
           : null,
     );
+
+    // TODO: Remove this when everyone is above v2.4.0
+    if (model.name != null && !model.hasCompletedOnboarding) {
+      _sharedPrefs.setBool(_hasCompletedOnboardingKey, true);
+      return model.copyWith(hasCompletedOnboarding: true);
+    }
+
+    return model;
   }
 }
