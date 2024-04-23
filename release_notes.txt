@@ -1,1 +1,2 @@
-Fix the frequency of backups - if you are facing issues re-login in the app.
+- Fix the re-login issue in devices that previously had this installed
+- Don't backup if nothing changes
