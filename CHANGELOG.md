@@ -1,3 +1,9 @@
+## 2.4.0 - 23/04/2024
+
+Backup to Google Drive is now available!
+
+Setting > Backup and Restore and then enable "Backup to Google Drive"
+
 ## 2.4.0-beta.4 - 22/04/2024
 
 - Fix the re-login issue in devices that previously had this installed

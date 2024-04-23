@@ -1,2 +1,3 @@
-- Fix the re-login issue in devices that previously had this installed
-- Don't backup if nothing changes
+Backup to Google Drive is now available!
+
+Setting > Backup and Restore and then enable "Backup to Google Drive"
