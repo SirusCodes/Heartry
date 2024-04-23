@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io' as io;
 
+import 'package:crypto/crypto.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:googleapis/drive/v3.dart' as gapis;
 import 'package:heartry/providers/theme_provider.dart';
@@ -20,6 +21,7 @@ enum BackupRestoreState {
   backingUp,
   restoring,
   success,
+  skipBackup,
   error,
 }
 
@@ -35,11 +37,23 @@ class BackupManagerProvider extends StateNotifier<BackupRestoreState> {
 
   final Ref _ref;
 
-  Future<void> backup() async {
+  Future<void> backup({bool forceBackup = false}) async {
     state = BackupRestoreState.backingUp;
+    final manager = _ref.read(backupRestoreManagerProvider);
     try {
-      final dateTime = await _ref.read(backupRestoreManagerProvider).backup();
+      final file = await manager.createBackupFile();
+      final backupHash = await manager.getBackupFileHash(file);
+      final isSameAsLastBackup = await manager.isSameAsLastBackup(backupHash);
+
+      if (isSameAsLastBackup && !forceBackup) {
+        state = BackupRestoreState.skipBackup;
+        return;
+      }
+
+      final dateTime = await manager.backup(file);
       state = BackupRestoreState.success;
+
+      await manager.setBackupHash(backupHash);
       _ref.read(configProvider.notifier).lastBackup = dateTime;
     } catch (e) {
       state = BackupRestoreState.error;
@@ -56,26 +70,7 @@ class BackupRestoreManagerProvider {
 
   final Ref ref;
 
-  Future<DateTime> backup() async {
-    final poems = await locator.get<Database>().getPoems();
-    final allPrefs = await _getAllSharedPrefs();
-
-    List<int>? imageBytes;
-    if (allPrefs["profile"] != null) {
-      imageBytes = io.File(allPrefs["profile"]).readAsBytesSync();
-    }
-    final backup = BackupModel(
-      poems: poems,
-      prefs: allPrefs,
-      image: imageBytes,
-    );
-
-    final data = json.encode(backup);
-    final dateTime = DateTime.now().toIso8601String();
-    final tempDir = await getTemporaryDirectory();
-    final file = io.File('${tempDir.path}/backup-$dateTime.json')
-      ..writeAsStringSync(data);
-
+  Future<DateTime> backup(io.File file) async {
     final drive = await _getDrive();
 
     await _uploadToDrive(file, drive);
@@ -108,7 +103,9 @@ class BackupRestoreManagerProvider {
       config.profile = null;
     }
 
-    await downloadedFile.delete();
+    final fileHash = await getBackupFileHash(downloadedFile);
+
+    (setBackupHash(fileHash), downloadedFile.delete()).wait;
 
     ref.invalidate(themeProvider);
 
@@ -150,6 +147,51 @@ class BackupRestoreManagerProvider {
     }
 
     return _getDateFromName(backupFiles.first.name!);
+  }
+
+  Future<io.File> createBackupFile() async {
+    final poems = await locator.get<Database>().getPoems();
+    final allPrefs = await _getAllSharedPrefs();
+
+    List<int>? imageBytes;
+    if (allPrefs["profile"] != null) {
+      imageBytes = io.File(allPrefs["profile"]).readAsBytesSync();
+    }
+    final backup = BackupModel(
+      poems: poems,
+      prefs: allPrefs,
+      image: imageBytes,
+    );
+
+    final data = json.encode(backup);
+    final dateTime = DateTime.now().toIso8601String();
+    final tempDir = await getTemporaryDirectory();
+    final file = io.File('${tempDir.path}/backup-$dateTime.json')
+      ..writeAsStringSync(data);
+
+    return file;
+  }
+
+  Future<bool> isSameAsLastBackup(String newBackupHash) async {
+    final sharedPrefs = await SharedPreferences.getInstance();
+
+    final lastBackupFileHash = sharedPrefs.getString('lastBackupFileHash');
+    if (lastBackupFileHash == null) {
+      return false;
+    }
+
+    return lastBackupFileHash == newBackupHash;
+  }
+
+  Future<void> setBackupHash(String newBackupHash) async {
+    final sharedPrefs = await SharedPreferences.getInstance();
+    sharedPrefs.setString('lastBackupFileHash', newBackupHash);
+  }
+
+  Future<String> getBackupFileHash(io.File file) async {
+    final bytes = await file.readAsBytes();
+
+    return md5.convert(bytes).toString();
   }
 
   DateTime _getDateFromName(String name) {
@@ -241,6 +283,8 @@ class BackupRestoreManagerProvider {
     final keys = sharedPrefs.getKeys();
     final prefs = <String, dynamic>{};
     for (final key in keys) {
+      // To avoid saving the last backup file hash in the backup file
+      if (["lastBackupFileHash", "lastBackup"].contains(key)) continue;
       prefs[key] = sharedPrefs.get(key);
     }
     return prefs;

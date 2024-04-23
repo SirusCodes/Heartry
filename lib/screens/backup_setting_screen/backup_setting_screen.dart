@@ -82,7 +82,7 @@ class BackupSettingScreen extends ConsumerWidget {
                       enabled: model.backupEmail != null,
                       onTap: () => ref //
                           .read(backupManagerProvider.notifier)
-                          .backup(),
+                          .backup(forceBackup: true),
                     ),
                     ListTile(
                       title: const Text("Last Backup"),

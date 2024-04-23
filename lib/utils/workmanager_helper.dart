@@ -33,8 +33,18 @@ void callbackDispatcher() {
     final container = ProviderContainer();
     final backupManager = container.read(backupRestoreManagerProvider);
     try {
-      final date = await backupManager.backup();
+      final file = await backupManager.createBackupFile();
+      final backupHash = await backupManager.getBackupFileHash(file);
+      final isSameAsLastBackup =
+          await backupManager.isSameAsLastBackup(backupHash);
+
+      if (isSameAsLastBackup) {
+        return true;
+      }
+
+      final date = await backupManager.backup(file);
       sharedprefs.setString("lastBackup", date.toIso8601String());
+      backupManager.setBackupHash(backupHash);
 
       final dateFomatter = DateFormat.yMMMEd().add_jm();
       FlutterLocalNotificationsPlugin().show(
@@ -67,10 +77,12 @@ void registerBackupWorkmanager() {
   final day = now.hour > 2 ? now.day + 1 : now.day;
   final startBackupAt = DateTime(now.year, now.month, day, 2, 0, 0);
 
+  const backupFrequency = Duration(days: 1);
+
   Workmanager().registerPeriodicTask(
     "backup-task",
     "backup",
-    frequency: const Duration(days: 1),
+    frequency: backupFrequency,
     initialDelay: startBackupAt.difference(now),
     backoffPolicy: BackoffPolicy.linear,
     backoffPolicyDelay: const Duration(seconds: 10),
