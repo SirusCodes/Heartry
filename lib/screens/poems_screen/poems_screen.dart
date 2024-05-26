@@ -29,15 +29,26 @@ class _PoemScreenState extends ConsumerState<PoemScreen> {
   @override
   void initState() {
     super.initState();
-    FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-        FlutterLocalNotificationsPlugin();
-    flutterLocalNotificationsPlugin
-        .resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin>()!
-        .requestNotificationsPermission();
 
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await requestNotifPerm();
+      checkIfChangelog();
+    });
+  }
+
+  Future<void> requestNotifPerm() {
+    final flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+
+    final androidNotif =
+        flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>()!;
+
+    return androidNotif.requestNotificationsPermission();
+  }
+
+  Future<void> checkIfChangelog() {
     final appVersionManager = ref.read(appVersionManagerProvider);
-    appVersionManager.isAppUpdated().then(
+    return appVersionManager.isAppUpdated().then(
       (value) {
         if (!value) return;
         _showChangelogs();
