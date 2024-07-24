@@ -1,3 +1,1 @@
-Backup to Google Drive is now available!
-
-Setting > Backup and Restore and then enable "Backup to Google Drive"
+Bug fixes 😊

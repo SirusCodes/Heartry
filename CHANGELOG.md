@@ -1,3 +1,7 @@
+## 2.4.1 - 24/07/2024
+
+Bug fixes 😊
+
 ## 2.4.0 - 23/04/2024
 
 Backup to Google Drive is now available!
