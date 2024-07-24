@@ -30,7 +30,7 @@ class ShareHelper {
       CupertinoPageRoute(
         builder: (_) => ImageScreen(
           title: title,
-          poem: poem.split("\n"),
+          poem: poem,
           poet: poet,
         ),
       ),

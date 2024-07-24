@@ -25,7 +25,7 @@ class ImageScreen extends StatefulWidget {
 
   final String? title, poet;
 
-  final List<String> poem;
+  final String poem;
 
   @override
   State<ImageScreen> createState() => _ImageScreenState();
@@ -264,34 +264,46 @@ class _ImageScreenState extends State<ImageScreen> {
 
     double height = availableHeight;
 
-    // creating the size of the poem
-    for (final line in widget.poem) {
-      final double heightToSub = _calcTextSize(
-        context,
-        constraints,
-        line,
-        POEM_TEXT_SIZE,
-        textScale,
-      ).height;
+    final poem = _calcTextSize(
+      context,
+      constraints,
+      widget.poem,
+      POEM_TEXT_SIZE,
+      textScale,
+    );
 
-      height -= heightToSub;
+    // https://stackoverflow.com/questions/51640388/flutter-textpainter-vs-paragraph-for-drawing-book-page
 
-      if (height <= 0) {
-        if (poemLine[poemLine.length - 1].isEmpty) poemLine.removeLast();
-        poemLines.add([...poemLine]);
-        poemLine.clear();
-        height = availableHeight - heightToSub;
-      }
+    final overflowH = poem.height > availableHeight;
 
-      poemLine.add(line);
+    double charWidth =
+        0.48 * POEM_TEXT_SIZE * textScale; //this coefisient still dodgy
+    double charHeight = poem.preferredLineHeight;
+    int charInLine = constraints.maxWidth ~/ charWidth;
+    int lines = constraints.maxHeight ~/ charHeight;
+
+    // cut string base on rough estimate of characters allowed in boxconstraints
+    if (overflowH) {
+      String text = widget.poem;
+
+      int splitStart = (charInLine * lines).toInt();
+      String newText = text.substring(0, splitStart);
+
+      //do final calculation for char allowed in boxconstraint SS
+      splitStart =
+          getSplitIndex(constraints: constraints, text: newText, style: style);
+
+      String nextText = text.substring(splitStart, text.length);
+
+      text = text.substring(0, splitStart);
+
+      _setPages(nextText, constraints);
     }
-
-    if (height > 0) poemLines.add([...poemLine]);
 
     return poemLines;
   }
 
-  Size _calcTextSize(
+  TextPainter _calcTextSize(
     BuildContext context,
     BoxConstraints constraints,
     String text,
@@ -312,6 +324,6 @@ class _ImageScreenState extends State<ImageScreen> {
       textDirection: TextDirection.ltr,
     )..layout(maxWidth: constraints.maxWidth - 140);
 
-    return painter.size;
+    return painter;
   }
 }
