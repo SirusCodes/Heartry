@@ -9,7 +9,7 @@ import '../../widgets/share_option_list.dart';
 import '../writing_screen/writing_screen.dart';
 
 class ReaderScreen extends StatelessWidget {
-  const ReaderScreen({Key? key, required this.model}) : super(key: key);
+  const ReaderScreen({super.key, required this.model});
 
   final PoemModel model;
 

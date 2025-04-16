@@ -17,11 +17,11 @@ import 'widgets/poem_image_widget.dart';
 
 class ImageScreen extends StatefulWidget {
   const ImageScreen({
-    Key? key,
+    super.key,
     required this.poem,
     required this.title,
     required this.poet,
-  }) : super(key: key);
+  });
 
   final String? title, poet;
 

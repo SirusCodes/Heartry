@@ -12,7 +12,7 @@ import '../../utils/undo_redo.dart';
 import '../../widgets/share_option_list.dart';
 
 class WritingScreen extends StatefulWidget {
-  const WritingScreen({Key? key, this.model}) : super(key: key);
+  const WritingScreen({super.key, this.model});
 
   final PoemModel? model;
 
@@ -227,11 +227,10 @@ typedef BoolCallBack = bool Function();
 
 class _WritingBottomAppBar extends StatelessWidget {
   const _WritingBottomAppBar({
-    Key? key,
     required this.onShareAsImage,
     required this.onShareAsText,
     required this.showSharePanel,
-  }) : super(key: key);
+  });
 
   final VoidCallback onShareAsImage, onShareAsText;
   final BoolCallBack showSharePanel;

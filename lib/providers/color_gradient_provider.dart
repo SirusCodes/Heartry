@@ -10,7 +10,7 @@ final colorGradientListProvider = StateNotifierProviderFamily<
 );
 
 class ColorGradientListProviderNotifier extends StateNotifier<List<Color>> {
-  ColorGradientListProviderNotifier(List<Color> state) : super(state);
+  ColorGradientListProviderNotifier(super.state);
 
   void reorderColors(int oldIndex, int newIndex) {
     final tempList = [...state];

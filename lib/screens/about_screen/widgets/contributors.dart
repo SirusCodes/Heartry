@@ -8,7 +8,7 @@ import 'base_info_widget.dart';
 const _profileURL = "https://darshanrander.com/darshan-min.jpg";
 
 class Contributors extends StatefulWidget {
-  const Contributors({Key? key}) : super(key: key);
+  const Contributors({super.key});
 
   @override
   State<Contributors> createState() => _ContributorsState();

@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 
 class ImageColorInvert extends StatelessWidget {
   const ImageColorInvert({
-    Key? key,
+    super.key,
     required this.image,
     this.invert = false,
-  }) : super(key: key);
+  });
 
   final Image image;
   final bool invert;

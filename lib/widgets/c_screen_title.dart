@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class CScreenTitle extends StatelessWidget {
-  const CScreenTitle({Key? key, required this.title}) : super(key: key);
+  const CScreenTitle({super.key, required this.title});
 
   final String title;
 

@@ -7,7 +7,7 @@ import '../../../providers/color_gradient_provider.dart';
 import '../../../widgets/color_picker_dialog.dart';
 
 class ImageColorHandler extends ConsumerWidget {
-  const ImageColorHandler({Key? key}) : super(key: key);
+  const ImageColorHandler({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

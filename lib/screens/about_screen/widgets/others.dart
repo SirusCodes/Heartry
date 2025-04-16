@@ -5,7 +5,7 @@ import 'package:url_launcher/url_launcher_string.dart';
 import 'base_info_widget.dart';
 
 class Others extends StatelessWidget {
-  const Others({Key? key}) : super(key: key);
+  const Others({super.key});
 
   @override
   Widget build(BuildContext context) {

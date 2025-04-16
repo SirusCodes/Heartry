@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 
 class ShareOptionList extends StatelessWidget {
   const ShareOptionList({
-    Key? key,
+    super.key,
     required this.onShareAsImage,
     required this.onShareAsText,
-  }) : super(key: key);
+  });
 
   final VoidCallback onShareAsImage, onShareAsText;
 

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class OnlyBackButtonBottomAppBar extends StatelessWidget {
-  const OnlyBackButtonBottomAppBar({Key? key}) : super(key: key);
+  const OnlyBackButtonBottomAppBar({super.key});
 
   @override
   Widget build(BuildContext context) {

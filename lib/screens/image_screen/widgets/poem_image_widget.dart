@@ -10,13 +10,13 @@ import 'poem_image_card.dart';
 
 class PoemImageWidget extends StatelessWidget {
   const PoemImageWidget({
-    Key? key,
+    super.key,
     required this.title,
     required this.poem,
     required this.page,
     required this.total,
     required this.poet,
-  }) : super(key: key);
+  });
 
   final List<String> poem;
   final int page, total;

@@ -7,7 +7,7 @@ import 'widgets/others.dart';
 import 'widgets/support_development.dart';
 
 class AboutScreen extends StatelessWidget {
-  const AboutScreen({Key? key}) : super(key: key);
+  const AboutScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

@@ -9,7 +9,7 @@ import '../../widgets/only_back_button_bottom_app_bar.dart';
 import '../about_screen/widgets/base_info_widget.dart';
 
 class PersonalizeScreen extends StatelessWidget {
-  const PersonalizeScreen({Key? key}) : super(key: key);
+  const PersonalizeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +30,7 @@ class PersonalizeScreen extends StatelessWidget {
 }
 
 class _Body extends ConsumerWidget {
-  const _Body({Key? key}) : super(key: key);
+  const _Body();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

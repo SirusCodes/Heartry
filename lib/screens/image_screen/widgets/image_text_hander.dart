@@ -5,7 +5,7 @@ import '../../../providers/text_providers.dart';
 import '../../../widgets/color_picker_dialog.dart';
 
 class ImageTextHandler extends ConsumerWidget {
-  const ImageTextHandler({Key? key}) : super(key: key);
+  const ImageTextHandler({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

@@ -15,7 +15,7 @@ import '../../widgets/only_back_button_bottom_app_bar.dart';
 const String noNameError = "Please enter your name...";
 
 class ProfileScreen extends ConsumerStatefulWidget {
-  const ProfileScreen({Key? key}) : super(key: key);
+  const ProfileScreen({super.key});
 
   @override
   ConsumerState<ProfileScreen> createState() => _ProfileScreenState();
@@ -84,7 +84,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     badgeContent: IconButton(
                       icon: Icon(
                         Icons.camera_alt_rounded,
-                        color: theme.colorScheme.background,
+                        color: theme.colorScheme.surface,
                       ),
                       onPressed: () => _showChangeProfileDialog(ref),
                     ),
@@ -182,7 +182,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 }
 
 class _ProfileUpdateDialog extends StatelessWidget {
-  const _ProfileUpdateDialog({Key? key}) : super(key: key);
+  const _ProfileUpdateDialog();
 
   @override
   Widget build(BuildContext context) {

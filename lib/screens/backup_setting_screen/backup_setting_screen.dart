@@ -10,7 +10,7 @@ import '../../widgets/only_back_button_bottom_app_bar.dart';
 import '../about_screen/widgets/base_info_widget.dart';
 
 class BackupSettingScreen extends ConsumerWidget {
-  const BackupSettingScreen({Key? key}) : super(key: key);
+  const BackupSettingScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

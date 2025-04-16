@@ -24,10 +24,9 @@ void showColorPickerWithDynamic({
 
 class _ColorPickerWithDynamic extends StatefulWidget {
   const _ColorPickerWithDynamic({
-    Key? key,
     required this.currentColor,
     required this.onOkPressed,
-  }) : super(key: key);
+  });
 
   final Color? currentColor;
   final OkResponseColorPicker onOkPressed;
@@ -126,10 +125,9 @@ void showColorPicker({
 
 class _ColorPicker extends StatefulWidget {
   const _ColorPicker({
-    Key? key,
     required this.currentColor,
     required this.onOkPressed,
-  }) : super(key: key);
+  });
 
   final Color? currentColor;
   final ValueChanged<Color> onOkPressed;

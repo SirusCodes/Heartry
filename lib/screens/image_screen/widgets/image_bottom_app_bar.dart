@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 
 class ImageBottomAppBar extends StatelessWidget {
   const ImageBottomAppBar({
-    Key? key,
+    super.key,
     required this.onTextPressed,
     required this.onDonePressed,
     required this.onColorPressed,
-  }) : super(key: key);
+  });
 
   final VoidCallback onColorPressed, onTextPressed, onDonePressed;
   @override

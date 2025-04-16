@@ -19,7 +19,7 @@ import '../poems_screen/poems_screen.dart';
 import '../restore_screen/restore_screen.dart';
 
 class IntroScreen extends StatefulWidget {
-  const IntroScreen({Key? key}) : super(key: key);
+  const IntroScreen({super.key});
 
   @override
   State<IntroScreen> createState() => _IntroScreenState();
@@ -102,7 +102,7 @@ class _IntroScreenState extends State<IntroScreen> {
 }
 
 class _NamePage extends ConsumerStatefulWidget {
-  const _NamePage({Key? key}) : super(key: key);
+  const _NamePage();
 
   @override
   _NamePageState createState() => _NamePageState();
@@ -225,7 +225,7 @@ class _NamePageState extends ConsumerState<_NamePage> {
 }
 
 class _ProfilePage extends ConsumerWidget {
-  const _ProfilePage({Key? key}) : super(key: key);
+  const _ProfilePage();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -374,7 +374,7 @@ class _ProfilePage extends ConsumerWidget {
 }
 
 class _WelcomePage extends StatelessWidget {
-  const _WelcomePage({Key? key}) : super(key: key);
+  const _WelcomePage();
 
   @override
   Widget build(BuildContext context) {

@@ -59,7 +59,7 @@ ThemeData getDarkTheme(ColorScheme colorScheme) => ThemeData(
 
 ThemeData getBlackTheme(ColorScheme colorScheme) => ThemeData(
       useMaterial3: true,
-      colorScheme: colorScheme.copyWith(background: Colors.black),
+      colorScheme: colorScheme.copyWith(surface: Colors.black),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
           padding: const EdgeInsets.all(10.0),
@@ -88,11 +88,9 @@ const heartryLightColorScheme = ColorScheme(
   errorContainer: Color(0xFFFFDAD6),
   onError: Color(0xFFFFFFFF),
   onErrorContainer: Color(0xFF410002),
-  background: Color(0xFFFFFBFF),
-  onBackground: Color(0xFF1D1B1E),
   surface: Color(0xFFFFFBFF),
   onSurface: Color(0xFF1D1B1E),
-  surfaceVariant: Color(0xFFE8E0EB),
+  surfaceContainerHighest: Color(0xFFE8E0EB),
   onSurfaceVariant: Color(0xFF4A454E),
   outline: Color(0xFF7B757F),
   onInverseSurface: Color(0xFFF5EFF4),
@@ -122,11 +120,9 @@ const heartryDarkColorScheme = ColorScheme(
   errorContainer: Color(0xFF93000A),
   onError: Color(0xFF690005),
   onErrorContainer: Color(0xFFFFDAD6),
-  background: Color(0xFF1D1B1E),
-  onBackground: Color(0xFFE7E1E5),
   surface: Color(0xFF1D1B1E),
   onSurface: Color(0xFFE7E1E5),
-  surfaceVariant: Color(0xFF4A454E),
+  surfaceContainerHighest: Color(0xFF4A454E),
   onSurfaceVariant: Color(0xFFCCC4CF),
   outline: Color(0xFF958E99),
   onInverseSurface: Color(0xFF1D1B1E),

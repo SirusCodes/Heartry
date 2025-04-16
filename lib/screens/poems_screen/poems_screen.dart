@@ -19,7 +19,7 @@ import '../writing_screen/writing_screen.dart';
 import 'widgets/poem_card.dart';
 
 class PoemScreen extends ConsumerStatefulWidget {
-  const PoemScreen({Key? key}) : super(key: key);
+  const PoemScreen({super.key});
 
   @override
   ConsumerState<PoemScreen> createState() => _PoemScreenState();
@@ -176,7 +176,7 @@ class _ChangelogDialog extends StatelessWidget {
 }
 
 class _CAppBar extends ConsumerWidget {
-  const _CAppBar({Key? key}) : super(key: key);
+  const _CAppBar();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -233,7 +233,7 @@ class _CAppBar extends ConsumerWidget {
 }
 
 class _CBody extends ConsumerWidget {
-  const _CBody({Key? key}) : super(key: key);
+  const _CBody();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

@@ -6,7 +6,7 @@ import '../../providers/restore_manager_provider.dart';
 import '../poems_screen/poems_screen.dart';
 
 class RestoreScreen extends ConsumerWidget {
-  const RestoreScreen({Key? key}) : super(key: key);
+  const RestoreScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

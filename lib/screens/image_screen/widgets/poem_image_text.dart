@@ -8,11 +8,11 @@ import '../../../utils/contants.dart';
 
 class PoemImageText extends ConsumerWidget {
   const PoemImageText({
-    Key? key,
+    super.key,
     required this.title,
     required this.poem,
     required this.poet,
-  }) : super(key: key);
+  });
 
   final List<String> poem;
   final String title, poet;

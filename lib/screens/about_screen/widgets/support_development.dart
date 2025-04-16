@@ -6,7 +6,7 @@ import '../../../utils/image_color_invert.dart';
 import 'base_info_widget.dart';
 
 class SupportDevelopment extends StatelessWidget {
-  const SupportDevelopment({Key? key}) : super(key: key);
+  const SupportDevelopment({super.key});
 
   @override
   Widget build(BuildContext context) {

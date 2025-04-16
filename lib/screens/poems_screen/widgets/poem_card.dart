@@ -13,7 +13,7 @@ import '../../reader_screen/reader_screen.dart';
 import '../../writing_screen/writing_screen.dart';
 
 class PoemCard extends StatefulWidget {
-  const PoemCard({Key? key, required this.model}) : super(key: key);
+  const PoemCard({super.key, required this.model});
 
   final PoemModel model;
 
