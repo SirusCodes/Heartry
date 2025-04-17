@@ -264,9 +264,8 @@ class _ImageScreenState extends State<ImageScreen> {
 
     double height = availableHeight;
 
-    // creating the size of the poem
     for (final line in widget.poem) {
-      final double heightToSub = _calcTextSize(
+      double heightToSub = _calcTextSize(
         context,
         constraints,
         line,
@@ -274,19 +273,80 @@ class _ImageScreenState extends State<ImageScreen> {
         textScale,
       ).height;
 
-      height -= heightToSub;
-
-      if (height <= 0) {
-        if (poemLine[poemLine.length - 1].isEmpty) poemLine.removeLast();
-        poemLines.add([...poemLine]);
-        poemLine.clear();
-        height = availableHeight - heightToSub;
+      // If a single line is too tall to fit, split it into smaller lines
+      if (heightToSub > availableHeight) {
+        final words = line.split(' ');
+        String current = '';
+        for (final word in words) {
+          final testLine = current.isEmpty ? word : '$current $word';
+          final testHeight = _calcTextSize(
+            context,
+            constraints,
+            testLine,
+            POEM_TEXT_SIZE,
+            textScale,
+          ).height;
+          // If a single word is too long to fit, force it onto a new page
+          if (testHeight > availableHeight && current.isEmpty) {
+            poemLine.add(word);
+            poemLines.add([...poemLine]);
+            poemLine.clear();
+            height = availableHeight;
+            current = '';
+            continue;
+          }
+          // If adding the word exceeds the page, start a new page
+          if (testHeight > height && current.isNotEmpty) {
+            poemLine.add(current);
+            poemLines.add([...poemLine]);
+            poemLine.clear();
+            height = availableHeight;
+            current = word;
+          } else {
+            current = current.isEmpty ? word : '$current $word';
+          }
+        }
+        if (current.isNotEmpty) {
+          final currentHeight = _calcTextSize(
+            context,
+            constraints,
+            current,
+            POEM_TEXT_SIZE,
+            textScale,
+          ).height;
+          if (currentHeight > height && poemLine.isNotEmpty) {
+            poemLines.add([...poemLine]);
+            poemLine.clear();
+            height = availableHeight;
+          }
+          poemLine.add(current);
+          height -= currentHeight;
+        }
+      } else {
+        // Normal line
+        if (heightToSub > height && poemLine.isNotEmpty) {
+          poemLines.add([...poemLine]);
+          poemLine.clear();
+          height = availableHeight;
+        }
+        poemLine.add(line);
+        height -= heightToSub;
       }
 
-      poemLine.add(line);
+      if (height <= 0) {
+        if (poemLine.isNotEmpty && poemLine[poemLine.length - 1].isEmpty)
+          poemLine.removeLast();
+        if (poemLine.isNotEmpty) poemLines.add([...poemLine]);
+        poemLine.clear();
+        height = availableHeight;
+      }
     }
 
-    if (height > 0) poemLines.add([...poemLine]);
+    if (poemLine.isNotEmpty) {
+      poemLines.add([...poemLine]);
+    } else if (poemLines.isEmpty && widget.poem.isNotEmpty) {
+      poemLines.add([...widget.poem]);
+    }
 
     return poemLines;
   }
