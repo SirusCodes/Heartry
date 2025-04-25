@@ -1,0 +1,65 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../../../providers/color_gradient_provider.dart';
+import '../core/base_image_design.dart';
+import '../core/customizations/gradient_background_color.dart';
+import '../core/customizations/text_customization.dart';
+import '../widgets/poem_image_text.dart';
+
+class GradientDesign extends BaseImageDesign {
+  GradientDesign({
+    required super.title,
+    required super.poem,
+    required super.poet,
+  });
+
+  List<List<String>> poemPages = [];
+
+  @override
+  EdgeInsetsGeometry getContentMargin() {
+    return const EdgeInsets.symmetric(
+      horizontal: 50,
+      vertical: 40,
+    );
+  }
+
+  @override
+  Widget buildBackground(BuildContext context) {
+    final primaryColor = Theme.of(context).colorScheme.primary;
+
+    return Consumer(
+      builder: (context, ref, child) {
+        final gradientList = ref.watch(colorGradientListProvider(primaryColor));
+        return Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: gradientList,
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  @override
+  Widget buildContent(BuildContext context, List<String> pageContent) {
+    return Center(
+      child: Padding(
+        padding: getContentMargin(),
+        child: PoemImageText(
+          poem: pageContent,
+          title: title,
+          poet: poet,
+        ),
+      ),
+    );
+  }
+
+  @override
+  List<Widget> getCustomizationOptions(BuildContext context) {
+    return [TextCustomization(), GradientBackgroundColor()];
+  }
+}

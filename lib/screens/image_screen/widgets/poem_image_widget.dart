@@ -31,8 +31,8 @@ class PoemImageWidget extends StatelessWidget {
       child: SizedBox.expand(
         child: Theme(
           data: ThemeData(
-            primaryColorLight: Colors.white.withOpacity(.3),
-            primaryColorDark: Colors.white.withOpacity(.3),
+            primaryColorLight: Colors.white.withValues(alpha: .3),
+            primaryColorDark: Colors.white.withValues(alpha: .3),
           ),
           child: Stack(
             fit: StackFit.expand,

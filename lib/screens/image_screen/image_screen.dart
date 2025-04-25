@@ -8,23 +8,20 @@ import 'package:screenshot/screenshot.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../../providers/text_providers.dart';
-import '../../utils/contants.dart';
 import '../share_images_screen/share_images_screen.dart';
-import 'widgets/image_bottom_app_bar.dart';
-import 'widgets/image_color_handler.dart';
-import 'widgets/image_text_hander.dart';
-import 'widgets/poem_image_widget.dart';
+import 'core/base_image_design.dart';
+import 'core/text_spliting_service.dart';
+import 'designs/gradient_design.dart';
 
 class ImageScreen extends StatefulWidget {
   const ImageScreen({
     super.key,
-    required this.poem,
     required this.title,
+    required this.poem,
     required this.poet,
   });
 
   final String? title, poet;
-
   final List<String> poem;
 
   @override
@@ -35,6 +32,12 @@ class _ImageScreenState extends State<ImageScreen> {
   final ScreenshotController _screenshot = ScreenshotController();
 
   final PageController _pageController = PageController();
+
+  late final BaseImageDesign design = GradientDesign(
+    title: widget.title,
+    poem: widget.poem,
+    poet: widget.poet,
+  );
 
   @override
   void dispose() {
@@ -47,114 +50,92 @@ class _ImageScreenState extends State<ImageScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.check_rounded),
+            onPressed: () => onSharePressed(context),
+          ),
+        ],
+      ),
       body: SafeArea(
-        child: Center(
-          child: Consumer(
-            builder: (context, ref, child) {
-              final textScale = ref.watch(textSizeProvider);
-              return LayoutBuilder(
-                builder: (context, constraints) {
-                  poemLines = _getPoemSeparated(
-                    context,
-                    constraints,
-                    textScale,
-                  );
+        child: Consumer(
+          builder: (context, ref, child) {
+            final textScale = ref.watch(textSizeProvider);
 
-                  return Screenshot(
+            return LayoutBuilder(
+              builder: (context, constraints) {
+                poemLines = TextSplittingService.getPoemSeparated(
+                  context: context,
+                  constraints: constraints,
+                  textScale: textScale,
+                  poem: widget.poem,
+                  title: widget.title,
+                  poet: widget.poet,
+                  contentMargin: design.getContentMargin(),
+                );
+
+                return Center(
+                  child: Screenshot(
                     controller: _screenshot,
                     child: PageView.builder(
                       controller: _pageController,
                       itemCount: poemLines.length,
-                      itemBuilder: (context, index) => PoemImageWidget(
-                        title: widget.title!,
-                        poem: poemLines[index],
-                        page: index,
-                        total: poemLines.length,
-                        poet: widget.poet!,
+                      itemBuilder: (context, index) => AspectRatio(
+                        aspectRatio: 9 / 16,
+                        child: SizedBox.expand(
+                          child: Stack(
+                            fit: StackFit.expand,
+                            children: [
+                              design.buildBackground(context),
+                              design.buildContent(context, poemLines[index]),
+                            ],
+                          ),
+                        ),
                       ),
                     ),
-                  );
-                },
-              );
-            },
-          ),
+                  ),
+                );
+              },
+            );
+          },
         ),
       ),
-      bottomNavigationBar: ImageBottomAppBar(
-        onTextPressed: () {
-          showModalBottomSheet<void>(
-            context: context,
-            builder: (context) {
-              return const ImageTextHandler();
-            },
-          );
-        },
-        onColorPressed: () {
-          showModalBottomSheet<void>(
-            context: context,
-            builder: (context) {
-              return const ImageColorHandler();
-            },
-          );
-        },
-        onDonePressed: () async {
-          // TODO: Once save to gallery is implemented
-          // if (!(await _isPermGranted(context))) return;
-
-          final navigator = Navigator.of(context);
-
-          imageCache.clear();
-
-          final List<String> images = [];
-
-          _showProgressDialog(context);
-
-          for (int pageIndex = 0; pageIndex < poemLines.length; pageIndex++) {
-            _pageController.jumpToPage(pageIndex);
-            final path = await _getImage(pageIndex + 1);
-            images.add(path);
-          }
-
-          navigator.pop();
-
-          if (images.length == 1) {
-            await _shareAll(images);
-            return;
-          }
-
-          if (!context.mounted) return;
-
-          _showShareTypeDialog(context, images);
-        },
+      bottomNavigationBar: BottomAppBar(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: design.getCustomizationOptions(context),
+        ),
       ),
     );
   }
 
-/*
-  TODO: Once save to gallery is implemented
-  Future<bool> _isPermGranted(BuildContext context) async {
-    final status = await Permission.storage.request();
-    if (status.isGranted) return true;
+  void onSharePressed(BuildContext context) async {
+    final navigator = Navigator.of(context);
 
-    bool _isSettingsOpened = false;
+    imageCache.clear();
 
-    if (status.isPermanentlyDenied) _isSettingsOpened = await openAppSettings();
+    final List<String> images = [];
 
-    if (!_isSettingsOpened)
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text("Please allow to store images"),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(15.0),
-          ),
-          behavior: SnackBarBehavior.floating,
-          margin: const EdgeInsets.all(8.0),
-        ),
-      );
+    _showProgressDialog(context);
 
-    return false;
+    for (int pageIndex = 0; pageIndex < poemLines.length; pageIndex++) {
+      _pageController.jumpToPage(pageIndex);
+      final path = await _getImage(pageIndex + 1);
+      images.add(path);
+    }
+
+    navigator.pop();
+
+    if (images.length == 1) {
+      await _shareAll(images);
+      return;
+    }
+
+    if (!context.mounted) return;
+
+    _showShareTypeDialog(context, images);
   }
-*/
 
   Future _showShareTypeDialog(BuildContext context, List<String> images) {
     return showDialog<void>(
@@ -215,7 +196,7 @@ class _ImageScreenState extends State<ImageScreen> {
 
     final path = join(
       tmpDir.path,
-      "${widget.title}-$index.png",
+      "${design.title}-$index.png",
     );
 
     final imgBytes = await _screenshot.capture(
@@ -226,152 +207,5 @@ class _ImageScreenState extends State<ImageScreen> {
     final imgFile = File(path)..writeAsBytes(imgBytes!);
 
     return imgFile.path;
-  }
-
-  List<List<String>> _getPoemSeparated(
-    BuildContext context,
-    BoxConstraints constraints,
-    double textScale,
-  ) {
-    final List<List<String>> poemLines = [];
-    final List<String> poemLine = [];
-    const PADDING_IN_HEIGHT_TEXT = 280;
-
-    // getting title height
-    final titleHeight = _calcTextSize(
-      context,
-      constraints,
-      widget.title!,
-      TITLE_TEXT_SIZE,
-      textScale <= 1.2 ? textScale : 1.2,
-      POEM_TITLE_MAX_LINES,
-    ).height;
-
-    // getting poet height
-    final poetHeight = _calcTextSize(
-      context,
-      constraints,
-      widget.poet!,
-      POET_TEXT_SIZE,
-      textScale <= 1.2 ? textScale : 1.2,
-      POET_NAME_MAX_LINES,
-    ).height;
-
-    final double availableHeight = constraints.maxHeight -
-        PADDING_IN_HEIGHT_TEXT -
-        titleHeight -
-        poetHeight;
-
-    double height = availableHeight;
-
-    for (final line in widget.poem) {
-      double heightToSub = _calcTextSize(
-        context,
-        constraints,
-        line,
-        POEM_TEXT_SIZE,
-        textScale,
-      ).height;
-
-      // If a single line is too tall to fit, split it into smaller lines
-      if (heightToSub > availableHeight) {
-        final words = line.split(' ');
-        String current = '';
-        for (final word in words) {
-          final testLine = current.isEmpty ? word : '$current $word';
-          final testHeight = _calcTextSize(
-            context,
-            constraints,
-            testLine,
-            POEM_TEXT_SIZE,
-            textScale,
-          ).height;
-          // If a single word is too long to fit, force it onto a new page
-          if (testHeight > availableHeight && current.isEmpty) {
-            poemLine.add(word);
-            poemLines.add([...poemLine]);
-            poemLine.clear();
-            height = availableHeight;
-            current = '';
-            continue;
-          }
-          // If adding the word exceeds the page, start a new page
-          if (testHeight > height && current.isNotEmpty) {
-            poemLine.add(current);
-            poemLines.add([...poemLine]);
-            poemLine.clear();
-            height = availableHeight;
-            current = word;
-          } else {
-            current = current.isEmpty ? word : '$current $word';
-          }
-        }
-        if (current.isNotEmpty) {
-          final currentHeight = _calcTextSize(
-            context,
-            constraints,
-            current,
-            POEM_TEXT_SIZE,
-            textScale,
-          ).height;
-          if (currentHeight > height && poemLine.isNotEmpty) {
-            poemLines.add([...poemLine]);
-            poemLine.clear();
-            height = availableHeight;
-          }
-          poemLine.add(current);
-          height -= currentHeight;
-        }
-      } else {
-        // Normal line
-        if (heightToSub > height && poemLine.isNotEmpty) {
-          poemLines.add([...poemLine]);
-          poemLine.clear();
-          height = availableHeight;
-        }
-        poemLine.add(line);
-        height -= heightToSub;
-      }
-
-      if (height <= 0) {
-        if (poemLine.isNotEmpty && poemLine[poemLine.length - 1].isEmpty)
-          poemLine.removeLast();
-        if (poemLine.isNotEmpty) poemLines.add([...poemLine]);
-        poemLine.clear();
-        height = availableHeight;
-      }
-    }
-
-    if (poemLine.isNotEmpty) {
-      poemLines.add([...poemLine]);
-    } else if (poemLines.isEmpty && widget.poem.isNotEmpty) {
-      poemLines.add([...widget.poem]);
-    }
-
-    return poemLines;
-  }
-
-  Size _calcTextSize(
-    BuildContext context,
-    BoxConstraints constraints,
-    String text,
-    double fontSize,
-    double scale, [
-    int? maxLines,
-  ]) {
-    final painter = TextPainter(
-      text: TextSpan(
-        text: text,
-        style: TextStyle(
-          fontSize: fontSize,
-          fontFamily: "Caveat",
-        ),
-      ),
-      maxLines: maxLines,
-      textScaler: TextScaler.linear(scale),
-      textDirection: TextDirection.ltr,
-    )..layout(maxWidth: constraints.maxWidth - 140);
-
-    return painter.size;
   }
 }

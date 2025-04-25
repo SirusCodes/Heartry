@@ -15,7 +15,7 @@ class PoemImageText extends ConsumerWidget {
   });
 
   final List<String> poem;
-  final String title, poet;
+  final String? title, poet;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final scale = ref.watch(textSizeProvider);
@@ -26,19 +26,20 @@ class PoemImageText extends ConsumerWidget {
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
-        Text(
-          title,
-          textAlign: TextAlign.center,
-          textScaler: TextScaler.linear(math.min(scale, 1.2)),
-          style: TextStyle(
-            fontSize: TITLE_TEXT_SIZE,
-            color: color,
-            fontFamily: "Caveat",
-            fontWeight: FontWeight.bold,
+        if (title != null)
+          Text(
+            title!,
+            textAlign: TextAlign.center,
+            textScaler: TextScaler.linear(math.min(scale, 1.2)),
+            style: TextStyle(
+              fontSize: TITLE_TEXT_SIZE,
+              color: color,
+              fontFamily: "Caveat",
+              fontWeight: FontWeight.bold,
+            ),
+            maxLines: POEM_TITLE_MAX_LINES,
+            overflow: TextOverflow.ellipsis,
           ),
-          maxLines: POEM_TITLE_MAX_LINES,
-          overflow: TextOverflow.ellipsis,
-        ),
         ...poem.map(
           (e) => Text(
             e,
@@ -51,18 +52,19 @@ class PoemImageText extends ConsumerWidget {
           ),
         ),
         const SizedBox(height: 10),
-        Text(
-          "-$poet",
-          textAlign: TextAlign.center,
-          textScaler: TextScaler.linear(math.min(scale, 1.2)),
-          style: TextStyle(
-            fontSize: POET_TEXT_SIZE,
-            color: color,
-            fontFamily: "Caveat",
+        if (poet != null)
+          Text(
+            "-$poet",
+            textAlign: TextAlign.center,
+            textScaler: TextScaler.linear(math.min(scale, 1.2)),
+            style: TextStyle(
+              fontSize: POET_TEXT_SIZE,
+              color: color,
+              fontFamily: "Caveat",
+            ),
+            maxLines: POET_NAME_MAX_LINES,
+            overflow: TextOverflow.ellipsis,
           ),
-          maxLines: POET_NAME_MAX_LINES,
-          overflow: TextOverflow.ellipsis,
-        ),
       ],
     );
   }

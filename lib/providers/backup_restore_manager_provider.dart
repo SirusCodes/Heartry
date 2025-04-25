@@ -5,7 +5,6 @@ import 'dart:io' as io;
 import 'package:crypto/crypto.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:googleapis/drive/v3.dart' as gapis;
-import 'package:heartry/providers/theme_provider.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -14,6 +13,7 @@ import '../database/config.dart';
 import '../database/database.dart';
 import '../init_get_it.dart';
 import '../models/backup_model/backup_model.dart';
+import 'theme_provider.dart';
 import 'token_manager.dart';
 
 enum BackupRestoreState {

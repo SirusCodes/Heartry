@@ -29,8 +29,8 @@ class PoemImageCard extends StatelessWidget {
                 end: Alignment.topLeft,
                 begin: Alignment.bottomRight,
                 colors: <Color>[
-                  Colors.white.withOpacity(.2),
-                  Colors.white.withOpacity(.05),
+                  Colors.white.withValues(alpha: .2),
+                  Colors.white.withValues(alpha: .05),
                 ],
               ),
               borderRadius: BorderRadius.circular(30),

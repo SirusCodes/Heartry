@@ -3,11 +3,30 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../providers/color_gradient_provider.dart';
-import '../../../widgets/color_picker_dialog.dart';
+import '../../../../providers/color_gradient_provider.dart';
+import '../../../../widgets/color_picker_dialog.dart';
 
-class ImageColorHandler extends ConsumerWidget {
-  const ImageColorHandler({super.key});
+class GradientBackgroundColor extends StatelessWidget {
+  const GradientBackgroundColor({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+      icon: Icon(Icons.color_lens_rounded),
+      onPressed: () {
+        showModalBottomSheet<void>(
+          context: context,
+          builder: (context) {
+            return const _GradientBackgroundColorHandler();
+          },
+        );
+      },
+    );
+  }
+}
+
+class _GradientBackgroundColorHandler extends ConsumerWidget {
+  const _GradientBackgroundColorHandler();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -89,9 +108,9 @@ class ImageColorHandler extends ConsumerWidget {
   // FROM https://github.com/mchome/flutter_colorpicker/blob/9b4942b6e6fa79fb78661f95531106afd1ed5d9f/lib/src/utils.dart#L15
   bool useWhiteForeground(Color backgroundColor, {double bias = 0.0}) {
     int v = math
-        .sqrt(math.pow(backgroundColor.red, 2) * 0.299 +
-            math.pow(backgroundColor.green, 2) * 0.587 +
-            math.pow(backgroundColor.blue, 2) * 0.114)
+        .sqrt(math.pow(backgroundColor.r, 2) * 0.299 +
+            math.pow(backgroundColor.g, 2) * 0.587 +
+            math.pow(backgroundColor.b, 2) * 0.114)
         .round();
     return v < 130 + bias ? true : false;
   }

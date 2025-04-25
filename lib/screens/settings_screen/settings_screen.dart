@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:heartry/screens/backup_setting_screen/backup_setting_screen.dart';
 
 import '../../widgets/c_screen_title.dart';
 import '../../widgets/only_back_button_bottom_app_bar.dart';
 import '../about_screen/about_screen.dart';
+import '../backup_setting_screen/backup_setting_screen.dart';
 import '../personalize_theme/personalize_theme.dart';
 import '../profile_screen/profile_screen.dart';
 

@@ -1,11 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../providers/text_providers.dart';
-import '../../../widgets/color_picker_dialog.dart';
+import '../../../../providers/text_providers.dart';
+import '../../../../widgets/color_picker_dialog.dart';
 
-class ImageTextHandler extends ConsumerWidget {
-  const ImageTextHandler({super.key});
+class TextCustomization extends StatelessWidget {
+  const TextCustomization({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+      icon: Icon(Icons.format_color_text_rounded),
+      onPressed: () {
+        showModalBottomSheet<void>(
+          context: context,
+          builder: (context) {
+            return const _ImageTextHandler();
+          },
+        );
+      },
+    );
+  }
+}
+
+class _ImageTextHandler extends ConsumerWidget {
+  const _ImageTextHandler();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:heartry/providers/shared_prefs_provider.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+
+import 'shared_prefs_provider.dart';
 
 final appVersionManagerProvider = Provider(AppVersionManagerProvider.new);
 
