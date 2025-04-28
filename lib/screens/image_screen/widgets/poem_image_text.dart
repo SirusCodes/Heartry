@@ -23,7 +23,7 @@ class PoemImageText extends ConsumerWidget {
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      mainAxisAlignment: MainAxisAlignment.center,
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         if (title != null)
@@ -52,19 +52,18 @@ class PoemImageText extends ConsumerWidget {
           ),
         ),
         const SizedBox(height: 10),
-        if (poet != null)
-          Text(
-            "-$poet",
-            textAlign: TextAlign.center,
-            textScaler: TextScaler.linear(math.min(scale, 1.2)),
-            style: TextStyle(
-              fontSize: POET_TEXT_SIZE,
-              color: color,
-              fontFamily: "Caveat",
-            ),
-            maxLines: POET_NAME_MAX_LINES,
-            overflow: TextOverflow.ellipsis,
+        Text(
+          "-$poet",
+          textAlign: TextAlign.center,
+          textScaler: TextScaler.linear(math.min(scale, 1.2)),
+          style: TextStyle(
+            fontSize: POET_TEXT_SIZE,
+            color: color,
+            fontFamily: "Caveat",
           ),
+          maxLines: POET_NAME_MAX_LINES,
+          overflow: TextOverflow.ellipsis,
+        ),
       ],
     );
   }

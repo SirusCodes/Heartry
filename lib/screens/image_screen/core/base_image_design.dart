@@ -16,5 +16,7 @@ abstract class BaseImageDesign {
 
   EdgeInsetsGeometry getContentMargin();
 
+  (double x, double y) extraSpacing();
+
   List<Widget> getCustomizationOptions(BuildContext context);
 }

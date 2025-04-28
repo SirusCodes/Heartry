@@ -45,7 +45,7 @@ class _ImageScreenState extends State<ImageScreen> {
     super.dispose();
   }
 
-  List<List<String>> poemLines = [];
+  List<List<String>> poemPages = [];
 
   @override
   Widget build(BuildContext context) {
@@ -63,40 +63,42 @@ class _ImageScreenState extends State<ImageScreen> {
           builder: (context, ref, child) {
             final textScale = ref.watch(textSizeProvider);
 
-            return LayoutBuilder(
-              builder: (context, constraints) {
-                poemLines = TextSplittingService.getPoemSeparated(
-                  context: context,
-                  constraints: constraints,
-                  textScale: textScale,
-                  poem: widget.poem,
-                  title: widget.title,
-                  poet: widget.poet,
-                  contentMargin: design.getContentMargin(),
-                );
+            return AspectRatio(
+              aspectRatio: 9 / 16,
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  final textSplittingService = TextSplittingService(
+                    context: context,
+                    constraints: constraints,
+                    title: widget.title,
+                    poet: widget.poet!,
+                    poem: widget.poem,
+                    contentMargin: design.getContentMargin(),
+                    extraSpacing: design.extraSpacing(),
+                  );
 
-                return Center(
-                  child: Screenshot(
-                    controller: _screenshot,
-                    child: PageView.builder(
-                      controller: _pageController,
-                      itemCount: poemLines.length,
-                      itemBuilder: (context, index) => AspectRatio(
-                        aspectRatio: 9 / 16,
-                        child: SizedBox.expand(
+                  poemPages = textSplittingService.getPoemSeparated(textScale);
+
+                  return Center(
+                    child: Screenshot(
+                      controller: _screenshot,
+                      child: PageView.builder(
+                        controller: _pageController,
+                        itemCount: poemPages.length,
+                        itemBuilder: (context, index) => SizedBox.expand(
                           child: Stack(
                             fit: StackFit.expand,
                             children: [
                               design.buildBackground(context),
-                              design.buildContent(context, poemLines[index]),
+                              design.buildContent(context, poemPages[index]),
                             ],
                           ),
                         ),
                       ),
                     ),
-                  ),
-                );
-              },
+                  );
+                },
+              ),
             );
           },
         ),
@@ -119,7 +121,7 @@ class _ImageScreenState extends State<ImageScreen> {
 
     _showProgressDialog(context);
 
-    for (int pageIndex = 0; pageIndex < poemLines.length; pageIndex++) {
+    for (int pageIndex = 0; pageIndex < poemPages.length; pageIndex++) {
       _pageController.jumpToPage(pageIndex);
       final path = await _getImage(pageIndex + 1);
       images.add(path);

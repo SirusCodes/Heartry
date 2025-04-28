@@ -25,6 +25,9 @@ class GradientDesign extends BaseImageDesign {
   }
 
   @override
+  (double x, double y) extraSpacing() => (0, 10);
+
+  @override
   Widget buildBackground(BuildContext context) {
     final primaryColor = Theme.of(context).colorScheme.primary;
 
@@ -46,14 +49,12 @@ class GradientDesign extends BaseImageDesign {
 
   @override
   Widget buildContent(BuildContext context, List<String> pageContent) {
-    return Center(
-      child: Padding(
-        padding: getContentMargin(),
-        child: PoemImageText(
-          poem: pageContent,
-          title: title,
-          poet: poet,
-        ),
+    return Padding(
+      padding: getContentMargin(),
+      child: PoemImageText(
+        poem: pageContent,
+        title: title,
+        poet: poet,
       ),
     );
   }

@@ -1,156 +1,193 @@
+import 'dart:collection';
+
 import 'package:flutter/material.dart';
 
 import '../../../utils/contants.dart';
 
 class TextSplittingService {
-  static List<List<String>> getPoemSeparated({
-    required BuildContext context,
-    required BoxConstraints constraints,
-    required double textScale,
-    required List<String> poem,
-    required String? title,
-    required String? poet,
-    required EdgeInsetsGeometry contentMargin,
-  }) {
-    final List<List<String>> poemLines = [];
-    final List<String> poemLine = [];
+  TextSplittingService({
+    required this.context,
+    required this.constraints,
+    required this.title,
+    required this.poet,
+    required this.poem,
+    required this.contentMargin,
+    required this.extraSpacing,
+  }) : _textStyle = DefaultTextStyle.of(context).style;
+
+  final BuildContext context;
+  final BoxConstraints constraints;
+  final String? title;
+  final String poet;
+  final List<String> poem;
+  final EdgeInsetsGeometry contentMargin;
+  final (double x, double y) extraSpacing;
+  final TextStyle _textStyle;
+
+  List<List<String>> getPoemSeparated(double textScale) {
+    final List<List<String>> poemPages = [];
+    final List<String> poemPage = [];
+
+    final double spaceForPoemX =
+        constraints.maxWidth - contentMargin.horizontal - extraSpacing.$1;
 
     // getting title height
-    final titleHeight = title != null && title.isNotEmpty
+    final titleHeight = title != null && title!.isNotEmpty
         ? _calcTextSize(
-            context,
-            constraints,
-            title,
+            title!,
             TITLE_TEXT_SIZE,
             textScale <= 1.2 ? textScale : 1.2,
-            contentMargin.horizontal,
+            spaceForPoemX,
             POEM_TITLE_MAX_LINES,
           ).height
         : 0;
 
     // getting poet height
-    final poetHeight = poet != null && poet.isNotEmpty
-        ? _calcTextSize(
-            context,
-            constraints,
-            poet,
-            POET_TEXT_SIZE,
-            textScale <= 1.2 ? textScale : 1.2,
-            contentMargin.horizontal,
-            POET_NAME_MAX_LINES,
-          ).height
-        : 0;
+    final poetHeight = _calcTextSize(
+      poet,
+      POET_TEXT_SIZE,
+      textScale <= 1.2 ? textScale : 1.2,
+      spaceForPoemX,
+      POET_NAME_MAX_LINES,
+    ).height;
 
-    final double availableHeight = constraints.maxHeight -
+    final double spaceForPoemY = constraints.maxHeight -
         contentMargin.vertical -
+        extraSpacing.$2 -
         titleHeight -
         poetHeight;
 
-    double height = availableHeight;
+    final pages = _getPoemPages(
+      availableHeight: spaceForPoemY,
+      context: context,
+      remainingLines: poem,
+      pages: [[]],
+      textScale: textScale,
+      maxWidth: spaceForPoemX,
+      spaceForPoemY: spaceForPoemY,
+    );
 
-    for (final line in poem) {
-      double heightToSub = _calcTextSize(
-        context,
-        constraints,
-        line,
-        POEM_TEXT_SIZE,
-        textScale,
-        contentMargin.horizontal,
-      ).height;
-
-      // If a single line is too tall to fit, split it into smaller lines
-      if (heightToSub > availableHeight) {
-        final words = line.split(' ');
-        String current = '';
-        for (final word in words) {
-          final testLine = current.isEmpty ? word : '$current $word';
-          final testHeight = _calcTextSize(
-            context,
-            constraints,
-            testLine,
-            POEM_TEXT_SIZE,
-            textScale,
-            contentMargin.horizontal,
-          ).height;
-          // If a single word is too long to fit, force it onto a new page
-          if (testHeight > availableHeight && current.isEmpty) {
-            poemLine.add(word);
-            poemLines.add([...poemLine]);
-            poemLine.clear();
-            height = availableHeight;
-            current = '';
-            continue;
-          }
-          // If adding the word exceeds the page, start a new page
-          if (testHeight > height && current.isNotEmpty) {
-            poemLine.add(current);
-            poemLines.add([...poemLine]);
-            poemLine.clear();
-            height = availableHeight;
-            current = word;
-          } else {
-            current = current.isEmpty ? word : '$current $word';
-          }
-        }
-        if (current.isNotEmpty) {
-          final currentHeight = _calcTextSize(
-            context,
-            constraints,
-            current,
-            POEM_TEXT_SIZE,
-            textScale,
-            contentMargin.horizontal,
-          ).height;
-          if (currentHeight > height && poemLine.isNotEmpty) {
-            poemLines.add([...poemLine]);
-            poemLine.clear();
-            height = availableHeight;
-          }
-          poemLine.add(current);
-          height -= currentHeight;
-        }
-      } else {
-        // Normal line
-        if (heightToSub > height && poemLine.isNotEmpty) {
-          poemLines.add([...poemLine]);
-          poemLine.clear();
-          height = availableHeight;
-        }
-        poemLine.add(line);
-        height -= heightToSub;
-      }
-
-      if (height <= 0) {
-        if (poemLine.isNotEmpty && poemLine[poemLine.length - 1].isEmpty)
-          poemLine.removeLast();
-        if (poemLine.isNotEmpty) poemLines.add([...poemLine]);
-        poemLine.clear();
-        height = availableHeight;
-      }
-    }
-
-    if (poemLine.isNotEmpty) {
-      poemLines.add([...poemLine]);
-    } else if (poemLines.isEmpty && poem.isNotEmpty) {
-      poemLines.add([...poem]);
-    }
-
-    return poemLines;
+    return pages.map(_removeEmptyStartAndEnds).toList();
   }
 
-  static Size _calcTextSize(
+  List<String> _removeEmptyStartAndEnds(List<String> page) {
+    if (page[0].isEmpty) {
+      page.removeAt(0);
+    }
+    if (page[page.length - 1].isEmpty) {
+      page.removeAt(page.length - 1);
+    }
+
+    return page;
+  }
+
+  List<List<String>> _getPoemPages({
+    required BuildContext context,
+    required List<String> remainingLines,
+    required List<List<String>> pages,
+    required double textScale,
+    required double maxWidth,
+    required double availableHeight,
+    required double spaceForPoemY,
+  }) {
+    if (remainingLines.isEmpty) {
+      return pages;
+    }
+
+    final line = remainingLines.first;
+    final heightToSub = _calcTextSize(
+      line,
+      POEM_TEXT_SIZE,
+      textScale,
+      maxWidth,
+    ).height;
+
+    if (heightToSub > availableHeight) {
+      // Split the line into two parts
+      final (firstPart, remaining) = _splitLine(
+        context,
+        textScale,
+        remainingLines.removeAt(0),
+        maxWidth,
+        availableHeight,
+      );
+
+      // Add the first part to the current page
+      if (firstPart.isNotEmpty) {
+        pages.last.add(firstPart);
+      }
+
+      // Add the remaining part back to the remaining lines
+      if (remaining.isNotEmpty) {
+        remainingLines.insert(0, remaining);
+      }
+
+      if (remainingLines.isNotEmpty) {
+        // Create a new page as the current one is full
+        return _getPoemPages(
+          context: context,
+          remainingLines: remainingLines,
+          pages: [...pages, []],
+          textScale: textScale,
+          maxWidth: maxWidth,
+          availableHeight: spaceForPoemY,
+          spaceForPoemY: spaceForPoemY,
+        );
+      }
+    }
+
+    pages.last.add(line);
+    // Recursively call the function with the remaining lines
+    return _getPoemPages(
+      context: context,
+      remainingLines: remainingLines.sublist(1),
+      pages: pages,
+      textScale: textScale,
+      maxWidth: maxWidth,
+      availableHeight: availableHeight - heightToSub,
+      spaceForPoemY: spaceForPoemY,
+    );
+  }
+
+  (String line, String remaining) _splitLine(
     BuildContext context,
-    BoxConstraints constraints,
+    double textScale,
+    String line,
+    double maxWidth,
+    double availableHeight,
+  ) {
+    List<String> words = line.split(" ");
+    String currentLine = "";
+
+    for (int i = 0; i < words.length; i++) {
+      final word = words[i];
+      currentLine = "$currentLine $word";
+      final testSize = _calcTextSize(
+        currentLine,
+        POEM_TEXT_SIZE,
+        textScale,
+        maxWidth,
+      );
+
+      if (testSize.height >= availableHeight) {
+        return (words.sublist(0, i).join(" "), words.sublist(i).join(" "));
+      }
+    }
+
+    return (line, "");
+  }
+
+  Size _calcTextSize(
     String text,
     double fontSize,
     double scale,
-    double horizontalMargin, [
+    double maxWidth, [
     int? maxLines,
   ]) {
     final painter = TextPainter(
       text: TextSpan(
         text: text,
-        style: TextStyle(
+        style: _textStyle.copyWith(
           fontSize: fontSize,
           fontFamily: "Caveat",
         ),
@@ -158,7 +195,7 @@ class TextSplittingService {
       maxLines: maxLines,
       textScaler: TextScaler.linear(scale),
       textDirection: TextDirection.ltr,
-    )..layout(maxWidth: constraints.maxWidth - horizontalMargin);
+    )..layout(maxWidth: maxWidth);
 
     return painter.size;
   }
