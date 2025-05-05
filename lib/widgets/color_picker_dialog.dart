@@ -115,28 +115,29 @@ void showColorPicker({
   showDialog(
     context: context,
     builder: (context) => Dialog(
-      child: _ColorPicker(
+      child: ColorPaletteSelector(
         currentColor: currentColor,
-        onOkPressed: onOkPressed,
+        onColorSelected: onOkPressed,
       ),
     ),
   );
 }
 
-class _ColorPicker extends StatefulWidget {
-  const _ColorPicker({
+class ColorPaletteSelector extends StatefulWidget {
+  const ColorPaletteSelector({
+    super.key,
     required this.currentColor,
-    required this.onOkPressed,
+    required this.onColorSelected,
   });
 
   final Color? currentColor;
-  final ValueChanged<Color> onOkPressed;
+  final ValueChanged<Color> onColorSelected;
 
   @override
-  State<_ColorPicker> createState() => _ColorPickerState();
+  State<ColorPaletteSelector> createState() => _ColorPaletteSelectorState();
 }
 
-class _ColorPickerState extends State<_ColorPicker> {
+class _ColorPaletteSelectorState extends State<ColorPaletteSelector> {
   late Color? selectedColor;
 
   @override
@@ -151,19 +152,22 @@ class _ColorPickerState extends State<_ColorPicker> {
       mainAxisSize: MainAxisSize.min,
       children: [
         ColorPicker(
-          color: selectedColor ?? Colors.white,
+          color: selectedColor ?? Colors.blue,
           onColorChanged: (color) => setState(() => selectedColor = color),
-          width: 40,
-          height: 40,
+          width: 35,
+          height: 35,
           borderRadius: 4,
           spacing: 5,
           runSpacing: 5,
-          heading: const Text('Select color'),
+          enableTonalPalette: true,
           subheading: const Text('Select color shade'),
+          tonalSubheading: const Text('Select tonal shade'),
           pickersEnabled: const <ColorPickerType, bool>{
             ColorPickerType.both: true,
             ColorPickerType.primary: false,
             ColorPickerType.accent: false,
+            ColorPickerType.bw: false,
+            ColorPickerType.wheel: true,
           },
         ),
         Padding(
@@ -177,7 +181,8 @@ class _ColorPickerState extends State<_ColorPicker> {
               ),
               TextButton(
                 onPressed: () {
-                  if (selectedColor != null) widget.onOkPressed(selectedColor!);
+                  if (selectedColor != null)
+                    widget.onColorSelected(selectedColor!);
                   Navigator.of(context).pop();
                 },
                 child: const Text("Ok"),

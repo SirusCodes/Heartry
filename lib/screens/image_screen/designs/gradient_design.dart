@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:heartry/screens/image_screen/core/customizations/text_color.dart';
+import 'package:heartry/screens/image_screen/core/customizations/text_size.dart';
 
 import '../../../providers/color_gradient_provider.dart';
 import '../core/base_image_design.dart';
 import '../core/customizations/gradient_background_color.dart';
-import '../core/customizations/text_customization.dart';
 import '../widgets/poem_image_text.dart';
 
 class GradientDesign extends BaseImageDesign {
@@ -13,8 +14,6 @@ class GradientDesign extends BaseImageDesign {
     required super.poem,
     required super.poet,
   });
-
-  List<List<String>> poemPages = [];
 
   @override
   EdgeInsetsGeometry getContentMargin() {
@@ -61,6 +60,6 @@ class GradientDesign extends BaseImageDesign {
 
   @override
   List<Widget> getCustomizationOptions(BuildContext context) {
-    return [TextCustomization(), GradientBackgroundColor()];
+    return [TextSize(), TextColor(), GradientBackgroundColor()];
   }
 }
