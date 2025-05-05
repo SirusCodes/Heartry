@@ -1,5 +1,3 @@
-import 'dart:collection';
-
 import 'package:flutter/material.dart';
 
 import '../../../utils/contants.dart';
@@ -25,9 +23,6 @@ class TextSplittingService {
   final TextStyle _textStyle;
 
   List<List<String>> getPoemSeparated(double textScale) {
-    final List<List<String>> poemPages = [];
-    final List<String> poemPage = [];
-
     final double spaceForPoemX =
         constraints.maxWidth - contentMargin.horizontal - extraSpacing.$1;
 
