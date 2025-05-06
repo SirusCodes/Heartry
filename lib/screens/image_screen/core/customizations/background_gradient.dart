@@ -5,8 +5,8 @@ import '../../../../providers/color_gradient_provider.dart';
 import '../../../../utils/color_helper.dart';
 import '../../../../widgets/color_picker_dialog.dart';
 
-class GradientBackgroundColor extends StatelessWidget {
-  const GradientBackgroundColor({super.key});
+class BackgroundGradient extends StatelessWidget {
+  const BackgroundGradient({super.key});
 
   @override
   Widget build(BuildContext context) {

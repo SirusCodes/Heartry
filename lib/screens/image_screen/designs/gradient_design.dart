@@ -5,7 +5,7 @@ import 'package:heartry/screens/image_screen/core/customizations/text_size.dart'
 
 import '../../../providers/color_gradient_provider.dart';
 import '../core/base_image_design.dart';
-import '../core/customizations/gradient_background_color.dart';
+import '../core/customizations/background_gradient.dart';
 import '../widgets/poem_image_text.dart';
 
 class GradientDesign extends BaseImageDesign {
@@ -60,6 +60,6 @@ class GradientDesign extends BaseImageDesign {
 
   @override
   List<Widget> getCustomizationOptions(BuildContext context) {
-    return [TextSize(), TextColor(), GradientBackgroundColor()];
+    return [TextSize(), TextColor(), BackgroundGradient()];
   }
 }
