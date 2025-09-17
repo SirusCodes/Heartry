@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 
 import '../../../utils/contants.dart';
@@ -9,8 +11,8 @@ class TextSplittingService {
     required this.title,
     required this.poet,
     required this.poem,
-    required this.contentMargin,
-    required this.extraSpacing,
+    required this.contentPadding,
+    required TextStyle textStyle,
   }) : _textStyle = DefaultTextStyle.of(context).style;
 
   final BuildContext context;
@@ -18,37 +20,39 @@ class TextSplittingService {
   final String? title;
   final String poet;
   final List<String> poem;
-  final EdgeInsetsGeometry contentMargin;
-  final (double x, double y) extraSpacing;
+  final EdgeInsetsGeometry contentPadding;
   final TextStyle _textStyle;
 
   List<List<String>> getPoemSeparated(double textScale) {
     final double spaceForPoemX =
-        constraints.maxWidth - contentMargin.horizontal - extraSpacing.$1;
+        constraints.maxWidth - contentPadding.horizontal;
 
     // getting title height
-    final titleHeight = title != null && title!.isNotEmpty
-        ? _calcTextSize(
-            title!,
-            TITLE_TEXT_SIZE,
-            textScale <= 1.2 ? textScale : 1.2,
-            spaceForPoemX,
-            POEM_TITLE_MAX_LINES,
-          ).height
-        : 0;
+    double titleHeight = 0;
+    if (title != null && title!.isNotEmpty) {
+      titleHeight = _calcTextSize(
+        title!,
+        TITLE_TEXT_SIZE,
+        math.min(textScale, 1.2),
+        spaceForPoemX,
+        POEM_TITLE_MAX_LINES,
+      ).height;
+
+      titleHeight += POEM_SPACING;
+    }
 
     // getting poet height
-    final poetHeight = _calcTextSize(
+    double poetHeight = _calcTextSize(
       poet,
       POET_TEXT_SIZE,
-      textScale <= 1.2 ? textScale : 1.2,
+      math.min(textScale, 1.2),
       spaceForPoemX,
       POET_NAME_MAX_LINES,
     ).height;
+    poetHeight += POEM_SPACING;
 
     final double spaceForPoemY = constraints.maxHeight -
-        contentMargin.vertical -
-        extraSpacing.$2 -
+        contentPadding.vertical -
         titleHeight -
         poetHeight;
 

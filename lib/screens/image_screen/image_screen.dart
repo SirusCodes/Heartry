@@ -1,17 +1,15 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:heartry/screens/image_builder/core/image_controller.dart';
+import 'package:heartry/screens/image_builder/layers/background.dart';
+import 'package:heartry/screens/image_builder/layers/text.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:share_plus/share_plus.dart';
 
-import '../../providers/text_providers.dart';
 import '../share_images_screen/share_images_screen.dart';
-import 'core/base_image_design.dart';
-import 'core/text_spliting_service.dart';
-import 'designs/gradient_design.dart';
 
 class ImageScreen extends StatefulWidget {
   const ImageScreen({
@@ -22,7 +20,7 @@ class ImageScreen extends StatefulWidget {
   });
 
   final String? title, poet;
-  final List<String> poem;
+  final String poem;
 
   @override
   State<ImageScreen> createState() => _ImageScreenState();
@@ -33,10 +31,8 @@ class _ImageScreenState extends State<ImageScreen> {
 
   final PageController _pageController = PageController();
 
-  late final BaseImageDesign design = GradientDesign(
-    title: widget.title,
-    poem: widget.poem,
-    poet: widget.poet,
+  final imageLayers = SolidBackgroundLayer(
+    nextLayer: TextLayer(),
   );
 
   @override
@@ -45,74 +41,70 @@ class _ImageScreenState extends State<ImageScreen> {
     super.dispose();
   }
 
-  List<List<String>> poemPages = [];
-
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final imageController = ImageController(
+      context: context,
+      title: widget.title,
+      author: widget.poet ?? "",
+      poem: widget.poem,
+      padding: imageLayers.getPadding(),
+      textStyle: TextStyle(
+        color: colorScheme.onPrimary,
+      ),
+    );
+
     return Scaffold(
       appBar: AppBar(
         actions: [
           IconButton(
             icon: const Icon(Icons.check_rounded),
-            onPressed: () => onSharePressed(context),
+            onPressed: () => onSharePressed(
+              context,
+              imageController.poemSeparated.length,
+            ),
           ),
         ],
       ),
       body: SafeArea(
-        child: Consumer(
-          builder: (context, ref, child) {
-            final textScale = ref.watch(textSizeProvider);
-
-            return AspectRatio(
-              aspectRatio: 9 / 16,
+        child: AspectRatio(
+          aspectRatio: 9 / 16,
+          child: Center(
+            child: Screenshot(
+              controller: _screenshot,
               child: LayoutBuilder(
                 builder: (context, constraints) {
-                  final textSplittingService = TextSplittingService(
-                    context: context,
-                    constraints: constraints,
-                    title: widget.title,
-                    poet: widget.poet!,
-                    poem: widget.poem,
-                    contentMargin: design.getContentMargin(),
-                    extraSpacing: design.extraSpacing(),
-                  );
+                  imageController.constraints = constraints;
 
-                  poemPages = textSplittingService.getPoemSeparated(textScale);
-
-                  return Center(
-                    child: Screenshot(
-                      controller: _screenshot,
-                      child: PageView.builder(
-                        controller: _pageController,
-                        itemCount: poemPages.length,
-                        itemBuilder: (context, index) => SizedBox.expand(
-                          child: Stack(
-                            fit: StackFit.expand,
-                            children: [
-                              design.buildBackground(context),
-                              design.buildContent(context, poemPages[index]),
-                            ],
-                          ),
-                        ),
+                  return ListenableBuilder(
+                    listenable: imageController,
+                    builder: (context, child) => PageView.builder(
+                      controller: _pageController,
+                      itemCount: imageController.poemSeparated.length,
+                      itemBuilder: (context, index) => imageLayers.build(
+                        context,
+                        imageController,
+                        index,
                       ),
                     ),
                   );
                 },
               ),
-            );
-          },
+            ),
+          ),
         ),
       ),
       bottomNavigationBar: BottomAppBar(
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: design.getCustomizationOptions(context),
+          children: imageLayers.getEditingOptions(imageController),
         ),
       ),
     );
   }
 
-  void onSharePressed(BuildContext context) async {
+  void onSharePressed(BuildContext context, int numberOfPages) async {
     final navigator = Navigator.of(context);
 
     imageCache.clear();
@@ -121,7 +113,7 @@ class _ImageScreenState extends State<ImageScreen> {
 
     _showProgressDialog(context);
 
-    for (int pageIndex = 0; pageIndex < poemPages.length; pageIndex++) {
+    for (int pageIndex = 0; pageIndex < numberOfPages; pageIndex++) {
       _pageController.jumpToPage(pageIndex);
       final path = await _getImage(pageIndex + 1);
       images.add(path);
@@ -196,9 +188,11 @@ class _ImageScreenState extends State<ImageScreen> {
   Future<String> _getImage(int index) async {
     final tmpDir = await getTemporaryDirectory();
 
+    final time = DateTime.now().toIso8601String();
+
     final path = join(
       tmpDir.path,
-      "${design.title}-$index.png",
+      "${widget.title}-$time-$index.png",
     );
 
     final imgBytes = await _screenshot.capture(

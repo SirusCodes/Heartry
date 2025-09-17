@@ -5,7 +5,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../database/config.dart';
 import '../../../providers/color_gradient_provider.dart';
-import '../../../providers/text_providers.dart';
 import 'poem_image_card.dart';
 
 class PoemImageWidget extends StatelessWidget {
@@ -59,13 +58,11 @@ class PoemImageWidget extends StatelessWidget {
                   right: 20,
                   child: Consumer(
                     builder: (context, ref, child) {
-                      final color = ref.watch(textColorProvider);
-
                       return Text(
                         "${page + 1}/$total",
                         style: TextStyle(
                           fontSize: 17,
-                          color: color,
+                          color: Colors.white,
                         ),
                       );
                     },

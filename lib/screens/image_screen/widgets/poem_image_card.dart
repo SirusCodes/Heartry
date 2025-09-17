@@ -40,6 +40,8 @@ class PoemImageCard extends StatelessWidget {
               poem: poem,
               title: title,
               poet: poet,
+              color: Colors.white,
+              scale: 1,
             ),
           ),
         ),
