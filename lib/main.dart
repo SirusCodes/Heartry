@@ -1,4 +1,5 @@
 import 'package:catcher_2/catcher_2.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -25,6 +26,12 @@ Future<void> main() async {
       CustomEmailReportHandler(),
     ],
   );
+
+  if (kDebugMode) {
+    return runApp(
+      const ProviderScope(child: MyApp()),
+    );
+  }
 
   Catcher2(
     releaseConfig: releaseCatcher,

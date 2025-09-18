@@ -31,10 +31,6 @@ class _ImageScreenState extends State<ImageScreen> {
 
   final PageController _pageController = PageController();
 
-  final imageLayers = SolidBackgroundLayer(
-    nextLayer: TextLayer(),
-  );
-
   @override
   void dispose() {
     _pageController.dispose();
@@ -43,6 +39,9 @@ class _ImageScreenState extends State<ImageScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final imageLayers = GradientBackgroundLayer(
+      nextLayer: TextLayer(),
+    );
     final colorScheme = Theme.of(context).colorScheme;
     final imageController = ImageController(
       context: context,
