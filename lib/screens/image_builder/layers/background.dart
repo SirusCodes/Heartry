@@ -10,16 +10,6 @@ class SolidBackgroundLayer extends ImageLayer {
 
   final color = ValueNotifier<Color?>(null);
 
-  static const padding = EdgeInsets.symmetric(
-    horizontal: 40,
-    vertical: 50,
-  );
-
-  @override
-  EdgeInsets getPadding() {
-    return padding + super.getPadding();
-  }
-
   @override
   Widget build(
     BuildContext context,
@@ -33,8 +23,11 @@ class SolidBackgroundLayer extends ImageLayer {
     return ValueListenableBuilder(
       valueListenable: color,
       builder: (context, colorValue, child) {
-        return Container(
-          padding: padding,
+        if (colorValue == null) {
+          return const SizedBox.shrink();
+        }
+
+        return ColoredBox(
           color: colorValue,
           child: super.build(
             context,
@@ -78,16 +71,6 @@ class GradientBackgroundLayer extends ImageLayer {
 
   final gradient = ValueNotifier<List<Color>?>(null);
 
-  static const padding = EdgeInsets.symmetric(
-    horizontal: 40,
-    vertical: 50,
-  );
-
-  @override
-  EdgeInsets getPadding() {
-    return padding + super.getPadding();
-  }
-
   @override
   Widget build(
     BuildContext context,
@@ -104,8 +87,7 @@ class GradientBackgroundLayer extends ImageLayer {
           return const SizedBox.shrink();
         }
 
-        return Container(
-          padding: padding,
+        return DecoratedBox(
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: gradientValue,

@@ -4,21 +4,32 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../database/config.dart';
-import 'poem_image_card.dart';
+import '../core/image_controller.dart';
+import '../core/image_layer.dart';
 
-class PoemImageWidget extends StatelessWidget {
-  const PoemImageWidget({
-    super.key,
-    required this.title,
-    required this.poem,
-    required this.page,
-    required this.total,
-    required this.poet,
-  });
+class BubbleOverlayLayer extends ImageLayer {
+  BubbleOverlayLayer({super.nextLayer});
 
-  final List<String> poem;
-  final int page, total;
-  final String title, poet;
+  @override
+  Widget build(
+    BuildContext context,
+    ImageController controller,
+    int currentPage,
+  ) {
+    return _BubbleOverlayWidget(
+      child: super.build(
+        context,
+        controller,
+        currentPage,
+      ),
+    );
+  }
+}
+
+class _BubbleOverlayWidget extends StatelessWidget {
+  const _BubbleOverlayWidget({required this.child});
+
+  final Widget child;
 
   @override
   Widget build(BuildContext context) {
@@ -33,22 +44,6 @@ class PoemImageWidget extends StatelessWidget {
           child: Stack(
             fit: StackFit.expand,
             children: [
-              if (total > 1)
-                Positioned(
-                  top: 20,
-                  right: 20,
-                  child: Consumer(
-                    builder: (context, ref, child) {
-                      return Text(
-                        "${page + 1}/$total",
-                        style: TextStyle(
-                          fontSize: 17,
-                          color: Colors.white,
-                        ),
-                      );
-                    },
-                  ),
-                ),
               const Positioned(
                 top: -30,
                 left: -30,
@@ -74,13 +69,7 @@ class PoemImageWidget extends StatelessWidget {
                 right: 110,
                 child: CircleAvatar(radius: 20),
               ),
-              Center(
-                child: PoemImageCard(
-                  poem: poem,
-                  title: title,
-                  poet: poet,
-                ),
-              ),
+              Center(child: child),
               Consumer(
                 builder: (context, ref, child) {
                   final config = ref.watch(configProvider);

@@ -9,6 +9,9 @@ import 'package:path_provider/path_provider.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:share_plus/share_plus.dart';
 
+import '../image_builder/layers/frames.dart';
+import '../image_builder/layers/overlay.dart';
+import '../image_builder/layers/utils.dart';
 import '../share_images_screen/share_images_screen.dart';
 
 class ImageScreen extends StatefulWidget {
@@ -40,8 +43,24 @@ class _ImageScreenState extends State<ImageScreen> {
   @override
   Widget build(BuildContext context) {
     final imageLayers = GradientBackgroundLayer(
-      nextLayer: TextLayer(),
+      nextLayer: BubbleOverlayLayer(
+        nextLayer: PageCounterLayer(
+          nextLayer: PaddingLayer(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 40,
+              vertical: 50,
+            ),
+            nextLayer: FrostedGlassLayer(
+              nextLayer: PaddingLayer(
+                padding: const EdgeInsets.all(16.0),
+                nextLayer: TextLayer(),
+              ),
+            ),
+          ),
+        ),
+      ),
     );
+
     final colorScheme = Theme.of(context).colorScheme;
     final imageController = ImageController(
       context: context,
