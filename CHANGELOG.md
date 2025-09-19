@@ -1,3 +1,8 @@
+## 2.5.0-beta - 19/09/2025
+
+- Rebuilt image generation architecture (new designs coming soon 😉)
+- Bug fixes
+
 ## 2.4.1 - 24/07/2024
 
 Bug fixes 😊

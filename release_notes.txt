@@ -1,1 +1,2 @@
-Bug fixes 😊
+- Rebuilt image generation architecture (new designs coming soon 😉)
+- Bug fixes
