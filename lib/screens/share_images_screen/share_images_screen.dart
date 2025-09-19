@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:typed_data' show Uint8List;
 
 import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
@@ -13,7 +12,7 @@ class ShareImagesScreen extends StatelessWidget {
     required this.images,
   });
 
-  final List<Uint8List> images;
+  final List<String> images;
 
   @override
   Widget build(BuildContext context) {
@@ -36,12 +35,10 @@ class ShareImagesScreen extends StatelessWidget {
                       (path) => InkWell(
                         onTap: () {
                           SharePlus.instance.share(ShareParams(
-                            files: [
-                              XFile.fromData(path, mimeType: "image/png")
-                            ],
+                            files: [XFile(path, mimeType: "image/png")],
                           ));
                         },
-                        child: Image.memory(path),
+                        child: Card(child: Image.file(File(path))),
                       ),
                     )
                     .toList(),

@@ -1,6 +1,8 @@
-import 'dart:typed_data' show Uint8List;
+import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:path/path.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:share_plus/share_plus.dart';
 
@@ -125,14 +127,13 @@ class _ImageScreenState extends State<ImageScreen> {
 
     imageCache.clear();
 
-    final List<Uint8List> images = [];
+    final List<String> images = [];
 
     _showProgressDialog(context);
 
     for (int pageIndex = 0; pageIndex < numberOfPages; pageIndex++) {
       _pageController.jumpToPage(pageIndex);
       final image = await _getImage(pageIndex);
-      if (image == null) continue;
       images.add(image);
     }
 
@@ -148,7 +149,7 @@ class _ImageScreenState extends State<ImageScreen> {
     _showShareTypeDialog(context, images);
   }
 
-  Future _showShareTypeDialog(BuildContext context, List<Uint8List> images) {
+  Future _showShareTypeDialog(BuildContext context, List<String> images) {
     return showDialog<void>(
       context: context,
       builder: (context) => SimpleDialog(
@@ -179,13 +180,11 @@ class _ImageScreenState extends State<ImageScreen> {
     );
   }
 
-  Future<void> _shareAll(List<Uint8List> images) async {
+  Future<void> _shareAll(List<String> images) async {
     await SharePlus.instance.share(ShareParams(
-      text:
-          "Made using Heartry 💜\nDownload at https://play.google.com/store/apps/details?id=com.darshan.heartry",
-      files: images
-          .map((img) => XFile.fromData(img, mimeType: "image/png"))
-          .toList(),
+      text: "Made using Heartry 💜\n"
+          "Download at https://play.google.com/store/apps/details?id=com.darshan.heartry",
+      files: images.map((img) => XFile(img, mimeType: "image/png")).toList(),
     ));
   }
 
@@ -206,12 +205,23 @@ class _ImageScreenState extends State<ImageScreen> {
     );
   }
 
-  Future<Uint8List?> _getImage(int index) async {
+  Future<String> _getImage(int index) async {
+    final tmpDir = await getTemporaryDirectory();
+
+    final time = DateTime.now().toIso8601String();
+
+    final path = join(
+      tmpDir.path,
+      "${widget.title}-$time-$index.png",
+    );
+
     final imgBytes = await _screenshot.capture(
       pixelRatio: 3,
       delay: const Duration(milliseconds: 50),
     );
 
-    return imgBytes;
+    final imgFile = File(path)..writeAsBytes(imgBytes!);
+
+    return imgFile.path;
   }
 }
