@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        agp_version = '8.9.1'
+        agp_version = '8.12.1'
     }
 }
 allprojects {

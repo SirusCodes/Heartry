@@ -16,7 +16,7 @@ class ShareHelper {
     msg += poem;
     msg += "\n\n-$poet";
 
-    Share.share(msg);
+    SharePlus.instance.share(ShareParams(text: msg));
   }
 
   static void shareAsImage(

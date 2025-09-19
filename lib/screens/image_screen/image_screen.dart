@@ -1,16 +1,14 @@
-import 'dart:io';
+import 'dart:typed_data' show Uint8List;
 
 import 'package:flutter/material.dart';
-import 'package:heartry/screens/image_builder/core/image_controller.dart';
-import 'package:heartry/screens/image_builder/layers/background.dart';
-import 'package:heartry/screens/image_builder/layers/text.dart';
-import 'package:path/path.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:share_plus/share_plus.dart';
 
+import '../image_builder/core/image_controller.dart';
+import '../image_builder/layers/background.dart';
 import '../image_builder/layers/frames.dart';
 import '../image_builder/layers/overlay.dart';
+import '../image_builder/layers/text.dart';
 import '../image_builder/layers/utils.dart';
 import '../share_images_screen/share_images_screen.dart';
 
@@ -127,14 +125,15 @@ class _ImageScreenState extends State<ImageScreen> {
 
     imageCache.clear();
 
-    final List<String> images = [];
+    final List<Uint8List> images = [];
 
     _showProgressDialog(context);
 
     for (int pageIndex = 0; pageIndex < numberOfPages; pageIndex++) {
       _pageController.jumpToPage(pageIndex);
-      final path = await _getImage(pageIndex + 1);
-      images.add(path);
+      final image = await _getImage(pageIndex);
+      if (image == null) continue;
+      images.add(image);
     }
 
     navigator.pop();
@@ -149,7 +148,7 @@ class _ImageScreenState extends State<ImageScreen> {
     _showShareTypeDialog(context, images);
   }
 
-  Future _showShareTypeDialog(BuildContext context, List<String> images) {
+  Future _showShareTypeDialog(BuildContext context, List<Uint8List> images) {
     return showDialog<void>(
       context: context,
       builder: (context) => SimpleDialog(
@@ -170,7 +169,7 @@ class _ImageScreenState extends State<ImageScreen> {
             onPressed: () => Navigator.push<void>(
               context,
               MaterialPageRoute(
-                builder: (_) => ShareImagesScreen(imagePaths: images),
+                builder: (_) => ShareImagesScreen(images: images),
               ),
             ),
             child: const Text("Share in parts"),
@@ -180,10 +179,14 @@ class _ImageScreenState extends State<ImageScreen> {
     );
   }
 
-  Future<void> _shareAll(List<String> images) async {
-    await Share.shareXFiles(
-      images.map((path) => XFile(path, mimeType: "image/png")).toList(),
-    );
+  Future<void> _shareAll(List<Uint8List> images) async {
+    await SharePlus.instance.share(ShareParams(
+      text:
+          "Made using Heartry 💜\nDownload at https://play.google.com/store/apps/details?id=com.darshan.heartry",
+      files: images
+          .map((img) => XFile.fromData(img, mimeType: "image/png"))
+          .toList(),
+    ));
   }
 
   void _showProgressDialog(BuildContext context) {
@@ -203,23 +206,12 @@ class _ImageScreenState extends State<ImageScreen> {
     );
   }
 
-  Future<String> _getImage(int index) async {
-    final tmpDir = await getTemporaryDirectory();
-
-    final time = DateTime.now().toIso8601String();
-
-    final path = join(
-      tmpDir.path,
-      "${widget.title}-$time-$index.png",
-    );
-
+  Future<Uint8List?> _getImage(int index) async {
     final imgBytes = await _screenshot.capture(
       pixelRatio: 3,
       delay: const Duration(milliseconds: 50),
     );
 
-    final imgFile = File(path)..writeAsBytes(imgBytes!);
-
-    return imgFile.path;
+    return imgBytes;
   }
 }

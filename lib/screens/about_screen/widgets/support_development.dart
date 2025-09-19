@@ -84,9 +84,10 @@ class SupportDevelopment extends StatelessWidget {
           title: const Text("Share"),
           subtitle: const Text("Share it with your friends and family."),
           leading: const CircleAvatar(child: Icon(Icons.share)),
-          onTap: () => Share.share(
-            "Hey, kindly checkout Heartry - An app for Writers on playstore at https://play.google.com/store/apps/details?id=com.darshan.heartry",
-          ),
+          onTap: () => SharePlus.instance.share(ShareParams(
+            text:
+                "Hey, kindly checkout Heartry - An app for Writers on playstore at https://play.google.com/store/apps/details?id=com.darshan.heartry",
+          )),
         ),
       ],
     );

@@ -33,13 +33,15 @@ class _BubbleOverlayWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return AspectRatio(
       aspectRatio: 9 / 16,
       child: SizedBox.expand(
         child: Theme(
           data: ThemeData(
-            primaryColorLight: Colors.white.withValues(alpha: .3),
-            primaryColorDark: Colors.white.withValues(alpha: .3),
+            colorScheme: colorScheme.copyWith(
+              primaryContainer: Colors.white.withValues(alpha: .3),
+            ),
           ),
           child: Stack(
             fit: StackFit.expand,

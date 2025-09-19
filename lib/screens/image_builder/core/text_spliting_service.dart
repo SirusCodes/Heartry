@@ -136,6 +136,10 @@ class TextSplittingService {
     }
 
     pages.last.add(line);
+    // Return if no remaining lines
+    if (remainingLines.isEmpty) {
+      return pages;
+    }
     // Recursively call the function with the remaining lines
     return _getPoemPages(
       context: context,
