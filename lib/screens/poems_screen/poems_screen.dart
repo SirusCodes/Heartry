@@ -31,7 +31,6 @@ class _PoemScreenState extends ConsumerState<PoemScreen> {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await requestNotifPerm();
       checkIfChangelog();
     });
   }
@@ -49,9 +48,10 @@ class _PoemScreenState extends ConsumerState<PoemScreen> {
   Future<void> checkIfChangelog() {
     final appVersionManager = ref.read(appVersionManagerProvider);
     return appVersionManager.isAppUpdated().then(
-      (value) {
+      (value) async {
         if (!value) return;
-        _showChangelogs();
+        await _showChangelogs();
+        await requestNotifPerm();
       },
     );
   }
@@ -101,8 +101,8 @@ class _PoemScreenState extends ConsumerState<PoemScreen> {
     );
   }
 
-  void _showChangelogs() {
-    showDialog(
+  Future<void> _showChangelogs() async {
+    return showDialog(
       context: context,
       builder: (_) => const Dialog(child: _ChangelogDialog()),
     );
