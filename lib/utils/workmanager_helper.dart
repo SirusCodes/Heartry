@@ -1,6 +1,5 @@
 import 'dart:developer';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:intl/intl.dart';
 // ignore: depend_on_referenced_packages
@@ -69,7 +68,7 @@ void callbackDispatcher() {
 }
 
 Future<void> initWorkmanager() async {
-  Workmanager().initialize(callbackDispatcher, isInDebugMode: kDebugMode);
+  Workmanager().initialize(callbackDispatcher);
 }
 
 void registerBackupWorkmanager() {

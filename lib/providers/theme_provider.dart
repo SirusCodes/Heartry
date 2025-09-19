@@ -31,7 +31,7 @@ class ThemeProvider extends AsyncNotifier<ThemeDetailModel> {
   }
 
   void setAccentColor(Color color) {
-    _sharedPreferences.setInt(_accentColorKey, color.value);
+    _sharedPreferences.setInt(_accentColorKey, color.toARGB32());
     state = AsyncData(state.asData!.value.copyWith(accentColor: color));
   }
 

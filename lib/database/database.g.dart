@@ -156,6 +156,15 @@ class PoemModel extends DataClass implements Insertable<PoemModel> {
         title: title ?? this.title,
         poem: poem ?? this.poem,
       );
+  PoemModel copyWithCompanion(PoemCompanion data) {
+    return PoemModel(
+      id: data.id.present ? data.id.value : this.id,
+      lastEdit: data.lastEdit.present ? data.lastEdit.value : this.lastEdit,
+      title: data.title.present ? data.title.value : this.title,
+      poem: data.poem.present ? data.poem.value : this.poem,
+    );
+  }
+
   @override
   String toString() {
     return (StringBuffer('PoemModel(')
@@ -255,10 +264,159 @@ class PoemCompanion extends UpdateCompanion<PoemModel> {
 
 abstract class _$Database extends GeneratedDatabase {
   _$Database(QueryExecutor e) : super(e);
+  $DatabaseManager get managers => $DatabaseManager(this);
   late final $PoemTable poem = $PoemTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities => [poem];
+}
+
+typedef $$PoemTableCreateCompanionBuilder = PoemCompanion Function({
+  Value<int?> id,
+  Value<DateTime?> lastEdit,
+  Value<String> title,
+  required String poem,
+});
+typedef $$PoemTableUpdateCompanionBuilder = PoemCompanion Function({
+  Value<int?> id,
+  Value<DateTime?> lastEdit,
+  Value<String> title,
+  Value<String> poem,
+});
+
+class $$PoemTableFilterComposer extends Composer<_$Database, $PoemTable> {
+  $$PoemTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get lastEdit => $composableBuilder(
+      column: $table.lastEdit, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get title => $composableBuilder(
+      column: $table.title, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get poem => $composableBuilder(
+      column: $table.poem, builder: (column) => ColumnFilters(column));
+}
+
+class $$PoemTableOrderingComposer extends Composer<_$Database, $PoemTable> {
+  $$PoemTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get lastEdit => $composableBuilder(
+      column: $table.lastEdit, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get title => $composableBuilder(
+      column: $table.title, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get poem => $composableBuilder(
+      column: $table.poem, builder: (column) => ColumnOrderings(column));
+}
+
+class $$PoemTableAnnotationComposer extends Composer<_$Database, $PoemTable> {
+  $$PoemTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get lastEdit =>
+      $composableBuilder(column: $table.lastEdit, builder: (column) => column);
+
+  GeneratedColumn<String> get title =>
+      $composableBuilder(column: $table.title, builder: (column) => column);
+
+  GeneratedColumn<String> get poem =>
+      $composableBuilder(column: $table.poem, builder: (column) => column);
+}
+
+class $$PoemTableTableManager extends RootTableManager<
+    _$Database,
+    $PoemTable,
+    PoemModel,
+    $$PoemTableFilterComposer,
+    $$PoemTableOrderingComposer,
+    $$PoemTableAnnotationComposer,
+    $$PoemTableCreateCompanionBuilder,
+    $$PoemTableUpdateCompanionBuilder,
+    (PoemModel, BaseReferences<_$Database, $PoemTable, PoemModel>),
+    PoemModel,
+    PrefetchHooks Function()> {
+  $$PoemTableTableManager(_$Database db, $PoemTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$PoemTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$PoemTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$PoemTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<int?> id = const Value.absent(),
+            Value<DateTime?> lastEdit = const Value.absent(),
+            Value<String> title = const Value.absent(),
+            Value<String> poem = const Value.absent(),
+          }) =>
+              PoemCompanion(
+            id: id,
+            lastEdit: lastEdit,
+            title: title,
+            poem: poem,
+          ),
+          createCompanionCallback: ({
+            Value<int?> id = const Value.absent(),
+            Value<DateTime?> lastEdit = const Value.absent(),
+            Value<String> title = const Value.absent(),
+            required String poem,
+          }) =>
+              PoemCompanion.insert(
+            id: id,
+            lastEdit: lastEdit,
+            title: title,
+            poem: poem,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$PoemTableProcessedTableManager = ProcessedTableManager<
+    _$Database,
+    $PoemTable,
+    PoemModel,
+    $$PoemTableFilterComposer,
+    $$PoemTableOrderingComposer,
+    $$PoemTableAnnotationComposer,
+    $$PoemTableCreateCompanionBuilder,
+    $$PoemTableUpdateCompanionBuilder,
+    (PoemModel, BaseReferences<_$Database, $PoemTable, PoemModel>),
+    PoemModel,
+    PrefetchHooks Function()>;
+
+class $DatabaseManager {
+  final _$Database _db;
+  $DatabaseManager(this._db);
+  $$PoemTableTableManager get poem => $$PoemTableTableManager(_db, _db.poem);
 }

@@ -76,7 +76,7 @@ class _WritingScreenState extends State<WritingScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       body: PopScope(
-        onPopInvoked: (_) {
+        onPopInvokedWithResult: (_, __) {
           if (_isEmpty && widget.model != null)
             poemDB.deletePoem(widget.model!);
         },

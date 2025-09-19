@@ -9,7 +9,7 @@ class AppVersionManagerProvider {
   const AppVersionManagerProvider(this.ref);
 
   static const _buildNumberKey = "buildNumber";
-  final ProviderRef ref;
+  final Ref ref;
 
   Future<bool> isAppUpdated() async {
     final packageInfo = await PackageInfo.fromPlatform();

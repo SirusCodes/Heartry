@@ -9,7 +9,9 @@ part of 'backup_model.dart';
 BackupModel _$BackupModelFromJson(Map<String, dynamic> json) => BackupModel(
       poems: const PoemModelConverter().fromJson(json['poems'] as List),
       prefs: json['prefs'] as Map<String, dynamic>,
-      image: (json['image'] as List<dynamic>?)?.map((e) => e as int).toList(),
+      image: (json['image'] as List<dynamic>?)
+          ?.map((e) => (e as num).toInt())
+          .toList(),
     );
 
 Map<String, dynamic> _$BackupModelToJson(BackupModel instance) =>

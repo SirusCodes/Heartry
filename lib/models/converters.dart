@@ -20,7 +20,7 @@ class NullableColorConverter extends JsonConverter<Color?, int?> {
   Color? fromJson(int? json) => json != null ? Color(json) : null;
 
   @override
-  int? toJson(Color? object) => object?.value;
+  int? toJson(Color? object) => object?.toARGB32();
 }
 
 class PoemModelConverter extends JsonConverter<List<PoemModel>, List> {
