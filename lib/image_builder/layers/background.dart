@@ -1,21 +1,19 @@
 import 'package:flutter/material.dart';
 
-import '../../../widgets/color_picker_dialog.dart';
-import '../../../widgets/gradient_palette_selector.dart';
-import '../core/image_controller.dart';
+import '../../widgets/color_picker_dialog.dart';
+import '../../widgets/gradient_palette_selector.dart';
 import '../core/image_layer.dart';
 
 class SolidBackgroundLayer extends ImageLayer {
-  SolidBackgroundLayer({super.nextLayer});
+  SolidBackgroundLayer({
+    super.key,
+    required super.nextLayer,
+  });
 
   final color = ValueNotifier<Color?>(null);
 
   @override
-  Widget build(
-    BuildContext context,
-    ImageController controller,
-    int currentPage,
-  ) {
+  Widget build(BuildContext context) {
     final primaryColor = Theme.of(context).colorScheme.primary;
 
     color.value ??= primaryColor;
@@ -29,24 +27,21 @@ class SolidBackgroundLayer extends ImageLayer {
 
         return ColoredBox(
           color: colorValue,
-          child: super.build(
-            context,
-            controller,
-            currentPage,
-          ),
+          child: nextLayer!.build(context),
         );
       },
     );
   }
 
   @override
-  List<Widget> getEditingOptions(ImageController controller) {
+  List<Widget> getEditingOptions(BuildContext context) {
     return [
       IconButton(
         icon: Icon(Icons.texture_rounded),
+        tooltip: "Background Color",
         onPressed: () {
           showModalBottomSheet<void>(
-            context: controller.context,
+            context: context,
             builder: (context) {
               return Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -61,22 +56,24 @@ class SolidBackgroundLayer extends ImageLayer {
           );
         },
       ),
-      ...super.getEditingOptions(controller),
+      ...super.getEditingOptions(context),
     ];
+  }
+
+  @override
+  void dispose() {
+    color.dispose();
+    super.dispose();
   }
 }
 
 class GradientBackgroundLayer extends ImageLayer {
-  GradientBackgroundLayer({super.nextLayer});
+  GradientBackgroundLayer({super.key, super.nextLayer});
 
   final gradient = ValueNotifier<List<Color>?>(null);
 
   @override
-  Widget build(
-    BuildContext context,
-    ImageController controller,
-    int currentPage,
-  ) {
+  Widget build(BuildContext context) {
     final primaryColor = Theme.of(context).colorScheme.primary;
     gradient.value ??= [primaryColor, primaryColor.withValues(alpha: 0.7)];
 
@@ -95,42 +92,42 @@ class GradientBackgroundLayer extends ImageLayer {
               end: Alignment.bottomRight,
             ),
           ),
-          child: super.build(
-            context,
-            controller,
-            currentPage,
-          ),
+          child: nextLayer?.build(context),
         );
       },
     );
   }
 
   @override
-  List<Widget> getEditingOptions(ImageController controller) {
+  List<Widget> getEditingOptions(BuildContext context) {
     return [
       IconButton(
         icon: Icon(Icons.gradient_rounded),
+        tooltip: "Background Gradient",
         onPressed: () {
           showModalBottomSheet<void>(
-            context: controller.context,
+            context: context,
             builder: (context) {
-              return ValueListenableBuilder(
-                valueListenable: gradient,
-                builder: (context, gradientValue, child) => Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: GradientPaletteSelector(
-                    gradient: gradientValue!,
-                    onChanged: (value) {
-                      gradient.value = value;
-                    },
-                  ),
+              return Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: GradientPaletteSelector(
+                  gradient: gradient.value!,
+                  onChanged: (value) {
+                    gradient.value = value;
+                  },
                 ),
               );
             },
           );
         },
       ),
-      ...super.getEditingOptions(controller),
+      ...super.getEditingOptions(context),
     ];
+  }
+
+  @override
+  void dispose() {
+    gradient.dispose();
+    super.dispose();
   }
 }

@@ -58,6 +58,7 @@ dependencies:
   flutter_secure_storage: ^9.0.0
   equatable: ^2.0.5
   crypto: ^3.0.3
+  material_symbols_icons: ^4.2874.0
 
 dev_dependencies:
   build_runner: null

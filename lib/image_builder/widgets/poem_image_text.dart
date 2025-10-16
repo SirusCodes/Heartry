@@ -2,7 +2,7 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 
-import '../../../utils/contants.dart';
+import '../../utils/contants.dart';
 
 class PoemImageText extends StatelessWidget {
   const PoemImageText({

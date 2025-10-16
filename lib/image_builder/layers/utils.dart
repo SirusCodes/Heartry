@@ -5,7 +5,7 @@ import '../core/image_controller.dart';
 import '../core/image_layer.dart';
 
 class PaddingLayer extends ImageLayer {
-  const PaddingLayer({required this.padding, super.nextLayer});
+  const PaddingLayer({super.key, required this.padding, super.nextLayer});
 
   final EdgeInsets padding;
 
@@ -17,29 +17,27 @@ class PaddingLayer extends ImageLayer {
   @override
   Widget build(
     BuildContext context,
-    ImageController controller,
-    int currentPage,
   ) {
     return Padding(
       padding: padding,
-      child: super.build(
-        context,
-        controller,
-        currentPage,
-      ),
+      child: nextLayer!.build(context),
     );
   }
 }
 
 class PageCounterLayer extends ImageLayer {
-  const PageCounterLayer({super.nextLayer});
+  const PageCounterLayer({
+    super.key,
+    super.nextLayer,
+    required this.controller,
+    required this.currentPage,
+  });
+
+  final ImageController controller;
+  final int currentPage;
 
   @override
-  Widget build(
-    BuildContext context,
-    ImageController controller,
-    int currentPage,
-  ) {
+  Widget build(BuildContext context) {
     final total = controller.poemSeparated.length;
     return Stack(
       children: [
@@ -65,11 +63,7 @@ class PageCounterLayer extends ImageLayer {
               },
             ),
           ),
-        super.build(
-          context,
-          controller,
-          currentPage,
-        ),
+        nextLayer!.build(context),
       ],
     );
   }

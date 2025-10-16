@@ -2,7 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
-import '../../../utils/contants.dart';
+import '../../utils/contants.dart';
 
 class TextSplittingService {
   TextSplittingService({

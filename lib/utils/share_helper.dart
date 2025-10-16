@@ -1,7 +1,6 @@
-import 'package:flutter/cupertino.dart';
-import 'package:share_plus/share_plus.dart';
-
+import 'package:flutter/material.dart';
 import '../screens/image_screen/image_screen.dart';
+import 'package:share_plus/share_plus.dart';
 
 class ShareHelper {
   static void shareAsText({
@@ -27,7 +26,7 @@ class ShareHelper {
   }) {
     Navigator.push<void>(
       context,
-      CupertinoPageRoute(
+      MaterialPageRoute<void>(
         builder: (_) => ImageScreen(
           title: title,
           poem: poem,

@@ -3,25 +3,16 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../database/config.dart';
-import '../core/image_controller.dart';
+import '../../database/config.dart';
 import '../core/image_layer.dart';
 
 class BubbleOverlayLayer extends ImageLayer {
-  BubbleOverlayLayer({super.nextLayer});
+  const BubbleOverlayLayer({super.key, super.nextLayer});
 
   @override
-  Widget build(
-    BuildContext context,
-    ImageController controller,
-    int currentPage,
-  ) {
+  Widget build(BuildContext context) {
     return _BubbleOverlayWidget(
-      child: super.build(
-        context,
-        controller,
-        currentPage,
-      ),
+      child: nextLayer!.build(context),
     );
   }
 }

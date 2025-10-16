@@ -1,22 +1,25 @@
 import 'package:flutter/material.dart';
 
-import '../../../widgets/color_picker_dialog.dart';
-import '../../image_screen/widgets/poem_image_text.dart';
+import '../../widgets/color_picker_dialog.dart';
+import '../widgets/poem_image_text.dart';
 import '../core/image_controller.dart';
 import '../core/image_layer.dart';
 
 class TextLayer extends ImageLayer {
-  TextLayer() : super(nextLayer: null);
+  TextLayer({
+    super.key,
+    required this.controller,
+    required this.currentPage,
+  }) : super(nextLayer: null);
 
   final textScale = ValueNotifier(1.0);
   final textColor = ValueNotifier<Color?>(null);
 
+  final ImageController controller;
+  final int currentPage;
+
   @override
-  Widget build(
-    BuildContext context,
-    ImageController controller,
-    int currentPage,
-  ) {
+  Widget build(BuildContext context) {
     return PoemImageText(
       poem: controller.poemSeparated[currentPage],
       title: controller.title,
@@ -27,13 +30,14 @@ class TextLayer extends ImageLayer {
   }
 
   @override
-  List<Widget> getEditingOptions(ImageController controller) {
+  List<Widget> getEditingOptions(BuildContext context) {
     return [
       IconButton(
         icon: Icon(Icons.format_color_text_rounded),
+        tooltip: "Text Color",
         onPressed: () {
           showModalBottomSheet<void>(
-            context: controller.context,
+            context: context,
             builder: (context) {
               return Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -56,9 +60,10 @@ class TextLayer extends ImageLayer {
       ),
       IconButton(
         icon: Icon(Icons.format_size_rounded),
+        tooltip: "Text Size",
         onPressed: () {
           showModalBottomSheet<void>(
-            context: controller.context,
+            context: context,
             builder: (context) {
               return ValueListenableBuilder(
                 valueListenable: textScale,
@@ -66,7 +71,7 @@ class TextLayer extends ImageLayer {
                   value: value,
                   onChanged: (value) {
                     controller.textSizeFactor = value;
-                    textScale.value = value;
+                    // textScale.value = value;
                   },
                 ),
               );
@@ -74,8 +79,15 @@ class TextLayer extends ImageLayer {
           );
         },
       ),
-      ...super.getEditingOptions(controller)
+      ...super.getEditingOptions(context)
     ];
+  }
+
+  @override
+  void dispose() {
+    textScale.dispose();
+    textColor.dispose();
+    super.dispose();
   }
 }
 

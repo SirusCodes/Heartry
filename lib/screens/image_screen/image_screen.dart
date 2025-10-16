@@ -1,17 +1,14 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:share_plus/share_plus.dart';
 
-import '../image_builder/core/image_controller.dart';
-import '../image_builder/layers/background.dart';
-import '../image_builder/layers/frames.dart';
-import '../image_builder/layers/overlay.dart';
-import '../image_builder/layers/text.dart';
-import '../image_builder/layers/utils.dart';
+import '../../image_builder/core/image_controller.dart';
+import '../../image_builder/templates/template.dart';
 import '../share_images_screen/share_images_screen.dart';
 
 class ImageScreen extends StatefulWidget {
@@ -31,8 +28,9 @@ class ImageScreen extends StatefulWidget {
 
 class _ImageScreenState extends State<ImageScreen> {
   final ScreenshotController _screenshot = ScreenshotController();
-
   final PageController _pageController = PageController();
+
+  Template selectedTemplate = SolidBackgroundTemplate();
 
   @override
   void dispose() {
@@ -42,36 +40,24 @@ class _ImageScreenState extends State<ImageScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final imageLayers = GradientBackgroundLayer(
-      nextLayer: BubbleOverlayLayer(
-        nextLayer: PageCounterLayer(
-          nextLayer: PaddingLayer(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 40,
-              vertical: 50,
-            ),
-            nextLayer: FrostedGlassLayer(
-              nextLayer: PaddingLayer(
-                padding: const EdgeInsets.all(16.0),
-                nextLayer: TextLayer(),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-
     final colorScheme = Theme.of(context).colorScheme;
+
     final imageController = ImageController(
       context: context,
       title: widget.title,
       author: widget.poet ?? "",
       poem: widget.poem,
-      padding: imageLayers.getPadding(),
       textStyle: TextStyle(
         color: colorScheme.onPrimary,
       ),
     );
+
+    final layer = selectedTemplate.getLayers(
+      imageController,
+      _pageController.hasClients ? _pageController.page?.round() ?? 0 : 0,
+    );
+
+    imageController.padding = layer.getPadding();
 
     return Scaffold(
       appBar: AppBar(
@@ -85,38 +71,80 @@ class _ImageScreenState extends State<ImageScreen> {
           ),
         ],
       ),
-      body: SafeArea(
+      body: Center(
         child: AspectRatio(
           aspectRatio: 9 / 16,
-          child: Center(
-            child: Screenshot(
-              controller: _screenshot,
-              child: LayoutBuilder(
-                builder: (context, constraints) {
-                  imageController.constraints = constraints;
+          child: Screenshot(
+            controller: _screenshot,
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                imageController.constraints = constraints;
 
-                  return ListenableBuilder(
-                    listenable: imageController,
-                    builder: (context, child) => PageView.builder(
-                      controller: _pageController,
-                      itemCount: imageController.poemSeparated.length,
-                      itemBuilder: (context, index) => imageLayers.build(
-                        context,
-                        imageController,
-                        index,
-                      ),
-                    ),
-                  );
-                },
-              ),
+                return ListenableBuilder(
+                  listenable: imageController,
+                  builder: (context, child) => PageView.builder(
+                    controller: _pageController,
+                    itemCount: imageController.poemSeparated.length,
+                    itemBuilder: (context, index) {
+                      // ignore: invalid_use_of_protected_member
+                      return layer.build(context);
+                    },
+                  ),
+                );
+              },
             ),
           ),
         ),
       ),
       bottomNavigationBar: BottomAppBar(
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: imageLayers.getEditingOptions(imageController),
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: IconButton(
+                tooltip: "Change Template",
+                icon: const Icon(Symbols.stacks),
+                onPressed: () {
+                  showModalBottomSheet<void>(
+                    context: context,
+                    builder: (context) => SizedBox(
+                      height: 300,
+                      child: _TemplateSelector(
+                        selectedTemplate: selectedTemplate,
+                        templates: [
+                          SolidBackgroundTemplate(),
+                          GradientBackgroundTemplate(),
+                          GradientBubbleOverlayTemplate(),
+                          SolidBubbleOverlayTemplate(),
+                        ],
+                        onTemplateSelected: (template) {
+                          setState(() {
+                            selectedTemplate = template;
+                          });
+                          Navigator.pop(context);
+                        },
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+            VerticalDivider(),
+            Expanded(
+              child: ListView(
+                scrollDirection: Axis.horizontal,
+                children: layer
+                    .getEditingOptions(context)
+                    .map(
+                      (e) => Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        child: e,
+                      ),
+                    )
+                    .toList(),
+              ),
+            )
+          ],
         ),
       ),
     );
@@ -223,5 +251,52 @@ class _ImageScreenState extends State<ImageScreen> {
     final imgFile = File(path)..writeAsBytes(imgBytes!);
 
     return imgFile.path;
+  }
+}
+
+class _TemplateSelector extends StatelessWidget {
+  const _TemplateSelector({
+    required this.templates,
+    required this.onTemplateSelected,
+    required this.selectedTemplate,
+  });
+
+  final Template selectedTemplate;
+  final List<Template> templates;
+  final ValueChanged<Template> onTemplateSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return ListView.builder(
+      itemCount: templates.length,
+      padding: const EdgeInsets.all(12.0),
+      itemBuilder: (context, index) {
+        final template = templates[index];
+        final isSelected = selectedTemplate.name == templates[index].name;
+
+        return Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: ListTile(
+            tileColor: isSelected ? colorScheme.primary.withAlpha(30) : null,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+              side: isSelected
+                  ? BorderSide(
+                      color: colorScheme.primary,
+                      width: 2,
+                    )
+                  : BorderSide.none,
+            ),
+            leading: template.getIcon(context),
+            title: Text(template.name),
+            onTap: () {
+              onTemplateSelected(template);
+            },
+          ),
+        );
+      },
+    );
   }
 }

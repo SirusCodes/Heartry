@@ -1,19 +1,13 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:heartry/screens/image_builder/core/image_controller.dart';
-
 import '../core/image_layer.dart';
 
 class FrostedGlassLayer extends ImageLayer {
-  FrostedGlassLayer({super.nextLayer});
+  const FrostedGlassLayer({super.key, super.nextLayer});
 
   @override
-  Widget build(
-    BuildContext context,
-    ImageController controller,
-    int currentPage,
-  ) {
+  Widget build(BuildContext context) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(30),
       child: BackdropFilter(
@@ -30,11 +24,7 @@ class FrostedGlassLayer extends ImageLayer {
             ),
             borderRadius: BorderRadius.circular(30),
           ),
-          child: super.build(
-            context,
-            controller,
-            currentPage,
-          ),
+          child: nextLayer!.build(context),
         ),
       ),
     );

@@ -79,7 +79,7 @@ class GradientPaletteSelector extends StatelessWidget {
                 context: context,
                 currentColor: gradient[i],
                 onOkPressed: (color) => onChanged(
-                  gradient.map((e) => e == gradient[i] ? color : e).toList(),
+                  List.from(gradient.map((e) => e == gradient[i] ? color : e)),
                 ),
               ),
             ),
