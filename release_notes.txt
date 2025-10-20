@@ -1,2 +1,2 @@
-- Rebuilt image generation architecture (new designs coming soon 😉)
-- Bug fixes
+- Add support for templates 😉
+- Minor bug fixes for user onboarding

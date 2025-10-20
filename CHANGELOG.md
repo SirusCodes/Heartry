@@ -1,3 +1,8 @@
+## 2.5.0-beta.1 - 20/09/2025
+
+- Add support for templates 😉
+- Minor bug fixes for user onboarding
+
 ## 2.5.0-beta - 19/09/2025
 
 - Rebuilt image generation architecture (new designs coming soon 😉)
