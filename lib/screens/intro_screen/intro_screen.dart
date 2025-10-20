@@ -48,23 +48,25 @@ class _IntroScreenState extends State<IntroScreen> {
 
             return child!;
           },
-          child: LiquidSwipe(
-            pages: pages,
-            enableLoop: false,
-            onPageChangeCallback: (activePageIndex) {
-              setState(() {
-                _enableSlideIcon = activePageIndex != pages.length - 1;
-              });
-            },
-            positionSlideIcon: .5,
-            ignoreUserGestureWhileAnimating: true,
-            slideIconWidget: _enableSlideIcon
-                ? const Icon(
-                    Icons.chevron_left_rounded,
-                    color: Colors.white,
-                    size: 40,
-                  )
-                : null,
+          child: SafeArea(
+            child: LiquidSwipe(
+              pages: pages,
+              enableLoop: false,
+              onPageChangeCallback: (activePageIndex) {
+                setState(() {
+                  _enableSlideIcon = activePageIndex != pages.length - 1;
+                });
+              },
+              positionSlideIcon: .5,
+              ignoreUserGestureWhileAnimating: true,
+              slideIconWidget: _enableSlideIcon
+                  ? const Icon(
+                      Icons.chevron_left_rounded,
+                      color: Colors.white,
+                      size: 40,
+                    )
+                  : null,
+            ),
           ),
         ),
       ),
@@ -408,6 +410,15 @@ class _WelcomePage extends StatelessWidget {
             style: TextStyle(
               fontSize: 25,
               color: Colors.white,
+              fontFamily: "Caveat",
+            ),
+          ),
+          const Text(
+            "Swipe left to continue",
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 20,
+              color: Colors.white70,
               fontFamily: "Caveat",
             ),
           ),

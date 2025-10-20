@@ -13,25 +13,27 @@ class RestoreScreen extends ConsumerWidget {
     final restoreState = ref.watch(restoreManagerProvider);
 
     return Scaffold(
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          const Spacer(),
-          Text(
-            restoreState.message,
-            style: Theme.of(context).textTheme.displaySmall,
-            textAlign: TextAlign.center,
-          ),
-          const Spacer(),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: _buildButtonBar(
-              restoreState: restoreState,
-              context: context,
-              ref: ref,
+      body: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            const Spacer(),
+            Text(
+              restoreState.message,
+              style: Theme.of(context).textTheme.displaySmall,
+              textAlign: TextAlign.center,
             ),
-          ),
-        ],
+            const Spacer(),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: _buildButtonBar(
+                restoreState: restoreState,
+                context: context,
+                ref: ref,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
