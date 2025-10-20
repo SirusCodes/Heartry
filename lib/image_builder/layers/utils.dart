@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../core/image_controller.dart';
 import '../core/image_layer.dart';
+import '../widgets/page_details.dart';
 
 class PaddingLayer extends ImageLayer {
   const PaddingLayer({super.key, required this.padding, super.nextLayer});
@@ -30,15 +31,15 @@ class PageCounterLayer extends ImageLayer {
     super.key,
     super.nextLayer,
     required this.controller,
-    required this.currentPage,
   });
 
   final ImageController controller;
-  final int currentPage;
 
   @override
   Widget build(BuildContext context) {
     final total = controller.poemSeparated.length;
+    final currentPage = PageDetails.of(context).currentPage;
+
     return Stack(
       children: [
         if (total > 1)

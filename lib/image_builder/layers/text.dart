@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../widgets/color_picker_dialog.dart';
+import '../widgets/page_details.dart';
 import '../widgets/poem_image_text.dart';
 import '../core/image_controller.dart';
 import '../core/image_layer.dart';
@@ -9,28 +10,36 @@ class TextLayer extends ImageLayer {
   TextLayer({
     super.key,
     required this.controller,
-    required this.currentPage,
   }) : super(nextLayer: null);
 
-  final textScale = ValueNotifier(1.0);
+  final textScale = ValueNotifier<double>(1.0);
   final textColor = ValueNotifier<Color?>(null);
 
   final ImageController controller;
-  final int currentPage;
 
   @override
   Widget build(BuildContext context) {
-    return PoemImageText(
-      poem: controller.poemSeparated[currentPage],
-      title: controller.title,
-      poet: controller.author,
-      color: controller.textStyle.color!,
-      scale: controller.textSizeFactor,
+    final colorScheme = Theme.of(context).colorScheme;
+    final currentPage = PageDetails.of(context).currentPage;
+
+    return ListenableBuilder(
+      listenable: Listenable.merge([textScale, textColor]),
+      builder: (context, child) {
+        return PoemImageText(
+          poem: controller.poemSeparated[currentPage],
+          title: controller.title,
+          poet: controller.author,
+          color: textColor.value ?? colorScheme.onSurface,
+          scale: textScale.value,
+        );
+      },
     );
   }
 
   @override
   List<Widget> getEditingOptions(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return [
       IconButton(
         icon: Icon(Icons.format_color_text_rounded),
@@ -44,12 +53,9 @@ class TextLayer extends ImageLayer {
                 child: ValueListenableBuilder(
                   valueListenable: textColor,
                   builder: (context, colorValue, child) => ColorPaletteSelector(
-                    currentColor: colorValue ?? controller.textStyle.color!,
+                    currentColor: colorValue ?? colorScheme.onSurface,
                     onColorSelected: (color) {
                       textColor.value = color;
-                      controller.textStyle = controller.textStyle.copyWith(
-                        color: color,
-                      );
                     },
                   ),
                 ),
@@ -71,7 +77,7 @@ class TextLayer extends ImageLayer {
                   value: value,
                   onChanged: (value) {
                     controller.textSizeFactor = value;
-                    // textScale.value = value;
+                    textScale.value = value;
                   },
                 ),
               );

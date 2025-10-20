@@ -110,11 +110,14 @@ class GradientBackgroundLayer extends ImageLayer {
             builder: (context) {
               return Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: GradientPaletteSelector(
-                  gradient: gradient.value!,
-                  onChanged: (value) {
-                    gradient.value = value;
-                  },
+                child: ValueListenableBuilder(
+                  valueListenable: gradient,
+                  builder: (context, value, child) => GradientPaletteSelector(
+                    gradient: value!,
+                    onChanged: (value) {
+                      gradient.value = value;
+                    },
+                  ),
                 ),
               );
             },

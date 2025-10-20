@@ -9,6 +9,7 @@ import 'package:share_plus/share_plus.dart';
 
 import '../../image_builder/core/image_controller.dart';
 import '../../image_builder/templates/template.dart';
+import '../../image_builder/widgets/page_details.dart';
 import '../share_images_screen/share_images_screen.dart';
 
 class ImageScreen extends StatefulWidget {
@@ -52,10 +53,7 @@ class _ImageScreenState extends State<ImageScreen> {
       ),
     );
 
-    final layer = selectedTemplate.getLayers(
-      imageController,
-      _pageController.hasClients ? _pageController.page?.round() ?? 0 : 0,
-    );
+    final layer = selectedTemplate.getLayers(imageController);
 
     imageController.padding = layer.getPadding();
 
@@ -86,8 +84,11 @@ class _ImageScreenState extends State<ImageScreen> {
                     controller: _pageController,
                     itemCount: imageController.poemSeparated.length,
                     itemBuilder: (context, index) {
-                      // ignore: invalid_use_of_protected_member
-                      return layer.build(context);
+                      return PageDetails(
+                        currentPage: index,
+                        // ignore: invalid_use_of_protected_member
+                        child: layer.build(context),
+                      );
                     },
                   ),
                 );

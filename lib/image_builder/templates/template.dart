@@ -13,7 +13,7 @@ abstract class Template {
     required this.name,
   });
 
-  ImageLayer getLayers(ImageController controller, int currentPage);
+  ImageLayer getLayers(ImageController controller);
   final String name;
 
   Widget getIcon(BuildContext context);
@@ -21,16 +21,18 @@ abstract class Template {
 
 class SolidBackgroundTemplate implements Template {
   @override
-  ImageLayer getLayers(ImageController controller, int currentPage) {
+  ImageLayer getLayers(ImageController controller) {
     return SolidBackgroundLayer(
-      nextLayer: PaddingLayer(
-        padding: const EdgeInsets.symmetric(
-          horizontal: 40,
-          vertical: 50,
-        ),
-        nextLayer: TextLayer(
-          controller: controller,
-          currentPage: currentPage,
+      nextLayer: PageCounterLayer(
+        controller: controller,
+        nextLayer: PaddingLayer(
+          padding: const EdgeInsets.symmetric(
+            horizontal: 40,
+            vertical: 50,
+          ),
+          nextLayer: TextLayer(
+            controller: controller,
+          ),
         ),
       ),
     );
@@ -47,16 +49,18 @@ class SolidBackgroundTemplate implements Template {
 
 class GradientBackgroundTemplate implements Template {
   @override
-  ImageLayer getLayers(ImageController controller, int currentPage) {
+  ImageLayer getLayers(ImageController controller) {
     return GradientBackgroundLayer(
-      nextLayer: PaddingLayer(
-        padding: const EdgeInsets.symmetric(
-          horizontal: 40,
-          vertical: 50,
-        ),
-        nextLayer: TextLayer(
-          controller: controller,
-          currentPage: currentPage,
+      nextLayer: PageCounterLayer(
+        controller: controller,
+        nextLayer: PaddingLayer(
+          padding: const EdgeInsets.symmetric(
+            horizontal: 40,
+            vertical: 50,
+          ),
+          nextLayer: TextLayer(
+            controller: controller,
+          ),
         ),
       ),
     );
@@ -73,20 +77,22 @@ class GradientBackgroundTemplate implements Template {
 
 class GradientBubbleOverlayTemplate implements Template {
   @override
-  ImageLayer getLayers(ImageController controller, int currentPage) {
+  ImageLayer getLayers(ImageController controller) {
     return GradientBackgroundLayer(
       nextLayer: BubbleOverlayLayer(
-        nextLayer: PaddingLayer(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 40,
-            vertical: 50,
-          ),
-          nextLayer: FrostedGlassLayer(
-            nextLayer: PaddingLayer(
-              padding: const EdgeInsets.all(16),
-              nextLayer: TextLayer(
-                controller: controller,
-                currentPage: currentPage,
+        nextLayer: PageCounterLayer(
+          controller: controller,
+          nextLayer: PaddingLayer(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 40,
+              vertical: 50,
+            ),
+            nextLayer: FrostedGlassLayer(
+              nextLayer: PaddingLayer(
+                padding: const EdgeInsets.all(16),
+                nextLayer: TextLayer(
+                  controller: controller,
+                ),
               ),
             ),
           ),
@@ -106,20 +112,22 @@ class GradientBubbleOverlayTemplate implements Template {
 
 class SolidBubbleOverlayTemplate implements Template {
   @override
-  ImageLayer getLayers(ImageController controller, int currentPage) {
+  ImageLayer getLayers(ImageController controller) {
     return SolidBackgroundLayer(
       nextLayer: BubbleOverlayLayer(
-        nextLayer: PaddingLayer(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 40,
-            vertical: 50,
-          ),
-          nextLayer: FrostedGlassLayer(
-            nextLayer: PaddingLayer(
-              padding: const EdgeInsets.all(16),
-              nextLayer: TextLayer(
-                controller: controller,
-                currentPage: currentPage,
+        nextLayer: PageCounterLayer(
+          controller: controller,
+          nextLayer: PaddingLayer(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 40,
+              vertical: 50,
+            ),
+            nextLayer: FrostedGlassLayer(
+              nextLayer: PaddingLayer(
+                padding: const EdgeInsets.all(16),
+                nextLayer: TextLayer(
+                  controller: controller,
+                ),
               ),
             ),
           ),
