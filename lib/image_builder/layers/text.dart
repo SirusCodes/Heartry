@@ -98,7 +98,7 @@ class TextLayer extends ImageLayer {
             builder: (context) {
               return ValueListenableBuilder(
                 valueListenable: _fontFamily,
-                builder: (context, value, child) => _FontFamily(
+                builder: (context, value, child) => _FontFamilyHandler(
                   value: value,
                   onChanged: (value) {
                     controller.textStyle = controller.textStyle.copyWith(
@@ -162,8 +162,8 @@ class _TextSizeHandler extends StatelessWidget {
   }
 }
 
-class _FontFamily extends StatelessWidget {
-  const _FontFamily({
+class _FontFamilyHandler extends StatelessWidget {
+  const _FontFamilyHandler({
     required this.value,
     required this.onChanged,
   });
@@ -196,7 +196,10 @@ class _FontFamily extends StatelessWidget {
                     )
                   : BorderSide.none,
             ),
-            title: Text(font.displayName),
+            title: Text(
+              font.displayName,
+              style: TextStyle(fontFamily: font.name, fontSize: 25),
+            ),
             onTap: () {
               onChanged(font);
             },
