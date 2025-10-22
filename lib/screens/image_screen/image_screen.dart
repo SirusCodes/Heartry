@@ -108,23 +108,20 @@ class _ImageScreenState extends State<ImageScreen> {
                 onPressed: () {
                   showModalBottomSheet<void>(
                     context: context,
-                    builder: (context) => SizedBox(
-                      height: 300,
-                      child: _TemplateSelector(
-                        selectedTemplate: selectedTemplate,
-                        templates: [
-                          SolidBackgroundTemplate(),
-                          GradientBackgroundTemplate(),
-                          GradientBubbleOverlayTemplate(),
-                          SolidBubbleOverlayTemplate(),
-                        ],
-                        onTemplateSelected: (template) {
-                          setState(() {
-                            selectedTemplate = template;
-                          });
-                          Navigator.pop(context);
-                        },
-                      ),
+                    builder: (context) => _TemplateSelector(
+                      selectedTemplate: selectedTemplate,
+                      templates: [
+                        SolidBackgroundTemplate(),
+                        GradientBackgroundTemplate(),
+                        GradientBubbleOverlayTemplate(),
+                        SolidBubbleOverlayTemplate(),
+                      ],
+                      onTemplateSelected: (template) {
+                        setState(() {
+                          selectedTemplate = template;
+                        });
+                        Navigator.pop(context);
+                      },
                     ),
                   );
                 },

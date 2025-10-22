@@ -16,9 +16,7 @@ class PaddingLayer extends ImageLayer {
   }
 
   @override
-  Widget build(
-    BuildContext context,
-  ) {
+  Widget build(BuildContext context) {
     return Padding(
       padding: padding,
       child: nextLayer!.build(context),
@@ -52,7 +50,7 @@ class PageCounterLayer extends ImageLayer {
                   "${currentPage + 1}/$total",
                   style: TextStyle(
                     fontSize: 17,
-                    color: Colors.white,
+                    color: controller.textStyle.color,
                     shadows: [
                       Shadow(
                         color: Colors.black.withValues(alpha: .5),

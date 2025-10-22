@@ -74,8 +74,8 @@ class GradientBackgroundLayer extends ImageLayer {
 
   @override
   Widget build(BuildContext context) {
-    final primaryColor = Theme.of(context).colorScheme.primary;
-    gradient.value ??= [primaryColor, primaryColor.withValues(alpha: 0.7)];
+    final colorScheme = Theme.of(context).colorScheme;
+    gradient.value ??= [colorScheme.primary, colorScheme.secondary];
 
     return ValueListenableBuilder(
       valueListenable: gradient,

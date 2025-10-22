@@ -31,11 +31,12 @@ class TextSplittingService {
     double titleHeight = 0;
     if (title != null && title!.isNotEmpty) {
       titleHeight = _calcTextSize(
-        title!,
-        TITLE_TEXT_SIZE,
-        math.min(textScale, 1.2),
-        spaceForPoemX,
-        POEM_TITLE_MAX_LINES,
+        text: title!,
+        fontSize: TITLE_TEXT_SIZE,
+        scale: math.min(textScale, 1.2),
+        maxWidth: spaceForPoemX,
+        fontFamily: _textStyle.fontFamily!,
+        maxLines: POEM_TITLE_MAX_LINES,
       ).height;
 
       titleHeight += POEM_SPACING;
@@ -43,11 +44,12 @@ class TextSplittingService {
 
     // getting poet height
     double poetHeight = _calcTextSize(
-      poet,
-      POET_TEXT_SIZE,
-      math.min(textScale, 1.2),
-      spaceForPoemX,
-      POET_NAME_MAX_LINES,
+      text: poet,
+      fontSize: POET_TEXT_SIZE,
+      scale: math.min(textScale, 1.2),
+      maxWidth: spaceForPoemX,
+      fontFamily: _textStyle.fontFamily!,
+      maxLines: POET_NAME_MAX_LINES,
     ).height;
     poetHeight += POEM_SPACING;
 
@@ -95,10 +97,11 @@ class TextSplittingService {
 
     final line = remainingLines.first;
     final heightToSub = _calcTextSize(
-      line,
-      POEM_TEXT_SIZE,
-      textScale,
-      maxWidth,
+      text: line,
+      fontSize: POEM_TEXT_SIZE,
+      scale: textScale,
+      maxWidth: maxWidth,
+      fontFamily: _textStyle.fontFamily!,
     ).height;
 
     if (heightToSub > availableHeight) {
@@ -166,10 +169,11 @@ class TextSplittingService {
       final word = words[i];
       currentLine = "$currentLine $word";
       final testSize = _calcTextSize(
-        currentLine,
-        POEM_TEXT_SIZE,
-        textScale,
-        maxWidth,
+        text: currentLine,
+        fontSize: POEM_TEXT_SIZE,
+        scale: textScale,
+        maxWidth: maxWidth,
+        fontFamily: _textStyle.fontFamily!,
       );
 
       if (testSize.height >= availableHeight) {
@@ -180,19 +184,20 @@ class TextSplittingService {
     return (line, "");
   }
 
-  Size _calcTextSize(
-    String text,
-    double fontSize,
-    double scale,
-    double maxWidth, [
+  Size _calcTextSize({
+    required String text,
+    required double fontSize,
+    required double scale,
+    required double maxWidth,
+    required String fontFamily,
     int? maxLines,
-  ]) {
+  }) {
     final painter = TextPainter(
       text: TextSpan(
         text: text,
         style: _textStyle.copyWith(
           fontSize: fontSize,
-          fontFamily: "Caveat",
+          fontFamily: fontFamily,
         ),
       ),
       maxLines: maxLines,

@@ -1,6 +1,7 @@
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
+import 'package:heartry/image_builder/core/font_family.dart';
 
 import '../../utils/contants.dart';
 
@@ -11,6 +12,7 @@ class PoemImageText extends StatelessWidget {
     required this.poem,
     required this.poet,
     required this.color,
+    required this.fontFamily,
     required this.scale,
   });
 
@@ -19,6 +21,7 @@ class PoemImageText extends StatelessWidget {
 
   final Color color;
   final double scale;
+  final FontFamily fontFamily;
 
   @override
   Widget build(BuildContext context) {
@@ -29,6 +32,7 @@ class PoemImageText extends StatelessWidget {
         poet: poet,
         scale: scale,
         color: color,
+        fontFamily: fontFamily,
       ),
       child: SizedBox.expand(),
     );
@@ -40,6 +44,7 @@ class PoemTextPainter extends CustomPainter {
   final String? title, poet;
   final double scale;
   final Color color;
+  final FontFamily fontFamily;
 
   PoemTextPainter({
     required this.poem,
@@ -47,6 +52,7 @@ class PoemTextPainter extends CustomPainter {
     required this.poet,
     required this.scale,
     required this.color,
+    required this.fontFamily,
   });
 
   @override
@@ -97,7 +103,7 @@ class PoemTextPainter extends CustomPainter {
         text: title,
         style: TextStyle(
           fontSize: TITLE_TEXT_SIZE,
-          fontFamily: "Caveat",
+          fontFamily: fontFamily.name,
           fontWeight: FontWeight.bold,
           overflow: TextOverflow.ellipsis,
           color: color,
@@ -121,7 +127,7 @@ class PoemTextPainter extends CustomPainter {
         text: "-$poet",
         style: TextStyle(
           fontSize: POET_TEXT_SIZE,
-          fontFamily: "Caveat",
+          fontFamily: fontFamily.name,
           overflow: TextOverflow.ellipsis,
           color: color,
         ),
@@ -142,7 +148,7 @@ class PoemTextPainter extends CustomPainter {
     final ui.ParagraphBuilder paragraphBuilder = ui.ParagraphBuilder(
       ui.ParagraphStyle(
         textAlign: TextAlign.center,
-        fontFamily: "Caveat",
+        fontFamily: fontFamily.name,
         fontSize: POEM_TEXT_SIZE * scale,
       ),
     );

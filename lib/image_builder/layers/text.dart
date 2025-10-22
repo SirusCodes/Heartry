@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../core/font_family.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../widgets/color_picker_dialog.dart';
 import '../widgets/page_details.dart';
@@ -12,8 +14,9 @@ class TextLayer extends ImageLayer {
     required this.controller,
   }) : super(nextLayer: null);
 
-  final textScale = ValueNotifier<double>(1.0);
-  final textColor = ValueNotifier<Color?>(null);
+  final _textScale = ValueNotifier<double>(1.0);
+  final _textColor = ValueNotifier<Color?>(null);
+  final _fontFamily = ValueNotifier<FontFamily>(FontFamily.caveat);
 
   final ImageController controller;
 
@@ -23,14 +26,15 @@ class TextLayer extends ImageLayer {
     final currentPage = PageDetails.of(context).currentPage;
 
     return ListenableBuilder(
-      listenable: Listenable.merge([textScale, textColor]),
+      listenable: Listenable.merge([_textScale, _textColor, _fontFamily]),
       builder: (context, child) {
         return PoemImageText(
           poem: controller.poemSeparated[currentPage],
           title: controller.title,
           poet: controller.author,
-          color: textColor.value ?? colorScheme.onSurface,
-          scale: textScale.value,
+          color: _textColor.value ?? colorScheme.onPrimary,
+          scale: _textScale.value,
+          fontFamily: _fontFamily.value,
         );
       },
     );
@@ -51,11 +55,11 @@ class TextLayer extends ImageLayer {
               return Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: ValueListenableBuilder(
-                  valueListenable: textColor,
+                  valueListenable: _textColor,
                   builder: (context, colorValue, child) => ColorPaletteSelector(
-                    currentColor: colorValue ?? colorScheme.onSurface,
+                    currentColor: colorValue ?? colorScheme.onPrimary,
                     onColorSelected: (color) {
-                      textColor.value = color;
+                      _textColor.value = color;
                     },
                   ),
                 ),
@@ -72,12 +76,35 @@ class TextLayer extends ImageLayer {
             context: context,
             builder: (context) {
               return ValueListenableBuilder(
-                valueListenable: textScale,
+                valueListenable: _textScale,
                 builder: (context, value, child) => _TextSizeHandler(
                   value: value,
                   onChanged: (value) {
                     controller.textSizeFactor = value;
-                    textScale.value = value;
+                    _textScale.value = value;
+                  },
+                ),
+              );
+            },
+          );
+        },
+      ),
+      IconButton(
+        icon: Icon(Symbols.font_download_rounded),
+        tooltip: "Font Family",
+        onPressed: () {
+          showModalBottomSheet<void>(
+            context: context,
+            builder: (context) {
+              return ValueListenableBuilder(
+                valueListenable: _fontFamily,
+                builder: (context, value, child) => _FontFamily(
+                  value: value,
+                  onChanged: (value) {
+                    controller.textStyle = controller.textStyle.copyWith(
+                      fontFamily: value.name,
+                    );
+                    _fontFamily.value = value;
                   },
                 ),
               );
@@ -91,8 +118,9 @@ class TextLayer extends ImageLayer {
 
   @override
   void dispose() {
-    textScale.dispose();
-    textColor.dispose();
+    _textScale.dispose();
+    _textColor.dispose();
+    _fontFamily.dispose();
     super.dispose();
   }
 }
@@ -130,6 +158,51 @@ class _TextSizeHandler extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+class _FontFamily extends StatelessWidget {
+  const _FontFamily({
+    required this.value,
+    required this.onChanged,
+  });
+
+  final FontFamily value;
+  final ValueChanged<FontFamily> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    const fonts = FontFamily.values;
+
+    return ListView.builder(
+      itemCount: fonts.length,
+      padding: const EdgeInsets.all(12.0),
+      itemBuilder: (context, index) {
+        final font = fonts[index];
+        final isSelected = value == font;
+
+        return Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: ListTile(
+            tileColor: isSelected ? colorScheme.primary.withAlpha(30) : null,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+              side: isSelected
+                  ? BorderSide(
+                      color: colorScheme.primary,
+                      width: 2,
+                    )
+                  : BorderSide.none,
+            ),
+            title: Text(font.displayName),
+            onTap: () {
+              onChanged(font);
+            },
+          ),
+        );
+      },
     );
   }
 }

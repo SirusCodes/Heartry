@@ -94,17 +94,37 @@ flutter:
   fonts:
     - family: Caveat
       fonts:
-        - asset: assets/fonts/Caveat-Regular.ttf
+        - asset: assets/fonts/Caveat/Caveat-Regular.ttf
           weight: 400
-        - asset: assets/fonts/Caveat-SemiBold.ttf
+        - asset: assets/fonts/Caveat/Caveat-SemiBold.ttf
           weight: 600
-  #       - asset: fonts/Schyler-Italic.ttf
-  #         style: italic
-  #   - family: Trajan Pro
-  #     fonts:
-  #       - asset: fonts/TrajanPro.ttf
-  #       - asset: fonts/TrajanPro_Bold.ttf
-  #         weight: 700
-  #
-  # For details regarding fonts from package dependencies,
-  # see https://flutter.dev/custom-fonts/#from-packages
+    - family: Tangerine
+      fonts:
+        - asset: assets/fonts/Tangerine/Tangerine-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/Tangerine/Tangerine-Bold.ttf
+          weight: 600
+    - family: Lato
+      fonts:
+        - asset: assets/fonts/Lato/Lato-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/Lato/Lato-Bold.ttf
+          weight: 600
+    - family: DancingScript
+      fonts:
+        - asset: assets/fonts/DancingScript.ttf
+    - family: JosefinSans
+      fonts:
+        - asset: assets/fonts/JosefinSans.ttf
+    - family: Lora
+      fonts:
+        - asset: assets/fonts/Lora.ttf
+    - family: Montserrat
+      fonts:
+        - asset: assets/fonts/Montserrat.ttf
+    - family: PlayfairDisplay
+      fonts:
+        - asset: assets/fonts/PlayfairDisplay.ttf
+    - family: Quicksand
+      fonts:
+        - asset: assets/fonts/Quicksand.ttf
