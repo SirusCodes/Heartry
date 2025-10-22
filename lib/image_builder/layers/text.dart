@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:heartry/image_builder/widgets/editing_option.dart';
 import '../core/font_family.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
@@ -45,7 +46,8 @@ class TextLayer extends ImageLayer {
     final colorScheme = Theme.of(context).colorScheme;
 
     return [
-      IconButton(
+      EditingOption(
+        option: "Text Color",
         icon: Icon(Icons.format_color_text_rounded),
         tooltip: "Text Color",
         onPressed: () {
@@ -68,7 +70,8 @@ class TextLayer extends ImageLayer {
           );
         },
       ),
-      IconButton(
+      EditingOption(
+        option: "Text Size",
         icon: Icon(Icons.format_size_rounded),
         tooltip: "Text Size",
         onPressed: () {
@@ -89,7 +92,8 @@ class TextLayer extends ImageLayer {
           );
         },
       ),
-      IconButton(
+      EditingOption(
+        option: "Font Family",
         icon: Icon(Symbols.font_download_rounded),
         tooltip: "Font Family",
         onPressed: () {

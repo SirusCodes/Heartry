@@ -9,6 +9,7 @@ import 'package:share_plus/share_plus.dart';
 
 import '../../image_builder/core/image_controller.dart';
 import '../../image_builder/templates/template.dart';
+import '../../image_builder/widgets/editing_option.dart';
 import '../../image_builder/widgets/page_details.dart';
 import '../share_images_screen/share_images_screen.dart';
 
@@ -101,8 +102,9 @@ class _ImageScreenState extends State<ImageScreen> {
         child: Row(
           children: [
             Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: IconButton(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              child: EditingOption(
+                option: "Templates",
                 tooltip: "Change Template",
                 icon: const Icon(Symbols.stacks),
                 onPressed: () {

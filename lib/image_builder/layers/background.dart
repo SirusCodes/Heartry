@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:heartry/image_builder/widgets/editing_option.dart';
 
 import '../../widgets/color_picker_dialog.dart';
 import '../../widgets/gradient_palette_selector.dart';
@@ -36,7 +37,8 @@ class SolidBackgroundLayer extends ImageLayer {
   @override
   List<Widget> getEditingOptions(BuildContext context) {
     return [
-      IconButton(
+      EditingOption(
+        option: "Background",
         icon: Icon(Icons.texture_rounded),
         tooltip: "Background Color",
         onPressed: () {
@@ -101,7 +103,8 @@ class GradientBackgroundLayer extends ImageLayer {
   @override
   List<Widget> getEditingOptions(BuildContext context) {
     return [
-      IconButton(
+      EditingOption(
+        option: "Background",
         icon: Icon(Icons.gradient_rounded),
         tooltip: "Background Gradient",
         onPressed: () {
