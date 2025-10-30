@@ -1,2 +1,3 @@
-- Add support for templates 😉
-- Minor bug fixes for user onboarding
+- Added multiple templates for image generation
+- Added multiple fonts for image generation
+- Bug fixes

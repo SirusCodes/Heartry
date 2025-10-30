@@ -1,4 +1,10 @@
-## 2.5.0-beta.1 - 20/09/2025
+## 2.5.0 - 30/10/2025
+
+- Added multiple templates for image generation
+- Added multiple fonts for image generation
+- Bug fixes
+
+## 2.5.0-beta.1 - 20/10/2025
 
 - Add support for templates 😉
 - Minor bug fixes for user onboarding
