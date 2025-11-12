@@ -72,10 +72,10 @@ class TextSplittingService {
   }
 
   List<String> _removeEmptyStartAndEnds(List<String> page) {
-    if (page[0].isEmpty) {
+    if (page.isNotEmpty && page[0].isEmpty) {
       page.removeAt(0);
     }
-    if (page[page.length - 1].isEmpty) {
+    if (page.isNotEmpty && page[page.length - 1].isEmpty) {
       page.removeAt(page.length - 1);
     }
 
