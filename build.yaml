@@ -2,6 +2,12 @@ targets:
   $default:
     builders:
       drift_dev|drift_dev:
+        options:
+          sql:
+            dialect: sqlite
+            options:
+              modules:
+                - fts5
         generate_for:
           - "**/database/**"
       json_serializable|json_serializable:

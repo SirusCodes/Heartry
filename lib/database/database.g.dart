@@ -11,32 +11,47 @@ class $PoemTable extends Poem with TableInfo<$PoemTable, PoemModel> {
   static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
   late final GeneratedColumn<int> id = GeneratedColumn<int>(
-      'id', aliasedName, true,
-      hasAutoIncrement: true,
-      type: DriftSqlType.int,
-      requiredDuringInsert: false,
-      defaultConstraints:
-          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
-  static const VerificationMeta _lastEditMeta =
-      const VerificationMeta('lastEdit');
+    'id',
+    aliasedName,
+    true,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _lastEditMeta = const VerificationMeta(
+    'lastEdit',
+  );
   @override
   late final GeneratedColumn<DateTime> lastEdit = GeneratedColumn<DateTime>(
-      'last_edit', aliasedName, true,
-      type: DriftSqlType.dateTime,
-      requiredDuringInsert: false,
-      defaultValue: Constant(DateTime.now()));
+    'last_edit',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: Constant(DateTime.now()),
+  );
   static const VerificationMeta _titleMeta = const VerificationMeta('title');
   @override
   late final GeneratedColumn<String> title = GeneratedColumn<String>(
-      'title', aliasedName, false,
-      type: DriftSqlType.string,
-      requiredDuringInsert: false,
-      defaultValue: const Constant(""));
+    'title',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(""),
+  );
   static const VerificationMeta _poemMeta = const VerificationMeta('poem');
   @override
   late final GeneratedColumn<String> poem = GeneratedColumn<String>(
-      'poem', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
+    'poem',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
   @override
   List<GeneratedColumn> get $columns => [id, lastEdit, title, poem];
   @override
@@ -45,24 +60,32 @@ class $PoemTable extends Poem with TableInfo<$PoemTable, PoemModel> {
   String get actualTableName => $name;
   static const String $name = 'poem';
   @override
-  VerificationContext validateIntegrity(Insertable<PoemModel> instance,
-      {bool isInserting = false}) {
+  VerificationContext validateIntegrity(
+    Insertable<PoemModel> instance, {
+    bool isInserting = false,
+  }) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
     }
     if (data.containsKey('last_edit')) {
-      context.handle(_lastEditMeta,
-          lastEdit.isAcceptableOrUnknown(data['last_edit']!, _lastEditMeta));
+      context.handle(
+        _lastEditMeta,
+        lastEdit.isAcceptableOrUnknown(data['last_edit']!, _lastEditMeta),
+      );
     }
     if (data.containsKey('title')) {
       context.handle(
-          _titleMeta, title.isAcceptableOrUnknown(data['title']!, _titleMeta));
+        _titleMeta,
+        title.isAcceptableOrUnknown(data['title']!, _titleMeta),
+      );
     }
     if (data.containsKey('poem')) {
       context.handle(
-          _poemMeta, poem.isAcceptableOrUnknown(data['poem']!, _poemMeta));
+        _poemMeta,
+        poem.isAcceptableOrUnknown(data['poem']!, _poemMeta),
+      );
     } else if (isInserting) {
       context.missing(_poemMeta);
     }
@@ -75,14 +98,22 @@ class $PoemTable extends Poem with TableInfo<$PoemTable, PoemModel> {
   PoemModel map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return PoemModel(
-      id: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}id']),
-      lastEdit: attachedDatabase.typeMapping
-          .read(DriftSqlType.dateTime, data['${effectivePrefix}last_edit']),
-      title: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}title'])!,
-      poem: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}poem'])!,
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      ),
+      lastEdit: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}last_edit'],
+      ),
+      title: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}title'],
+      )!,
+      poem: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}poem'],
+      )!,
     );
   }
 
@@ -97,8 +128,12 @@ class PoemModel extends DataClass implements Insertable<PoemModel> {
   final DateTime? lastEdit;
   final String title;
   final String poem;
-  const PoemModel(
-      {this.id, this.lastEdit, required this.title, required this.poem});
+  const PoemModel({
+    this.id,
+    this.lastEdit,
+    required this.title,
+    required this.poem,
+  });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -124,8 +159,10 @@ class PoemModel extends DataClass implements Insertable<PoemModel> {
     );
   }
 
-  factory PoemModel.fromJson(Map<String, dynamic> json,
-      {ValueSerializer? serializer}) {
+  factory PoemModel.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return PoemModel(
       id: serializer.fromJson<int?>(json['id']),
@@ -145,17 +182,17 @@ class PoemModel extends DataClass implements Insertable<PoemModel> {
     };
   }
 
-  PoemModel copyWith(
-          {Value<int?> id = const Value.absent(),
-          Value<DateTime?> lastEdit = const Value.absent(),
-          String? title,
-          String? poem}) =>
-      PoemModel(
-        id: id.present ? id.value : this.id,
-        lastEdit: lastEdit.present ? lastEdit.value : this.lastEdit,
-        title: title ?? this.title,
-        poem: poem ?? this.poem,
-      );
+  PoemModel copyWith({
+    Value<int?> id = const Value.absent(),
+    Value<DateTime?> lastEdit = const Value.absent(),
+    String? title,
+    String? poem,
+  }) => PoemModel(
+    id: id.present ? id.value : this.id,
+    lastEdit: lastEdit.present ? lastEdit.value : this.lastEdit,
+    title: title ?? this.title,
+    poem: poem ?? this.poem,
+  );
   PoemModel copyWithCompanion(PoemCompanion data) {
     return PoemModel(
       id: data.id.present ? data.id.value : this.id,
@@ -219,11 +256,12 @@ class PoemCompanion extends UpdateCompanion<PoemModel> {
     });
   }
 
-  PoemCompanion copyWith(
-      {Value<int?>? id,
-      Value<DateTime?>? lastEdit,
-      Value<String>? title,
-      Value<String>? poem}) {
+  PoemCompanion copyWith({
+    Value<int?>? id,
+    Value<DateTime?>? lastEdit,
+    Value<String>? title,
+    Value<String>? poem,
+  }) {
     return PoemCompanion(
       id: id ?? this.id,
       lastEdit: lastEdit ?? this.lastEdit,
@@ -273,18 +311,20 @@ abstract class _$Database extends GeneratedDatabase {
   List<DatabaseSchemaEntity> get allSchemaEntities => [poem];
 }
 
-typedef $$PoemTableCreateCompanionBuilder = PoemCompanion Function({
-  Value<int?> id,
-  Value<DateTime?> lastEdit,
-  Value<String> title,
-  required String poem,
-});
-typedef $$PoemTableUpdateCompanionBuilder = PoemCompanion Function({
-  Value<int?> id,
-  Value<DateTime?> lastEdit,
-  Value<String> title,
-  Value<String> poem,
-});
+typedef $$PoemTableCreateCompanionBuilder =
+    PoemCompanion Function({
+      Value<int?> id,
+      Value<DateTime?> lastEdit,
+      Value<String> title,
+      required String poem,
+    });
+typedef $$PoemTableUpdateCompanionBuilder =
+    PoemCompanion Function({
+      Value<int?> id,
+      Value<DateTime?> lastEdit,
+      Value<String> title,
+      Value<String> poem,
+    });
 
 class $$PoemTableFilterComposer extends Composer<_$Database, $PoemTable> {
   $$PoemTableFilterComposer({
@@ -295,16 +335,24 @@ class $$PoemTableFilterComposer extends Composer<_$Database, $PoemTable> {
     super.$removeJoinBuilderFromRootComposer,
   });
   ColumnFilters<int> get id => $composableBuilder(
-      column: $table.id, builder: (column) => ColumnFilters(column));
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<DateTime> get lastEdit => $composableBuilder(
-      column: $table.lastEdit, builder: (column) => ColumnFilters(column));
+    column: $table.lastEdit,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<String> get title => $composableBuilder(
-      column: $table.title, builder: (column) => ColumnFilters(column));
+    column: $table.title,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<String> get poem => $composableBuilder(
-      column: $table.poem, builder: (column) => ColumnFilters(column));
+    column: $table.poem,
+    builder: (column) => ColumnFilters(column),
+  );
 }
 
 class $$PoemTableOrderingComposer extends Composer<_$Database, $PoemTable> {
@@ -316,16 +364,24 @@ class $$PoemTableOrderingComposer extends Composer<_$Database, $PoemTable> {
     super.$removeJoinBuilderFromRootComposer,
   });
   ColumnOrderings<int> get id => $composableBuilder(
-      column: $table.id, builder: (column) => ColumnOrderings(column));
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<DateTime> get lastEdit => $composableBuilder(
-      column: $table.lastEdit, builder: (column) => ColumnOrderings(column));
+    column: $table.lastEdit,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<String> get title => $composableBuilder(
-      column: $table.title, builder: (column) => ColumnOrderings(column));
+    column: $table.title,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<String> get poem => $composableBuilder(
-      column: $table.poem, builder: (column) => ColumnOrderings(column));
+    column: $table.poem,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$PoemTableAnnotationComposer extends Composer<_$Database, $PoemTable> {
@@ -349,20 +405,24 @@ class $$PoemTableAnnotationComposer extends Composer<_$Database, $PoemTable> {
       $composableBuilder(column: $table.poem, builder: (column) => column);
 }
 
-class $$PoemTableTableManager extends RootTableManager<
-    _$Database,
-    $PoemTable,
-    PoemModel,
-    $$PoemTableFilterComposer,
-    $$PoemTableOrderingComposer,
-    $$PoemTableAnnotationComposer,
-    $$PoemTableCreateCompanionBuilder,
-    $$PoemTableUpdateCompanionBuilder,
-    (PoemModel, BaseReferences<_$Database, $PoemTable, PoemModel>),
-    PoemModel,
-    PrefetchHooks Function()> {
+class $$PoemTableTableManager
+    extends
+        RootTableManager<
+          _$Database,
+          $PoemTable,
+          PoemModel,
+          $$PoemTableFilterComposer,
+          $$PoemTableOrderingComposer,
+          $$PoemTableAnnotationComposer,
+          $$PoemTableCreateCompanionBuilder,
+          $$PoemTableUpdateCompanionBuilder,
+          (PoemModel, BaseReferences<_$Database, $PoemTable, PoemModel>),
+          PoemModel,
+          PrefetchHooks Function()
+        > {
   $$PoemTableTableManager(_$Database db, $PoemTable table)
-      : super(TableManagerState(
+    : super(
+        TableManagerState(
           db: db,
           table: table,
           createFilteringComposer: () =>
@@ -371,49 +431,52 @@ class $$PoemTableTableManager extends RootTableManager<
               $$PoemTableOrderingComposer($db: db, $table: table),
           createComputedFieldComposer: () =>
               $$PoemTableAnnotationComposer($db: db, $table: table),
-          updateCompanionCallback: ({
-            Value<int?> id = const Value.absent(),
-            Value<DateTime?> lastEdit = const Value.absent(),
-            Value<String> title = const Value.absent(),
-            Value<String> poem = const Value.absent(),
-          }) =>
-              PoemCompanion(
-            id: id,
-            lastEdit: lastEdit,
-            title: title,
-            poem: poem,
-          ),
-          createCompanionCallback: ({
-            Value<int?> id = const Value.absent(),
-            Value<DateTime?> lastEdit = const Value.absent(),
-            Value<String> title = const Value.absent(),
-            required String poem,
-          }) =>
-              PoemCompanion.insert(
-            id: id,
-            lastEdit: lastEdit,
-            title: title,
-            poem: poem,
-          ),
+          updateCompanionCallback:
+              ({
+                Value<int?> id = const Value.absent(),
+                Value<DateTime?> lastEdit = const Value.absent(),
+                Value<String> title = const Value.absent(),
+                Value<String> poem = const Value.absent(),
+              }) => PoemCompanion(
+                id: id,
+                lastEdit: lastEdit,
+                title: title,
+                poem: poem,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int?> id = const Value.absent(),
+                Value<DateTime?> lastEdit = const Value.absent(),
+                Value<String> title = const Value.absent(),
+                required String poem,
+              }) => PoemCompanion.insert(
+                id: id,
+                lastEdit: lastEdit,
+                title: title,
+                poem: poem,
+              ),
           withReferenceMapper: (p0) => p0
               .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
               .toList(),
           prefetchHooksCallback: null,
-        ));
+        ),
+      );
 }
 
-typedef $$PoemTableProcessedTableManager = ProcessedTableManager<
-    _$Database,
-    $PoemTable,
-    PoemModel,
-    $$PoemTableFilterComposer,
-    $$PoemTableOrderingComposer,
-    $$PoemTableAnnotationComposer,
-    $$PoemTableCreateCompanionBuilder,
-    $$PoemTableUpdateCompanionBuilder,
-    (PoemModel, BaseReferences<_$Database, $PoemTable, PoemModel>),
-    PoemModel,
-    PrefetchHooks Function()>;
+typedef $$PoemTableProcessedTableManager =
+    ProcessedTableManager<
+      _$Database,
+      $PoemTable,
+      PoemModel,
+      $$PoemTableFilterComposer,
+      $$PoemTableOrderingComposer,
+      $$PoemTableAnnotationComposer,
+      $$PoemTableCreateCompanionBuilder,
+      $$PoemTableUpdateCompanionBuilder,
+      (PoemModel, BaseReferences<_$Database, $PoemTable, PoemModel>),
+      PoemModel,
+      PrefetchHooks Function()
+    >;
 
 class $DatabaseManager {
   final _$Database _db;

@@ -9,16 +9,17 @@ part of 'theme_detail_model.dart';
 ThemeDetailModel _$ThemeDetailModelFromJson(Map<String, dynamic> json) =>
     ThemeDetailModel(
       themeType: $enumDecode(_$ThemeTypeEnumMap, json['themeType']),
-      accentColor: const NullableColorConverter()
-          .fromJson((json['accentColor'] as num?)?.toInt()),
+      accentColor: const NullableColorConverter().fromJson(
+        (json['accentColor'] as num?)?.toInt(),
+      ),
     );
 
-Map<String, dynamic> _$ThemeDetailModelToJson(ThemeDetailModel instance) =>
-    <String, dynamic>{
-      'themeType': _$ThemeTypeEnumMap[instance.themeType]!,
-      'accentColor':
-          const NullableColorConverter().toJson(instance.accentColor),
-    };
+Map<String, dynamic> _$ThemeDetailModelToJson(
+  ThemeDetailModel instance,
+) => <String, dynamic>{
+  'themeType': _$ThemeTypeEnumMap[instance.themeType]!,
+  'accentColor': const NullableColorConverter().toJson(instance.accentColor),
+};
 
 const _$ThemeTypeEnumMap = {
   ThemeType.light: 'light',
