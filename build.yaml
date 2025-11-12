@@ -8,6 +8,8 @@ targets:
             options:
               modules:
                 - fts5
+          databases:
+            poem: lib/database/database.dart
         generate_for:
           - "**/database/**"
       json_serializable|json_serializable:
