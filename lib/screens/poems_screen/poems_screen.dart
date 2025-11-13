@@ -6,6 +6,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:heartry/screens/poems_screen/providers/multi_select_provider.dart';
 import '../../database/database.dart';
 import '../../init_get_it.dart';
 import 'package:url_launcher/url_launcher_string.dart';
@@ -15,7 +16,10 @@ import '../../providers/app_version_manager_provider.dart';
 import '../../providers/changelog_provider.dart';
 import '../../providers/list_grid_provider.dart';
 import '../../providers/stream_poem_provider.dart';
+import '../../utils/share_helper.dart';
+import '../../widgets/share_option_list.dart';
 import '../profile_screen/profile_screen.dart';
+import '../reader_screen/reader_screen.dart';
 import '../settings_screen/settings_screen.dart';
 import '../writing_screen/writing_screen.dart';
 import 'widgets/poem_card.dart';
@@ -178,6 +182,24 @@ class _CAppBar extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final showMultiOption = ref.watch(multiSelectEnabledProvider);
+
+    return AnimatedCrossFade(
+      firstChild: _DefaultAppBar(),
+      secondChild: _Toolbar(),
+      crossFadeState: showMultiOption
+          ? CrossFadeState.showSecond
+          : CrossFadeState.showFirst,
+      duration: const Duration(milliseconds: 100),
+    );
+  }
+}
+
+class _DefaultAppBar extends ConsumerWidget {
+  const _DefaultAppBar();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
     final imagePath =
         ref //
             .watch(configProvider)
@@ -209,39 +231,7 @@ class _CAppBar extends ConsumerWidget {
                 ? const Icon(Icons.list_alt_rounded)
                 : const Icon(Icons.grid_view),
           ),
-          const SizedBox(width: 10),
-          SearchAnchor(
-            isFullScreen: true,
-            builder: (context, controller) {
-              return IconButton(
-                onPressed: () {
-                  controller.openView();
-                },
-                icon: Icon(Icons.search),
-              );
-            },
-            suggestionsBuilder: (context, controller) async {
-              final query = controller.text;
-              if (query.isEmpty) return [];
-
-              final poems = await locator<Database>().searchPoems(query);
-              return poems.map((poem) => PoemCard(model: poem));
-            },
-            viewBuilder: (suggestions) => _PoemsLayout(
-              isGrid: isGrid,
-              itemBuilder: (context, index) {
-                final poems = suggestions.toList();
-
-                return Padding(
-                  padding: !isGrid
-                      ? const EdgeInsets.symmetric(horizontal: 10, vertical: 5)
-                      : EdgeInsets.zero,
-                  child: poems[index],
-                );
-              },
-              itemCount: suggestions.length,
-            ),
-          ),
+          _SearchIcon(isGrid: isGrid),
           const SizedBox(width: 10),
           GestureDetector(
             onTap: () {
@@ -263,6 +253,181 @@ class _CAppBar extends ConsumerWidget {
   }
 }
 
+class _Toolbar extends ConsumerWidget {
+  const _Toolbar();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final selectedPoems = ref.watch(selectedPoemsProvider);
+
+    return Padding(
+      padding: const EdgeInsets.only(top: 15.0, left: 5.0, right: 5.0),
+      child: Row(
+        children: [
+          IconButton(
+            icon: const Icon(Icons.close_rounded),
+            onPressed: () => ref.read(selectedPoemsProvider.notifier).clear(),
+          ),
+          Text(
+            selectedPoems.length.toString(),
+            style: Theme.of(context).textTheme.bodyLarge,
+          ),
+          const Spacer(),
+          if (selectedPoems.length == 1) ...[
+            IconButton(
+              icon: const Icon(Icons.share),
+              onPressed: () => _shareClicked(context, selectedPoems.first),
+            ),
+            IconButton(
+              icon: const Icon(Icons.remove_red_eye_rounded),
+              onPressed: () =>
+                  _navigateToReaderScreen(context, selectedPoems.first),
+            ),
+          ],
+          IconButton(
+            icon: const Icon(Icons.delete),
+            onPressed: () => _showWarning(context, selectedPoems, ref),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _shareClicked(BuildContext context, PoemModel poem) {
+    showModalBottomSheet<void>(
+      context: context,
+      builder: (context) => Consumer(
+        builder: (context, ref, child) {
+          final poet =
+              ref //
+                  .watch(configProvider)
+                  .whenOrNull(data: (data) => data.name);
+
+          return ShareOptionList(
+            onShareAsImage: () => ShareHelper.shareAsImage(
+              context,
+              title: poem.title,
+              poem: poem.poem,
+              poet: poet ?? "Unknown",
+            ),
+            onShareAsText: () => ShareHelper.shareAsText(
+              title: poem.title,
+              poem: poem.poem,
+              poet: poet ?? "Unknown",
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  void _navigateToReaderScreen(BuildContext context, PoemModel poem) {
+    Navigator.push<void>(
+      context,
+      MaterialPageRoute(builder: (_) => ReaderScreen(model: poem)),
+    );
+  }
+
+  void _showWarning(
+    BuildContext context,
+    List<PoemModel> selectedPoems,
+    WidgetRef ref,
+  ) {
+    showDialog<void>(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text("Do you really want to delete it?"),
+        content: const Text(
+          "There would be no other way to get back you art."
+          " Are you really sure?",
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => _delete(context, selectedPoems, ref),
+            child: const Text("Yes"),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("No"),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _delete(
+    BuildContext context,
+    List<PoemModel> selectedPoems,
+    WidgetRef ref,
+  ) async {
+    final navigator = Navigator.of(context);
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+
+    final result = await locator<Database>().deletePoems(
+      selectedPoems.map((p) => p.id!),
+    );
+
+    final String msg = result == 0 ? "Failed to delete" : "Deleted";
+
+    navigator.pop();
+    scaffoldMessenger.showSnackBar(SnackBar(content: Text(msg)));
+    ref.read(selectedPoemsProvider.notifier).clear();
+  }
+}
+
+class _SearchIcon extends StatelessWidget {
+  const _SearchIcon({required this.isGrid});
+
+  final bool isGrid;
+
+  @override
+  Widget build(BuildContext context) {
+    return SearchAnchor(
+      isFullScreen: true,
+      builder: (context, controller) {
+        return IconButton(
+          onPressed: () {
+            controller.openView();
+          },
+          icon: Icon(Icons.search),
+        );
+      },
+      suggestionsBuilder: (context, controller) async {
+        final query = controller.text;
+        if (query.isEmpty) return [];
+
+        final poems = await locator<Database>().searchPoems(query);
+
+        return poems.map(
+          (poem) => PoemCard(
+            model: poem,
+            onPressed: () {
+              Navigator.push<void>(
+                context,
+                MaterialPageRoute(builder: (_) => WritingScreen(model: poem)),
+              );
+            },
+          ),
+        );
+      },
+      viewBuilder: (suggestions) => _PoemsLayout(
+        isGrid: isGrid,
+        itemBuilder: (context, index) {
+          final poems = suggestions.toList();
+
+          return Padding(
+            padding: !isGrid
+                ? const EdgeInsets.symmetric(horizontal: 10, vertical: 5)
+                : EdgeInsets.zero,
+            child: poems[index],
+          );
+        },
+        itemCount: suggestions.length,
+      ),
+    );
+  }
+}
+
 class _CBody extends ConsumerWidget {
   const _CBody();
 
@@ -270,6 +435,8 @@ class _CBody extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final isGrid = ref.watch(listGridProvider);
     final poems = ref.watch(streamPoemProvider);
+    final selectedPoems = ref.watch(selectedPoemsProvider);
+    final multiSelectedEnabled = ref.watch(multiSelectEnabledProvider);
 
     return poems.when(
       data: (poems) {
@@ -298,13 +465,32 @@ class _CBody extends ConsumerWidget {
           itemCount: poems.length,
           itemBuilder: (context, index) {
             final poem = poems[index];
+            final isSelected =
+                selectedPoems.indexWhere((t) => t.id == poem.id) != -1;
+
             return Padding(
               padding: !isGrid
                   ? const EdgeInsets.symmetric(horizontal: 10, vertical: 5)
                   : EdgeInsets.zero,
               child: PoemCard(
                 model: poem,
+                isSelected: isSelected,
                 key: ValueKey("${poem.lastEdit}-${poem.id}"),
+                onPressed: () {
+                  if (multiSelectedEnabled) {
+                    ref.read(selectedPoemsProvider.notifier).toggle(poem);
+                    return;
+                  }
+                  Navigator.push<void>(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => WritingScreen(model: poem),
+                    ),
+                  );
+                },
+                onLongPress: () {
+                  ref.read(selectedPoemsProvider.notifier).toggle(poem);
+                },
               ),
             );
           },

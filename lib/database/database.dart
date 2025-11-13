@@ -112,4 +112,8 @@ class Database extends _$Database {
   Future<int> deletePoem(PoemModel model) {
     return delete(poem).delete(model);
   }
+
+  Future<int> deletePoems(Iterable<int> poemIds) {
+    return poem.deleteWhere((f) => f.id.isIn(poemIds));
+  }
 }

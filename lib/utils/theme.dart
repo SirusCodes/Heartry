@@ -29,46 +29,165 @@ enum ThemeType {
   }
 }
 
-ThemeData getLightTheme(ColorScheme colorScheme) => ThemeData(
-      useMaterial3: true,
-      colorScheme: colorScheme,
-      outlinedButtonTheme: OutlinedButtonThemeData(
-        style: OutlinedButton.styleFrom(
-          padding: const EdgeInsets.all(10.0),
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-          side: BorderSide(color: colorScheme.primary),
-          backgroundColor: colorScheme.secondaryContainer,
-        ),
-      ),
+class PoemCardTheme extends ThemeExtension<PoemCardTheme> {
+  final Color backgroundColor, borderColor, textColor;
+
+  PoemCardTheme({
+    required this.backgroundColor,
+    required this.borderColor,
+    required this.textColor,
+  });
+
+  @override
+  ThemeExtension<PoemCardTheme> copyWith({
+    Color? backgroundColor,
+    Color? borderColor,
+    Color? textColor,
+  }) {
+    return PoemCardTheme(
+      backgroundColor: backgroundColor ?? this.backgroundColor,
+      borderColor: borderColor ?? this.borderColor,
+      textColor: textColor ?? this.textColor,
     );
+  }
+
+  @override
+  ThemeExtension<PoemCardTheme> lerp(
+    covariant ThemeExtension<PoemCardTheme>? other,
+    double t,
+  ) {
+    if (other is! PoemCardTheme) {
+      return this;
+    }
+
+    return PoemCardTheme(
+      backgroundColor:
+          Color.lerp(backgroundColor, other.backgroundColor, t) ??
+          Colors.transparent,
+      borderColor:
+          Color.lerp(borderColor, other.borderColor, t) ?? Colors.transparent,
+      textColor:
+          Color.lerp(textColor, other.textColor, t) ?? Colors.transparent,
+    );
+  }
+}
+
+class SelectedPoemCardTheme extends ThemeExtension<SelectedPoemCardTheme> {
+  final Color backgroundColor, borderColor, textColor;
+
+  SelectedPoemCardTheme({
+    required this.backgroundColor,
+    required this.borderColor,
+    required this.textColor,
+  });
+
+  @override
+  ThemeExtension<SelectedPoemCardTheme> copyWith({
+    Color? backgroundColor,
+    Color? borderColor,
+    Color? textColor,
+  }) {
+    return SelectedPoemCardTheme(
+      backgroundColor: backgroundColor ?? this.backgroundColor,
+      borderColor: borderColor ?? this.borderColor,
+      textColor: textColor ?? this.textColor,
+    );
+  }
+
+  @override
+  ThemeExtension<SelectedPoemCardTheme> lerp(
+    covariant ThemeExtension<SelectedPoemCardTheme>? other,
+    double t,
+  ) {
+    if (other is! SelectedPoemCardTheme) {
+      return this;
+    }
+
+    return SelectedPoemCardTheme(
+      backgroundColor:
+          Color.lerp(backgroundColor, other.backgroundColor, t) ??
+          Colors.transparent,
+      borderColor:
+          Color.lerp(borderColor, other.borderColor, t) ?? Colors.transparent,
+      textColor:
+          Color.lerp(textColor, other.textColor, t) ?? Colors.transparent,
+    );
+  }
+}
+
+ThemeData getLightTheme(ColorScheme colorScheme) => ThemeData(
+  useMaterial3: true,
+  colorScheme: colorScheme,
+  extensions: [
+    PoemCardTheme(
+      backgroundColor: colorScheme.secondaryContainer,
+      borderColor: colorScheme.secondary,
+      textColor: colorScheme.onSecondaryContainer,
+    ),
+    SelectedPoemCardTheme(
+      backgroundColor: colorScheme.primary,
+      borderColor: colorScheme.primaryContainer,
+      textColor: colorScheme.onPrimary,
+    ),
+  ],
+  outlinedButtonTheme: OutlinedButtonThemeData(
+    style: OutlinedButton.styleFrom(
+      padding: const EdgeInsets.all(10.0),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+      side: BorderSide(color: colorScheme.primary),
+      backgroundColor: colorScheme.secondaryContainer,
+    ),
+  ),
+);
 
 ThemeData getDarkTheme(ColorScheme colorScheme) => ThemeData(
-      useMaterial3: true,
-      colorScheme: colorScheme,
-      outlinedButtonTheme: OutlinedButtonThemeData(
-        style: OutlinedButton.styleFrom(
-          padding: const EdgeInsets.all(10.0),
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-          side: BorderSide.none,
-          backgroundColor: colorScheme.secondaryContainer,
-        ),
-      ),
-    );
+  useMaterial3: true,
+  colorScheme: colorScheme,
+  extensions: [
+    PoemCardTheme(
+      backgroundColor: colorScheme.secondaryContainer,
+      borderColor: Colors.transparent,
+      textColor: colorScheme.onSecondaryContainer,
+    ),
+    SelectedPoemCardTheme(
+      backgroundColor: colorScheme.primaryContainer,
+      borderColor: colorScheme.primary,
+      textColor: colorScheme.onPrimaryContainer,
+    ),
+  ],
+  outlinedButtonTheme: OutlinedButtonThemeData(
+    style: OutlinedButton.styleFrom(
+      padding: const EdgeInsets.all(10.0),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+      side: BorderSide.none,
+      backgroundColor: colorScheme.secondaryContainer,
+    ),
+  ),
+);
 
 ThemeData getBlackTheme(ColorScheme colorScheme) => ThemeData(
-      useMaterial3: true,
-      colorScheme: colorScheme.copyWith(surface: Colors.black),
-      outlinedButtonTheme: OutlinedButtonThemeData(
-        style: OutlinedButton.styleFrom(
-          padding: const EdgeInsets.all(10.0),
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-          side: BorderSide(color: colorScheme.secondaryContainer, width: 2),
-        ),
-      ),
-    );
+  useMaterial3: true,
+  colorScheme: colorScheme.copyWith(surface: Colors.black),
+  extensions: [
+    PoemCardTheme(
+      backgroundColor: Colors.transparent,
+      borderColor: colorScheme.secondaryContainer,
+      textColor: colorScheme.onSecondaryContainer,
+    ),
+    SelectedPoemCardTheme(
+      backgroundColor: colorScheme.primaryContainer,
+      borderColor: colorScheme.primary,
+      textColor: colorScheme.onPrimaryContainer,
+    ),
+  ],
+  outlinedButtonTheme: OutlinedButtonThemeData(
+    style: OutlinedButton.styleFrom(
+      padding: const EdgeInsets.all(10.0),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+      side: BorderSide(color: colorScheme.secondaryContainer, width: 2),
+    ),
+  ),
+);
 
 const heartryLightColorScheme = ColorScheme(
   brightness: Brightness.light,
