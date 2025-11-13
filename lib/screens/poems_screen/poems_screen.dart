@@ -6,6 +6,8 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import '../../database/database.dart';
+import '../../init_get_it.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 import '../../database/config.dart';
@@ -38,22 +40,21 @@ class _PoemScreenState extends ConsumerState<PoemScreen> {
   Future<void> requestNotifPerm() {
     final flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
-    final androidNotif =
-        flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin>()!;
+    final androidNotif = flutterLocalNotificationsPlugin
+        .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin
+        >()!;
 
     return androidNotif.requestNotificationsPermission();
   }
 
   Future<void> checkIfChangelog() {
     final appVersionManager = ref.read(appVersionManagerProvider);
-    return appVersionManager.isAppUpdated().then(
-      (value) async {
-        if (!value) return;
-        await _showChangelogs();
-        await requestNotifPerm();
-      },
-    );
+    return appVersionManager.isAppUpdated().then((value) async {
+      if (!value) return;
+      await _showChangelogs();
+      await requestNotifPerm();
+    });
   }
 
   @override
@@ -63,9 +64,7 @@ class _PoemScreenState extends ConsumerState<PoemScreen> {
         child: NestedScrollView(
           floatHeaderSlivers: true,
           headerSliverBuilder: (_, __) => [
-            const SliverToBoxAdapter(
-              child: _CAppBar(),
-            ),
+            const SliverToBoxAdapter(child: _CAppBar()),
           ],
           body: const _CBody(),
         ),
@@ -144,12 +143,11 @@ class _ChangelogDialog extends StatelessWidget {
                           launchUrlString(githubChangelogUrl);
                         },
                         child: const Text("Open changelogs in browser"),
-                      )
+                      ),
                     ],
                   ),
-                  loading: () => const Center(
-                    child: CircularProgressIndicator(),
-                  ),
+                  loading: () =>
+                      const Center(child: CircularProgressIndicator()),
                 );
               },
             ),
@@ -180,37 +178,69 @@ class _CAppBar extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final imagePath = ref //
-        .watch(configProvider)
-        .whenOrNull(data: (data) => data.profile);
-    final isList = ref.watch(listGridProvider);
+    final imagePath =
+        ref //
+            .watch(configProvider)
+            .whenOrNull(data: (data) => data.profile);
+    final isGrid = ref.watch(listGridProvider);
 
     return Padding(
-      padding: const EdgeInsets.only(
-        top: 15.0,
-        left: 15.0,
-        right: 15.0,
-      ),
+      padding: const EdgeInsets.only(top: 15.0, left: 15.0, right: 15.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
             "Heartry",
             style: Theme.of(context).textTheme.displaySmall!.copyWith(
-                  fontWeight: FontWeight.w600,
-                  fontFamily: "Caveat",
-                  color: Theme.of(context).colorScheme.primary,
-                ),
+              fontWeight: FontWeight.w600,
+              fontFamily: "Caveat",
+              color: Theme.of(context).colorScheme.primary,
+            ),
           ),
           const Spacer(),
+
           IconButton(
             onPressed: () {
-              ref.read(listGridProvider.notifier).state =
-                  !ref.read(listGridProvider);
+              ref.read(listGridProvider.notifier).state = !ref.read(
+                listGridProvider,
+              );
             },
-            icon: isList
+            icon: isGrid
                 ? const Icon(Icons.list_alt_rounded)
                 : const Icon(Icons.grid_view),
+          ),
+          const SizedBox(width: 10),
+          SearchAnchor(
+            isFullScreen: true,
+            builder: (context, controller) {
+              return IconButton(
+                onPressed: () {
+                  controller.openView();
+                },
+                icon: Icon(Icons.search),
+              );
+            },
+            suggestionsBuilder: (context, controller) async {
+              final query = controller.text;
+              if (query.isEmpty) return [];
+
+              final poems = await locator<Database>().searchPoems(query);
+              return poems.map((poem) => PoemCard(model: poem));
+            },
+            viewBuilder: (suggestions) => _PoemsLayout(
+              isGrid: isGrid,
+              itemBuilder: (context, index) {
+                final poems = suggestions.toList();
+
+                return Padding(
+                  padding: !isGrid
+                      ? const EdgeInsets.symmetric(horizontal: 10, vertical: 5)
+                      : EdgeInsets.zero,
+                  child: poems[index],
+                );
+              },
+              itemCount: suggestions.length,
+            ),
           ),
           const SizedBox(width: 10),
           GestureDetector(
@@ -221,8 +251,9 @@ class _CAppBar extends ConsumerWidget {
               );
             },
             child: CircleAvatar(
-              backgroundImage:
-                  imagePath != null ? FileImage(File(imagePath)) : null,
+              backgroundImage: imagePath != null
+                  ? FileImage(File(imagePath))
+                  : null,
               child: imagePath == null ? const Icon(Icons.person) : null,
             ),
           ),
@@ -262,38 +293,50 @@ class _CBody extends ConsumerWidget {
             ),
           );
         }
-        return isGrid
-            ? MasonryGridView.count(
-                crossAxisCount: 2,
-                crossAxisSpacing: 10,
-                padding: const EdgeInsets.all(10.0),
-                mainAxisSpacing: 10,
-                itemBuilder: (context, index) {
-                  final poem = poems[index];
-                  return PoemCard(
-                    model: poem,
-                    key: ValueKey("${poem.lastEdit}-${poem.id}"),
-                  );
-                },
-                itemCount: poems.length,
-              )
-            : ListView.builder(
-                itemCount: poems.length,
-                itemBuilder: (context, index) => Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 5,
-                  ),
-                  child: PoemCard(model: poems[index]),
-                ),
-              );
+        return _PoemsLayout(
+          isGrid: isGrid,
+          itemCount: poems.length,
+          itemBuilder: (context, index) {
+            final poem = poems[index];
+            return Padding(
+              padding: !isGrid
+                  ? const EdgeInsets.symmetric(horizontal: 10, vertical: 5)
+                  : EdgeInsets.zero,
+              child: PoemCard(
+                model: poem,
+                key: ValueKey("${poem.lastEdit}-${poem.id}"),
+              ),
+            );
+          },
+        );
       },
-      loading: () => const Center(
-        child: CircularProgressIndicator(),
-      ),
-      error: (e, st) => Center(
-        child: Text(e.toString() + st.toString()),
-      ),
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (e, st) => Center(child: Text(e.toString() + st.toString())),
     );
+  }
+}
+
+class _PoemsLayout extends StatelessWidget {
+  const _PoemsLayout({
+    required this.isGrid,
+    required this.itemBuilder,
+    required this.itemCount,
+  });
+  final bool isGrid;
+  final IndexedWidgetBuilder itemBuilder;
+  final int itemCount;
+
+  @override
+  Widget build(BuildContext context) {
+    return isGrid
+        ? MasonryGridView.count(
+            crossAxisCount: 2,
+            crossAxisSpacing: 10,
+            padding: const EdgeInsets.all(10.0),
+            mainAxisSpacing: 10,
+            itemBuilder: itemBuilder,
+            itemCount: itemCount,
+          )
+        : ListView.builder(itemCount: itemCount, itemBuilder: itemBuilder);
   }
 }
