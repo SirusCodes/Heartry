@@ -12,13 +12,13 @@ import '../providers/backup_restore_manager_provider.dart';
 
 const AndroidNotificationDetails androidNotificationDetails =
     AndroidNotificationDetails(
-  'heartry_backup',
-  'Backup Notifications',
-  importance: Importance.defaultImportance,
-  silent: true,
-  priority: Priority.defaultPriority,
-  icon: "@mipmap/ic_launcher",
-);
+      'heartry_backup',
+      'Backup Notifications',
+      importance: Importance.defaultImportance,
+      silent: true,
+      priority: Priority.defaultPriority,
+      icon: "@mipmap/ic_launcher",
+    );
 
 @pragma('vm:entry-point')
 void callbackDispatcher() {
@@ -34,8 +34,9 @@ void callbackDispatcher() {
     try {
       final file = await backupManager.createBackupFile();
       final backupHash = await backupManager.getBackupFileHash(file);
-      final isSameAsLastBackup =
-          await backupManager.isSameAsLastBackup(backupHash);
+      final isSameAsLastBackup = await backupManager.isSameAsLastBackup(
+        backupHash,
+      );
 
       if (isSameAsLastBackup) {
         return true;

@@ -1,10 +1,8 @@
 import 'package:flex_color_picker/flex_color_picker.dart';
 import 'package:flutter/material.dart';
 
-typedef OkResponseColorPicker = void Function(
-  Color selectedColor,
-  bool dynamicColorStatus,
-);
+typedef OkResponseColorPicker =
+    void Function(Color selectedColor, bool dynamicColorStatus);
 
 void showColorPickerWithDynamic({
   required BuildContext context,
@@ -101,7 +99,7 @@ class _ColorPickerWithDynamicState extends State<_ColorPickerWithDynamic> {
               ),
             ],
           ),
-        )
+        ),
       ],
     );
   }
@@ -189,7 +187,7 @@ class _ColorPaletteSelectorState extends State<ColorPaletteSelector> {
               ),
             ],
           ),
-        )
+        ),
       ],
     );
   }

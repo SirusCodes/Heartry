@@ -27,13 +27,11 @@ enum BackupRestoreState {
 
 final backupManagerProvider =
     StateNotifierProvider<BackupManagerProvider, BackupRestoreState>(
-  BackupManagerProvider.new,
-);
+      BackupManagerProvider.new,
+    );
 
 class BackupManagerProvider extends StateNotifier<BackupRestoreState> {
-  BackupManagerProvider(Ref ref)
-      : _ref = ref,
-        super(BackupRestoreState.idle);
+  BackupManagerProvider(Ref ref) : _ref = ref, super(BackupRestoreState.idle);
 
   final Ref _ref;
 
@@ -211,10 +209,12 @@ class BackupRestoreManagerProvider {
       throw BackupRestoreException('No backup found');
     }
 
-    final file = (await drive.files.get(
-      backup.id!,
-      downloadOptions: gapis.DownloadOptions.fullMedia,
-    )) as gapis.Media;
+    final file =
+        (await drive.files.get(
+              backup.id!,
+              downloadOptions: gapis.DownloadOptions.fullMedia,
+            ))
+            as gapis.Media;
 
     final tempDir = await getTemporaryDirectory();
     final downloadedFile = io.File('${tempDir.path}/${backup.name}');

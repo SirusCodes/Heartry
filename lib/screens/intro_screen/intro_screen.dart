@@ -30,11 +30,7 @@ class _IntroScreenState extends State<IntroScreen> {
 
   @override
   Widget build(BuildContext context) {
-    const pages = [
-      _WelcomePage(),
-      _ProfilePage(),
-      _NamePage(),
-    ];
+    const pages = [_WelcomePage(), _ProfilePage(), _NamePage()];
 
     return Scaffold(
       body: Theme(
@@ -164,7 +160,10 @@ class _NamePageState extends ConsumerState<_NamePage> {
                   valueListenable: _nameController,
                   builder: (context, value, child) => IconButton(
                     color: Colors.deepPurple,
-                    onPressed: value.text.isNotEmpty //
+                    onPressed:
+                        value
+                            .text
+                            .isNotEmpty //
                         ? _onNameFeildSubmitted
                         : null,
                     icon: const Icon(Icons.chevron_right_rounded),
@@ -194,7 +193,7 @@ class _NamePageState extends ConsumerState<_NamePage> {
                           "https://heartry.darshanrander.com/policy",
                         );
                       },
-                  )
+                  ),
                 ],
               ),
             ),
@@ -219,9 +218,7 @@ class _NamePageState extends ConsumerState<_NamePage> {
     config.hasCompletedOnboarding = true;
 
     navigator.pushReplacement<void, void>(
-      CupertinoPageRoute(
-        builder: (_) => const PoemScreen(),
-      ),
+      CupertinoPageRoute(builder: (_) => const PoemScreen()),
     );
   }
 }
@@ -258,7 +255,9 @@ class _ProfilePage extends ConsumerWidget {
                 return CircleAvatar(
                   maxRadius: 100,
                   minRadius: 80,
-                  backgroundImage: imagePath != null //
+                  backgroundImage:
+                      imagePath !=
+                          null //
                       ? FileImage(File(imagePath))
                       : null,
                   child: isAndroid
@@ -275,8 +274,8 @@ class _ProfilePage extends ConsumerWidget {
                           },
                         )
                       : imagePath == null
-                          ? const Icon(Icons.person, size: 100)
-                          : null,
+                      ? const Icon(Icons.person, size: 100)
+                      : null,
                 );
               },
             ),
@@ -329,18 +328,16 @@ class _ProfilePage extends ConsumerWidget {
     return ElevatedButton(
       onPressed: onPressed,
       child: Row(
-        children: <Widget>[
-          icon,
-          const Spacer(),
-          Text(text),
-          const Spacer(),
-        ],
+        children: <Widget>[icon, const Spacer(), Text(text), const Spacer()],
       ),
     );
   }
 
   Future<void> _updateImage(
-      WidgetRef ref, BuildContext context, ImageSource source) async {
+    WidgetRef ref,
+    BuildContext context,
+    ImageSource source,
+  ) async {
     final config = ref.read(configProvider.notifier);
     final picker = ImagePicker();
     final scaffoldMessenger = ScaffoldMessenger.of(context);
@@ -367,9 +364,9 @@ class _ProfilePage extends ConsumerWidget {
     final file = p.basename(pickedImage.path);
 
     final imageSaved = p.join(directory.path, file);
-    final image = await File(imageSaved).writeAsBytes(
-      await pickedImage.readAsBytes(),
-    );
+    final image = await File(
+      imageSaved,
+    ).writeAsBytes(await pickedImage.readAsBytes());
 
     return image.path;
   }

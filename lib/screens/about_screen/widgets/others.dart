@@ -34,7 +34,8 @@ class Others extends StatelessWidget {
               future: PackageInfo.fromPlatform(),
               builder: (context, snapshot) => ListTile(
                 title: const Text("Version"),
-                subtitle: snapshot.connectionState == ConnectionState.done &&
+                subtitle:
+                    snapshot.connectionState == ConnectionState.done &&
                         snapshot.hasData
                     ? Text(snapshot.data!.version)
                     : const Text("Can't get version"),

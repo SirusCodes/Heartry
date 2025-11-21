@@ -12,10 +12,10 @@ class ImageController extends ChangeNotifier {
     double textSizeFactor = 1.0,
     EdgeInsetsGeometry padding = const EdgeInsets.all(16.0),
     TextStyle? textStyle,
-  })  : _textSizeFactor = textSizeFactor,
-        _constraints = constraints,
-        _padding = padding,
-        _textStyle = DefaultTextStyle.of(context).style.merge(textStyle);
+  }) : _textSizeFactor = textSizeFactor,
+       _constraints = constraints,
+       _padding = padding,
+       _textStyle = DefaultTextStyle.of(context).style.merge(textStyle);
 
   final String author, poem;
   final String? title;

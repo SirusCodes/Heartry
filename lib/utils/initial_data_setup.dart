@@ -32,9 +32,8 @@ You can share poem in 2 ways.
 1. As Text 🆎 (For Messages)
 2. As Photos 📷 (For Stories)""");
 
-    await db.insertPoem(PoemModel(
-      title: "Welcome!!🎉",
-      poem: buffer.toString(),
-    ));
+    await db.insertPoem(
+      PoemModel(title: "Welcome!!🎉", poem: buffer.toString()),
+    );
   }
 }

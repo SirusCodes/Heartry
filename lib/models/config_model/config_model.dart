@@ -69,11 +69,11 @@ class ConfigModel extends Equatable {
 
   @override
   List<Object?> get props => [
-        name,
-        profile,
-        backupEmail,
-        isAutoBackupEnabled,
-        hasCompletedOnboarding,
-        lastBackup
-      ];
+    name,
+    profile,
+    backupEmail,
+    isAutoBackupEnabled,
+    hasCompletedOnboarding,
+    lastBackup,
+  ];
 }

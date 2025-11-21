@@ -53,9 +53,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
           final name = _nameController.text;
           if (name.isEmpty) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text(noNameError)),
-            );
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(const SnackBar(content: Text(noNameError)));
             return;
           }
           if (_name != _nameController.text)
@@ -72,10 +72,11 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               ),
               Consumer(
                 builder: (context, ref, child) {
-                  final imagePath = ref //
-                      .watch(configProvider)
-                      .requireValue
-                      .profile;
+                  final imagePath =
+                      ref //
+                          .watch(configProvider)
+                          .requireValue
+                          .profile;
 
                   return Badge(
                     badgeStyle: BadgeStyle(
@@ -95,8 +96,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     child: CircleAvatar(
                       maxRadius: 100,
                       minRadius: 80,
-                      backgroundImage:
-                          imagePath != null ? FileImage(File(imagePath)) : null,
+                      backgroundImage: imagePath != null
+                          ? FileImage(File(imagePath))
+                          : null,
                       child: isAndroid
                           ? FutureBuilder(
                               future: _retriveImage(ref),
@@ -111,8 +113,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                               },
                             )
                           : imagePath == null
-                              ? const Icon(Icons.person, size: 100)
-                              : null,
+                          ? const Icon(Icons.person, size: 100)
+                          : null,
                     ),
                   );
                 },
@@ -173,9 +175,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     final file = p.basename(pickedImage.path);
 
     final imageSaved = p.join(directory.path, file);
-    final image = await File(imageSaved).writeAsBytes(
-      await pickedImage.readAsBytes(),
-    );
+    final image = await File(
+      imageSaved,
+    ).writeAsBytes(await pickedImage.readAsBytes());
 
     return image.path;
   }
@@ -206,7 +208,9 @@ class _ProfileUpdateDialog extends StatelessWidget {
         ),
         Consumer(
           builder: (context, ref, child) {
-            return ref.watch(configProvider).when(
+            return ref
+                .watch(configProvider)
+                .when(
                   data: (image) {
                     if (image.profile != null)
                       return _buildDialogButton(
@@ -238,12 +242,7 @@ class _ProfileUpdateDialog extends StatelessWidget {
     return ElevatedButton(
       onPressed: onPressed,
       child: Row(
-        children: <Widget>[
-          icon,
-          const Spacer(),
-          Text(text),
-          const Spacer(),
-        ],
+        children: <Widget>[icon, const Spacer(), Text(text), const Spacer()],
       ),
     );
   }

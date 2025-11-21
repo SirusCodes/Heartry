@@ -42,17 +42,13 @@ class ReaderScreen extends StatelessWidget {
               icon: const Icon(Icons.edit),
               onPressed: () => Navigator.pushReplacement<void, void>(
                 context,
-                MaterialPageRoute(
-                  builder: (_) => WritingScreen(
-                    model: model,
-                  ),
-                ),
+                MaterialPageRoute(builder: (_) => WritingScreen(model: model)),
               ),
             ),
             IconButton(
               onPressed: () => _showShareBottomSheet(context),
               icon: const Icon(Icons.share),
-            )
+            ),
           ],
         ),
       ),
@@ -64,9 +60,10 @@ class ReaderScreen extends StatelessWidget {
       context: context,
       builder: (context) => Consumer(
         builder: (context, ref, child) {
-          final poet = ref //
-              .watch(configProvider)
-              .whenOrNull(data: (data) => data.name);
+          final poet =
+              ref //
+                  .watch(configProvider)
+                  .whenOrNull(data: (data) => data.name);
 
           return ShareOptionList(
             onShareAsImage: () => ShareHelper.shareAsImage(

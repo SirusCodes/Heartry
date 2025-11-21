@@ -53,7 +53,8 @@ class TextSplittingService {
     ).height;
     poetHeight += POEM_SPACING;
 
-    final double spaceForPoemY = constraints.maxHeight -
+    final double spaceForPoemY =
+        constraints.maxHeight -
         contentPadding.vertical -
         titleHeight -
         poetHeight;
@@ -195,10 +196,7 @@ class TextSplittingService {
     final painter = TextPainter(
       text: TextSpan(
         text: text,
-        style: _textStyle.copyWith(
-          fontSize: fontSize,
-          fontFamily: fontFamily,
-        ),
+        style: _textStyle.copyWith(fontSize: fontSize, fontFamily: fontFamily),
       ),
       maxLines: maxLines,
       textScaler: TextScaler.linear(scale),

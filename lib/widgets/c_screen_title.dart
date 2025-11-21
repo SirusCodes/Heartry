@@ -12,10 +12,10 @@ class CScreenTitle extends StatelessWidget {
       child: Text(
         title,
         style: Theme.of(context).textTheme.displaySmall!.copyWith(
-              fontWeight: FontWeight.w600,
-              fontFamily: "Caveat",
-              color: Theme.of(context).colorScheme.primary,
-            ),
+          fontWeight: FontWeight.w600,
+          fontFamily: "Caveat",
+          color: Theme.of(context).colorScheme.primary,
+        ),
       ),
     );
   }

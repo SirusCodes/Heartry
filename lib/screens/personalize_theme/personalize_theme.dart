@@ -46,8 +46,10 @@ class _Body extends ConsumerWidget {
             subtitle: Text(currentTheme.themeType.toString()),
             onTap: () async {
               final theme = ref.read(themeProvider.notifier);
-              final selectedTheme =
-                  await _showThemeDialog(context, currentTheme.themeType);
+              final selectedTheme = await _showThemeDialog(
+                context,
+                currentTheme.themeType,
+              );
               if (selectedTheme != null) theme.setTheme(selectedTheme);
             },
           ),

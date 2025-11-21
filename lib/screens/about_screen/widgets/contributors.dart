@@ -59,8 +59,9 @@ class _ContributorsState extends State<Contributors> {
             }
             throw Exception(stackTrace);
           },
-          backgroundImage:
-              !_profileError ? const NetworkImage(_profileURL) : null,
+          backgroundImage: !_profileError
+              ? const NetworkImage(_profileURL)
+              : null,
           child: _profileError ? const Icon(Icons.person, size: 80) : null,
         ),
         const SizedBox(height: 10),

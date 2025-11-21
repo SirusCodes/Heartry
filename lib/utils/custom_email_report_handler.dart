@@ -8,11 +8,11 @@ class CustomEmailReportHandler extends ReportHandler {
 
   @override
   List<PlatformType> getSupportedPlatforms() => [
-        PlatformType.android,
-        PlatformType.unknown,
-        PlatformType.web,
-        PlatformType.iOS,
-      ];
+    PlatformType.android,
+    PlatformType.unknown,
+    PlatformType.web,
+    PlatformType.iOS,
+  ];
 
   @override
   Future<bool> handle(Report report, BuildContext? context) async {

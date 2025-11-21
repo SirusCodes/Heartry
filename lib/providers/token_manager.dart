@@ -34,9 +34,7 @@ class TokenManager {
   Future<void> getAndSaveTokensFromAuthCode(String serverAuthCode) async {
     final response = await http.post(
       _uri.replace(path: '/api/oauth'),
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: {'Content-Type': 'application/json'},
       body: jsonEncode({'code': serverAuthCode}),
     );
 
@@ -95,9 +93,7 @@ class TokenManager {
 
     final response = await http.post(
       _uri.replace(path: '/api/refresh_token'),
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: {'Content-Type': 'application/json'},
       body: jsonEncode({'refresh_token': refreshToken}),
     );
 
@@ -129,7 +125,7 @@ class TokenManager {
     await Future.wait([
       storage.write(key: _refreshToken, value: refreshToken),
       storage.write(key: _accessTokenKey, value: accessToken),
-      storage.write(key: _expireDate, value: expireDate.toIso8601String())
+      storage.write(key: _expireDate, value: expireDate.toIso8601String()),
     ]);
 
     return;
@@ -141,7 +137,7 @@ class TokenManager {
   }) async {
     await Future.wait([
       storage.write(key: _accessTokenKey, value: accessToken),
-      storage.write(key: _expireDate, value: expireDate.toIso8601String())
+      storage.write(key: _expireDate, value: expireDate.toIso8601String()),
     ]);
 
     return;

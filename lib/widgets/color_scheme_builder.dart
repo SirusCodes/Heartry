@@ -3,10 +3,8 @@ import 'package:flutter/material.dart';
 
 import '../utils/theme.dart';
 
-typedef ColorSchemeBuilderFunction = Widget Function(
-  ColorScheme lightColorScheme,
-  ColorScheme darkColorScheme,
-);
+typedef ColorSchemeBuilderFunction =
+    Widget Function(ColorScheme lightColorScheme, ColorScheme darkColorScheme);
 
 class ColorSchemeBuilder extends StatelessWidget {
   const ColorSchemeBuilder({

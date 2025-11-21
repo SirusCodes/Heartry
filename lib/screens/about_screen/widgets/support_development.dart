@@ -27,12 +27,8 @@ class SupportDevelopment extends StatelessWidget {
         ),
         ListTile(
           title: const Text("Rate the app"),
-          subtitle: const Text(
-            "Love this app? Let us know in the Play Store!",
-          ),
-          leading: const CircleAvatar(
-            child: Icon(Icons.star),
-          ),
+          subtitle: const Text("Love this app? Let us know in the Play Store!"),
+          leading: const CircleAvatar(child: Icon(Icons.star)),
           onTap: () => _launchURL(
             "https://play.google.com/store/apps/details?id=com.darshan.heartry",
           ),
@@ -61,9 +57,7 @@ class SupportDevelopment extends StatelessWidget {
           subtitle: const Text(
             "Tell us what new features you want in future updates.",
           ),
-          leading: const CircleAvatar(
-            child: Icon(Icons.flare_outlined),
-          ),
+          leading: const CircleAvatar(child: Icon(Icons.flare_outlined)),
           onTap: () => _launchURL(
             "mailto:heartryapp@gmail.com?&subject=Feature request",
           ),
@@ -73,21 +67,20 @@ class SupportDevelopment extends StatelessWidget {
           subtitle: const Text(
             "App is not working as expected? Send us a bug report.",
           ),
-          leading: const CircleAvatar(
-            child: Icon(Icons.bug_report_rounded),
-          ),
-          onTap: () => _launchURL(
-            "mailto:heartryapp@gmail.com?&subject=Bug report",
-          ),
+          leading: const CircleAvatar(child: Icon(Icons.bug_report_rounded)),
+          onTap: () =>
+              _launchURL("mailto:heartryapp@gmail.com?&subject=Bug report"),
         ),
         ListTile(
           title: const Text("Share"),
           subtitle: const Text("Share it with your friends and family."),
           leading: const CircleAvatar(child: Icon(Icons.share)),
-          onTap: () => SharePlus.instance.share(ShareParams(
-            text:
-                "Hey, kindly checkout Heartry - An app for Writers on playstore at https://play.google.com/store/apps/details?id=com.darshan.heartry",
-          )),
+          onTap: () => SharePlus.instance.share(
+            ShareParams(
+              text:
+                  "Hey, kindly checkout Heartry - An app for Writers on playstore at https://play.google.com/store/apps/details?id=com.darshan.heartry",
+            ),
+          ),
         ),
       ],
     );

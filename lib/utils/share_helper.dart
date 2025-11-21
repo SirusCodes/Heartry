@@ -27,11 +27,7 @@ class ShareHelper {
     Navigator.push<void>(
       context,
       MaterialPageRoute<void>(
-        builder: (_) => ImageScreen(
-          title: title,
-          poem: poem,
-          poet: poet,
-        ),
+        builder: (_) => ImageScreen(title: title, poem: poem, poet: poet),
       ),
     );
   }

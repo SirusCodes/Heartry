@@ -17,10 +17,7 @@ class PaddingLayer extends ImageLayer {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: padding,
-      child: nextLayer!.build(context),
-    );
+    return Padding(padding: padding, child: nextLayer!.build(context));
   }
 }
 

@@ -28,10 +28,7 @@ class EditingOption extends StatelessWidget {
             spacing: 5,
             children: [
               icon,
-              Text(
-                option,
-                style: Theme.of(context).textTheme.bodySmall,
-              ),
+              Text(option, style: Theme.of(context).textTheme.bodySmall),
             ],
           ),
         ),

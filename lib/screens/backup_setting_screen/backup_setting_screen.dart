@@ -80,17 +80,16 @@ class BackupSettingScreen extends ConsumerWidget {
                         "Backup your data to Google Drive immediately.",
                       ),
                       enabled: model.backupEmail != null,
-                      onTap: () => ref //
-                          .read(backupManagerProvider.notifier)
-                          .backup(forceBackup: true),
+                      onTap: () =>
+                          ref //
+                              .read(backupManagerProvider.notifier)
+                              .backup(forceBackup: true),
                     ),
                     ListTile(
                       title: const Text("Last Backup"),
                       subtitle: model.lastBackup == null
                           ? const Text("Have no backup yet.")
-                          : Text(
-                              dateTimeFormatter.format(model.lastBackup!),
-                            ),
+                          : Text(dateTimeFormatter.format(model.lastBackup!)),
                     ),
                   ],
                 );
@@ -105,19 +104,20 @@ class BackupSettingScreen extends ConsumerWidget {
     );
   }
 
-  void _onBackupManagerUpdate(BackupRestoreState? previous,
-      BackupRestoreState next, BuildContext context) {
+  void _onBackupManagerUpdate(
+    BackupRestoreState? previous,
+    BackupRestoreState next,
+    BuildContext context,
+  ) {
     if (next == BackupRestoreState.backingUp) {
       _showBackupDialog(context);
     } else if (next == BackupRestoreState.success) {
       Navigator.pop(context);
     } else if (next == BackupRestoreState.error) {
       Navigator.pop(context);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Backup failed"),
-        ),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text("Backup failed")));
     }
   }
 

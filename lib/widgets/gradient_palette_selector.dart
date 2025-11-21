@@ -25,10 +25,7 @@ class GradientPaletteSelector extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
-              const Text(
-                "Customize Gradient",
-                style: TextStyle(fontSize: 18),
-              ),
+              const Text("Customize Gradient", style: TextStyle(fontSize: 18)),
               IconButton(
                 onPressed: () => showColorPicker(
                   context: context,
@@ -38,7 +35,7 @@ class GradientPaletteSelector extends StatelessWidget {
                   },
                 ),
                 icon: const Icon(Icons.add),
-              )
+              ),
             ],
           ),
         ),

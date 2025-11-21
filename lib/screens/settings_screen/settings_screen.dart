@@ -18,9 +18,7 @@ class SettingsScreen extends StatelessWidget {
       body: SafeArea(
         child: ListView(
           children: [
-            const CScreenTitle(
-              title: "Settings",
-            ),
+            const CScreenTitle(title: "Settings"),
             ListTile(
               leading: const CircleAvatar(child: Icon(Icons.person)),
               title: const Text("Profile"),

@@ -6,8 +6,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/config_model/config_model.dart';
 import '../utils/workmanager_helper.dart';
 
-final configProvider =
-    AsyncNotifierProvider<Config, ConfigModel>(() => Config());
+final configProvider = AsyncNotifierProvider<Config, ConfigModel>(
+  () => Config(),
+);
 
 class Config extends AsyncNotifier<ConfigModel> {
   static late SharedPreferences _sharedPrefs;

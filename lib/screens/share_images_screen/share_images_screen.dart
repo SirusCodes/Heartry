@@ -7,10 +7,7 @@ import '../../widgets/c_screen_title.dart';
 import '../../widgets/only_back_button_bottom_app_bar.dart';
 
 class ShareImagesScreen extends StatelessWidget {
-  const ShareImagesScreen({
-    super.key,
-    required this.images,
-  });
+  const ShareImagesScreen({super.key, required this.images});
 
   final List<String> images;
 
@@ -34,9 +31,11 @@ class ShareImagesScreen extends StatelessWidget {
                     .map(
                       (path) => InkWell(
                         onTap: () {
-                          SharePlus.instance.share(ShareParams(
-                            files: [XFile(path, mimeType: "image/png")],
-                          ));
+                          SharePlus.instance.share(
+                            ShareParams(
+                              files: [XFile(path, mimeType: "image/png")],
+                            ),
+                          );
                         },
                         child: Card(child: Image.file(File(path))),
                       ),
@@ -47,8 +46,9 @@ class ShareImagesScreen extends StatelessWidget {
           ],
         ),
       ),
-      bottomNavigationBar:
-          Platform.isIOS ? const OnlyBackButtonBottomAppBar() : null,
+      bottomNavigationBar: Platform.isIOS
+          ? const OnlyBackButtonBottomAppBar()
+          : null,
     );
   }
 }

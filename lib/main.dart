@@ -20,17 +20,12 @@ Future<void> main() async {
   initGetIt();
   initWorkmanager();
 
-  final releaseCatcher = Catcher2Options(
-    DialogReportMode(),
-    [
-      CustomEmailReportHandler(),
-    ],
-  );
+  final releaseCatcher = Catcher2Options(DialogReportMode(), [
+    CustomEmailReportHandler(),
+  ]);
 
   if (kDebugMode) {
-    return runApp(
-      const ProviderScope(child: MyApp()),
-    );
+    return runApp(const ProviderScope(child: MyApp()));
   }
 
   Catcher2(
@@ -40,12 +35,10 @@ Future<void> main() async {
     rootWidget: const ProviderScope(child: MyApp()),
   );
 
-  SystemChrome.setPreferredOrientations(
-    [
-      DeviceOrientation.portraitUp,
-      DeviceOrientation.portraitDown,
-    ],
-  );
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
 }
 
 class MyApp extends StatelessWidget {
@@ -71,20 +64,19 @@ class MyApp extends StatelessWidget {
                     : getBlackTheme(darkColorScheme),
                 home: Consumer(
                   builder: (context, ref, _) {
-                    return ref.watch(configProvider).when(
+                    return ref
+                        .watch(configProvider)
+                        .when(
                           data: (config) {
                             if (config.hasCompletedOnboarding)
                               return const PoemScreen();
 
                             return const IntroScreen();
                           },
-                          error: (err, st) => Center(
-                            child: Text("$err\n${"_" * 25}\n$st"),
-                          ),
+                          error: (err, st) =>
+                              Center(child: Text("$err\n${"_" * 25}\n$st")),
                           loading: () => const Material(
-                            child: Center(
-                              child: CircularProgressIndicator(),
-                            ),
+                            child: Center(child: CircularProgressIndicator()),
                           ),
                         );
                   },
@@ -92,11 +84,8 @@ class MyApp extends StatelessWidget {
               );
             },
           ),
-          loading: () => const Material(
-            child: Center(
-              child: CircularProgressIndicator(),
-            ),
-          ),
+          loading: () =>
+              const Material(child: Center(child: CircularProgressIndicator())),
           error: (err, st) {
             throw Exception("$err\n${"_" * 25}\nst");
           },

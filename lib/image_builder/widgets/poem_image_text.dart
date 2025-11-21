@@ -61,7 +61,8 @@ class PoemTextPainter extends CustomPainter {
     double totalHeight = 0;
 
     // Build once
-    final titlePainter = (title != null && title!.isNotEmpty) //
+    final titlePainter =
+        (title != null && title!.isNotEmpty) //
         ? _buildTitle(maxWidth)
         : null;
     final paragraph = _buildParagraph(maxWidth);
@@ -111,10 +112,9 @@ class PoemTextPainter extends CustomPainter {
       ),
       maxLines: POEM_TITLE_MAX_LINES,
       textDirection: TextDirection.ltr,
-      textScaler: TextScaler.linear(scale).clamp(
-        minScaleFactor: 1,
-        maxScaleFactor: 1.2,
-      ),
+      textScaler: TextScaler.linear(
+        scale,
+      ).clamp(minScaleFactor: 1, maxScaleFactor: 1.2),
     );
 
     painter.layout(maxWidth: maxWidth);
@@ -134,10 +134,9 @@ class PoemTextPainter extends CustomPainter {
       ),
       textDirection: TextDirection.ltr,
       maxLines: POET_NAME_MAX_LINES,
-      textScaler: TextScaler.linear(scale).clamp(
-        minScaleFactor: 1,
-        maxScaleFactor: 1.2,
-      ),
+      textScaler: TextScaler.linear(
+        scale,
+      ).clamp(minScaleFactor: 1, maxScaleFactor: 1.2),
     );
 
     painter.layout(maxWidth: maxWidth);

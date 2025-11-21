@@ -8,9 +8,7 @@ class OnlyBackButtonBottomAppBar extends StatelessWidget {
     return BottomAppBar(
       shape: AutomaticNotchedShape(
         const RoundedRectangleBorder(),
-        RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(30),
-        ),
+        RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
       ),
       child: Row(
         children: <Widget>[
@@ -19,7 +17,7 @@ class OnlyBackButtonBottomAppBar extends StatelessWidget {
             onPressed: () {
               Navigator.pop(context);
             },
-          )
+          ),
         ],
       ),
     );

@@ -46,13 +46,11 @@ class RestoreScreen extends ConsumerWidget {
     return switch (restoreState) {
       IdleRestoreState() => _buildIdle(context, ref),
       SearchingBackupRestoreState() ||
-      RestoringRestoreState() =>
-        const SizedBox.shrink(),
+      RestoringRestoreState() => const SizedBox.shrink(),
       FoundBackupRestoreState() => _buildFoundRestoreButtons(context, ref),
       NotFoundBackupRestoreState() ||
       SuccessRestoreState() ||
-      ErrorRestoreState() =>
-        _buildNextButton(context, ref),
+      ErrorRestoreState() => _buildNextButton(context, ref),
     };
   }
 
@@ -77,9 +75,10 @@ class RestoreScreen extends ConsumerWidget {
         const SizedBox(width: 8),
         Expanded(
           child: FilledButton(
-            onPressed: () => ref //
-                .read(restoreManagerProvider.notifier)
-                .restore(),
+            onPressed: () =>
+                ref //
+                    .read(restoreManagerProvider.notifier)
+                    .restore(),
             child: const Text('Restore'),
           ),
         ),
@@ -95,9 +94,10 @@ class RestoreScreen extends ConsumerWidget {
         const SizedBox(width: 8),
         Expanded(
           child: FilledButton(
-            onPressed: () => ref //
-                .read(restoreManagerProvider.notifier)
-                .checkBackup(),
+            onPressed: () =>
+                ref //
+                    .read(restoreManagerProvider.notifier)
+                    .checkBackup(),
             child: const Text('Check backup'),
           ),
         ),

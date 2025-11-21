@@ -42,8 +42,9 @@ class _WritingScreenState extends State<WritingScreen>
     _poemModel = widget.model;
 
     _titleTextController = TextEditingController(text: _poemModel?.title);
-    undoRedo.textEditingController =
-        TextEditingController(text: _poemModel?.poem);
+    undoRedo.textEditingController = TextEditingController(
+      text: _poemModel?.poem,
+    );
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       undoRedo.registerChange(undoRedo.textEditingController.text);
@@ -120,7 +121,7 @@ class _WritingScreenState extends State<WritingScreen>
                       onChanged: _onChangeHandler,
                       style: const TextStyle(fontSize: 20),
                     ),
-                    const SizedBox(height: kBottomNavigationBarHeight)
+                    const SizedBox(height: kBottomNavigationBarHeight),
                   ],
                 ),
               ),
@@ -139,7 +140,8 @@ class _WritingScreenState extends State<WritingScreen>
 
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
-                              content: Text("Please write something!")),
+                            content: Text("Please write something!"),
+                          ),
                         );
 
                         return false;
@@ -164,7 +166,7 @@ class _WritingScreenState extends State<WritingScreen>
                     );
                   },
                 ),
-              )
+              ),
             ],
           ),
         ),
@@ -266,7 +268,7 @@ class _WritingBottomAppBar extends StatelessWidget {
                   IconButton(
                     onPressed: () => _showSharePanel(context),
                     icon: const Icon(Icons.share),
-                  )
+                  ),
                 ],
               );
             },

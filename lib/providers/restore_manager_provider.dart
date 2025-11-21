@@ -7,16 +7,17 @@ import 'backup_restore_manager_provider.dart';
 
 final restoreManagerProvider =
     NotifierProvider<RestoreManagerProvider, RestoreState>(
-  RestoreManagerProvider.new,
-);
+      RestoreManagerProvider.new,
+    );
 
 class RestoreManagerProvider extends Notifier<RestoreState> {
   Future<void> checkBackup() async {
     state = const SearchingBackupRestoreState();
     try {
-      final date = await ref //
-          .read(backupRestoreManagerProvider)
-          .getLastestBackupDate();
+      final date =
+          await ref //
+              .read(backupRestoreManagerProvider)
+              .getLastestBackupDate();
 
       if (date == null) {
         state = const NotFoundBackupRestoreState();
