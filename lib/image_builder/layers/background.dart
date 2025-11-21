@@ -147,6 +147,8 @@ class ImageBackgroundLayer extends ImageLayer {
       valueListenable: filePath,
       builder: (context, value, child) {
         if (value == null) {
+          _pickImage();
+
           return ColoredBox(
             color: Colors.white,
             child: nextLayer!.build(context),
@@ -173,20 +175,22 @@ class ImageBackgroundLayer extends ImageLayer {
         option: "Background",
         icon: Icon(Symbols.image_search_rounded),
         tooltip: "Background Image",
-        onPressed: () async {
-          final picker = ImagePicker();
-          final picked = await picker.pickImage(
-            source: ImageSource.gallery,
-            imageQuality: 90,
-          );
-
-          if (picked != null) {
-            filePath.value = picked;
-          }
-        },
+        onPressed: _pickImage,
       ),
       ...super.getEditingOptions(context),
     ];
+  }
+
+  void _pickImage() async {
+    final picker = ImagePicker();
+    final picked = await picker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 90,
+    );
+
+    if (picked != null) {
+      filePath.value = picked;
+    }
   }
 
   @override
