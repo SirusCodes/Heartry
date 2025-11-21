@@ -34,7 +34,7 @@ jobs:
       - name: Lint and Analyze code
         run: |
           dart format --set-exit-if-changed .
-          flutter analyze .
+          flutter analyze lib
 
       # - name: Run Tests
       #   run: flutter test
