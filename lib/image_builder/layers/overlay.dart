@@ -1,19 +1,147 @@
 import 'dart:io';
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../database/config.dart';
+import '../../widgets/color_picker_dialog.dart';
 import '../core/image_layer.dart';
+import '../widgets/editing_option.dart';
+import '../widgets/slider_option.dart';
+
+class BlurOverlayLayer extends ImageLayer {
+  BlurOverlayLayer({super.key, super.nextLayer});
+
+  final blur = ValueNotifier<double>(5.0);
+
+  @override
+  Widget build(BuildContext context) {
+    return ValueListenableBuilder(
+      valueListenable: blur,
+      builder: (context, value, child) {
+        return BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: value, sigmaY: value),
+          child: nextLayer!.build(context),
+        );
+      },
+    );
+  }
+
+  @override
+  List<Widget> getEditingOptions(BuildContext context) {
+    return [
+      EditingOption(
+        option: "Blur",
+        icon: Icon(Symbols.blur_circular_rounded),
+        tooltip: "Blur background",
+        onPressed: () {
+          showModalBottomSheet(
+            context: context,
+            builder: (context) => ValueListenableBuilder(
+              valueListenable: blur,
+              builder: (context, value, child) {
+                return SliderOption(
+                  title: "Customize Blur",
+                  value: value,
+                  onChanged: (newValue) {
+                    blur.value = newValue;
+                  },
+                  min: 0,
+                  max: 20,
+                  divisions: 20,
+                  label: value.toStringAsFixed(0),
+                );
+              },
+            ),
+          );
+        },
+      ),
+      ...super.getEditingOptions(context),
+    ];
+  }
+}
+
+class TranlucentOverlayLayer extends ImageLayer {
+  TranlucentOverlayLayer({super.key, required super.nextLayer});
+
+  final opacity = ValueNotifier<double>(0.2);
+  final color = ValueNotifier<Color>(Colors.white);
+
+  @override
+  Widget build(BuildContext context) {
+    return ListenableBuilder(
+      listenable: Listenable.merge([opacity, color]),
+      builder: (context, child) => ColoredBox(
+        color: color.value.withValues(alpha: opacity.value),
+        child: child,
+      ),
+      child: nextLayer!.build(context),
+    );
+  }
+
+  @override
+  List<Widget> getEditingOptions(BuildContext context) {
+    return [
+      EditingOption(
+        option: "Overlay Opacity",
+        icon: Icon(Symbols.masked_transitions_rounded),
+        tooltip: "Adjust Overlay Opacity",
+        onPressed: () {
+          showModalBottomSheet(
+            context: context,
+            builder: (context) => ValueListenableBuilder(
+              valueListenable: opacity,
+              builder: (context, value, child) {
+                return SliderOption(
+                  title: "Customize Opacity",
+                  value: value * 100,
+                  label: "${(value * 100).toStringAsFixed(0)}%",
+                  onChanged: (newValue) {
+                    opacity.value = newValue / 100;
+                  },
+                  min: 0,
+                  max: 100,
+                  divisions: 10,
+                );
+              },
+            ),
+          );
+        },
+      ),
+      EditingOption(
+        option: "Overlay Color",
+        icon: Icon(Icons.texture_rounded),
+        tooltip: "Overlay Color",
+        onPressed: () {
+          showModalBottomSheet<void>(
+            context: context,
+            builder: (context) {
+              return Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: ColorPaletteSelector(
+                  currentColor: color.value,
+                  onColorSelected: (value) {
+                    color.value = value;
+                  },
+                ),
+              );
+            },
+          );
+        },
+      ),
+      ...super.getEditingOptions(context),
+    ];
+  }
+}
 
 class BubbleOverlayLayer extends ImageLayer {
   const BubbleOverlayLayer({super.key, super.nextLayer});
 
   @override
   Widget build(BuildContext context) {
-    return _BubbleOverlayWidget(
-      child: nextLayer!.build(context),
-    );
+    return _BubbleOverlayWidget(child: nextLayer!.build(context));
   }
 }
 

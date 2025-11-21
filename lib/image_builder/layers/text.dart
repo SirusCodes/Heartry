@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:heartry/image_builder/widgets/editing_option.dart';
+import 'package:heartry/image_builder/widgets/slider_option.dart';
 import '../core/font_family.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
@@ -10,10 +11,7 @@ import '../core/image_controller.dart';
 import '../core/image_layer.dart';
 
 class TextLayer extends ImageLayer {
-  TextLayer({
-    super.key,
-    required this.controller,
-  }) : super(nextLayer: null);
+  TextLayer({super.key, required this.controller}) : super(nextLayer: null);
 
   final _textScale = ValueNotifier<double>(1.0);
   final _textColor = ValueNotifier<Color?>(null);
@@ -80,7 +78,12 @@ class TextLayer extends ImageLayer {
             builder: (context) {
               return ValueListenableBuilder(
                 valueListenable: _textScale,
-                builder: (context, value, child) => _TextSizeHandler(
+                builder: (context, value, child) => SliderOption(
+                  title: "Adjust Text Size",
+                  min: 0.8,
+                  max: 2,
+                  divisions: 12,
+                  label: "${value.toStringAsPrecision(2)}x",
                   value: value,
                   onChanged: (value) {
                     controller.textSizeFactor = value;
@@ -116,7 +119,7 @@ class TextLayer extends ImageLayer {
           );
         },
       ),
-      ...super.getEditingOptions(context)
+      ...super.getEditingOptions(context),
     ];
   }
 
@@ -129,48 +132,8 @@ class TextLayer extends ImageLayer {
   }
 }
 
-class _TextSizeHandler extends StatelessWidget {
-  const _TextSizeHandler({
-    required this.value,
-    required this.onChanged,
-  });
-
-  final double value;
-  final ValueChanged<double> onChanged;
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      height: 150,
-      child: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          mainAxisSize: MainAxisSize.max,
-          children: [
-            Text(
-              "${value.toStringAsPrecision(2)}x",
-              style: TextStyle(fontSize: 20),
-            ),
-            Slider(
-              value: value,
-              min: 0.8,
-              max: 2,
-              divisions: 12,
-              label: value.toStringAsPrecision(2),
-              onChanged: onChanged,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
 class _FontFamilyHandler extends StatelessWidget {
-  const _FontFamilyHandler({
-    required this.value,
-    required this.onChanged,
-  });
+  const _FontFamilyHandler({required this.value, required this.onChanged});
 
   final FontFamily value;
   final ValueChanged<FontFamily> onChanged;
@@ -194,10 +157,7 @@ class _FontFamilyHandler extends StatelessWidget {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
               side: isSelected
-                  ? BorderSide(
-                      color: colorScheme.primary,
-                      width: 2,
-                    )
+                  ? BorderSide(color: colorScheme.primary, width: 2)
                   : BorderSide.none,
             ),
             title: Text(

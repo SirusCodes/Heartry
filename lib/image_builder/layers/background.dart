@@ -1,15 +1,16 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:heartry/image_builder/widgets/editing_option.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../widgets/color_picker_dialog.dart';
 import '../../widgets/gradient_palette_selector.dart';
 import '../core/image_layer.dart';
 
 class SolidBackgroundLayer extends ImageLayer {
-  SolidBackgroundLayer({
-    super.key,
-    required super.nextLayer,
-  });
+  SolidBackgroundLayer({super.key, required super.nextLayer});
 
   final color = ValueNotifier<Color?>(null);
 
@@ -26,10 +27,7 @@ class SolidBackgroundLayer extends ImageLayer {
           return const SizedBox.shrink();
         }
 
-        return ColoredBox(
-          color: colorValue,
-          child: nextLayer!.build(context),
-        );
+        return ColoredBox(color: colorValue, child: nextLayer!.build(context));
       },
     );
   }
@@ -134,6 +132,66 @@ class GradientBackgroundLayer extends ImageLayer {
   @override
   void dispose() {
     gradient.dispose();
+    super.dispose();
+  }
+}
+
+class ImageBackgroundLayer extends ImageLayer {
+  ImageBackgroundLayer({super.key, super.nextLayer});
+
+  final filePath = ValueNotifier<XFile?>(null);
+
+  @override
+  Widget build(BuildContext context) {
+    return ValueListenableBuilder(
+      valueListenable: filePath,
+      builder: (context, value, child) {
+        if (value == null) {
+          return ColoredBox(
+            color: Colors.white,
+            child: nextLayer!.build(context),
+          );
+        }
+
+        return Container(
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: FileImage(File(filePath.value!.path)),
+              fit: BoxFit.cover,
+            ),
+          ),
+          child: nextLayer!.build(context),
+        );
+      },
+    );
+  }
+
+  @override
+  List<Widget> getEditingOptions(BuildContext context) {
+    return [
+      EditingOption(
+        option: "Background",
+        icon: Icon(Symbols.image_search_rounded),
+        tooltip: "Background Image",
+        onPressed: () async {
+          final picker = ImagePicker();
+          final picked = await picker.pickImage(
+            source: ImageSource.gallery,
+            imageQuality: 90,
+          );
+
+          if (picked != null) {
+            filePath.value = picked;
+          }
+        },
+      ),
+      ...super.getEditingOptions(context),
+    ];
+  }
+
+  @override
+  void dispose() {
+    filePath.dispose();
     super.dispose();
   }
 }

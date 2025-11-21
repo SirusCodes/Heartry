@@ -49,9 +49,7 @@ class _ImageScreenState extends State<ImageScreen> {
       title: widget.title,
       author: widget.poet ?? "",
       poem: widget.poem,
-      textStyle: TextStyle(
-        color: colorScheme.onPrimary,
-      ),
+      textStyle: TextStyle(color: colorScheme.onPrimary),
     );
 
     final layer = selectedTemplate.getLayers(imageController);
@@ -63,10 +61,8 @@ class _ImageScreenState extends State<ImageScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.check_rounded),
-            onPressed: () => onSharePressed(
-              context,
-              imageController.poemSeparated.length,
-            ),
+            onPressed: () =>
+                onSharePressed(context, imageController.poemSeparated.length),
           ),
         ],
       ),
@@ -117,6 +113,7 @@ class _ImageScreenState extends State<ImageScreen> {
                         GradientBackgroundTemplate(),
                         GradientBubbleOverlayTemplate(),
                         SolidBubbleOverlayTemplate(),
+                        ImageBackgroundTemplate(),
                       ],
                       onTemplateSelected: (template) {
                         setState(() {
@@ -143,7 +140,7 @@ class _ImageScreenState extends State<ImageScreen> {
                     )
                     .toList(),
               ),
-            )
+            ),
           ],
         ),
       ),
@@ -209,11 +206,14 @@ class _ImageScreenState extends State<ImageScreen> {
   }
 
   Future<void> _shareAll(List<String> images) async {
-    await SharePlus.instance.share(ShareParams(
-      text: "Made using Heartry 💜\n"
-          "Download at https://play.google.com/store/apps/details?id=com.darshan.heartry",
-      files: images.map((img) => XFile(img, mimeType: "image/png")).toList(),
-    ));
+    await SharePlus.instance.share(
+      ShareParams(
+        text:
+            "Made using Heartry 💜\n"
+            "Download at https://play.google.com/store/apps/details?id=com.darshan.heartry",
+        files: images.map((img) => XFile(img, mimeType: "image/png")).toList(),
+      ),
+    );
   }
 
   void _showProgressDialog(BuildContext context) {
@@ -223,10 +223,7 @@ class _ImageScreenState extends State<ImageScreen> {
       builder: (context) {
         return const Dialog(
           child: Material(
-            child: Center(
-              heightFactor: 3,
-              child: CircularProgressIndicator(),
-            ),
+            child: Center(heightFactor: 3, child: CircularProgressIndicator()),
           ),
         );
       },
@@ -238,14 +235,11 @@ class _ImageScreenState extends State<ImageScreen> {
 
     final time = DateTime.now().toIso8601String();
 
-    final path = join(
-      tmpDir.path,
-      "${widget.title}-$time-$index.png",
-    );
+    final path = join(tmpDir.path, "${widget.title}-$time-$index.png");
 
     final imgBytes = await _screenshot.capture(
       pixelRatio: 3,
-      delay: const Duration(milliseconds: 50),
+      delay: const Duration(milliseconds: 100),
     );
 
     final imgFile = File(path)..writeAsBytes(imgBytes!);
@@ -283,10 +277,7 @@ class _TemplateSelector extends StatelessWidget {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
               side: isSelected
-                  ? BorderSide(
-                      color: colorScheme.primary,
-                      width: 2,
-                    )
+                  ? BorderSide(color: colorScheme.primary, width: 2)
                   : BorderSide.none,
             ),
             leading: template.getIcon(context),

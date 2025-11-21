@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import '../core/image_controller.dart';
 
 import '../core/image_layer.dart';
@@ -9,9 +10,7 @@ import '../layers/text.dart';
 import '../layers/utils.dart';
 
 abstract class Template {
-  Template({
-    required this.name,
-  });
+  Template({required this.name});
 
   ImageLayer getLayers(ImageController controller);
   final String name;
@@ -26,13 +25,8 @@ class SolidBackgroundTemplate implements Template {
       nextLayer: PageCounterLayer(
         controller: controller,
         nextLayer: PaddingLayer(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 40,
-            vertical: 50,
-          ),
-          nextLayer: TextLayer(
-            controller: controller,
-          ),
+          padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 50),
+          nextLayer: TextLayer(controller: controller),
         ),
       ),
     );
@@ -54,13 +48,8 @@ class GradientBackgroundTemplate implements Template {
       nextLayer: PageCounterLayer(
         controller: controller,
         nextLayer: PaddingLayer(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 40,
-            vertical: 50,
-          ),
-          nextLayer: TextLayer(
-            controller: controller,
-          ),
+          padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 50),
+          nextLayer: TextLayer(controller: controller),
         ),
       ),
     );
@@ -83,16 +72,11 @@ class GradientBubbleOverlayTemplate implements Template {
         nextLayer: PageCounterLayer(
           controller: controller,
           nextLayer: PaddingLayer(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 40,
-              vertical: 50,
-            ),
+            padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 50),
             nextLayer: FrostedGlassLayer(
               nextLayer: PaddingLayer(
                 padding: const EdgeInsets.all(16),
-                nextLayer: TextLayer(
-                  controller: controller,
-                ),
+                nextLayer: TextLayer(controller: controller),
               ),
             ),
           ),
@@ -118,16 +102,11 @@ class SolidBubbleOverlayTemplate implements Template {
         nextLayer: PageCounterLayer(
           controller: controller,
           nextLayer: PaddingLayer(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 40,
-              vertical: 50,
-            ),
+            padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 50),
             nextLayer: FrostedGlassLayer(
               nextLayer: PaddingLayer(
                 padding: const EdgeInsets.all(16),
-                nextLayer: TextLayer(
-                  controller: controller,
-                ),
+                nextLayer: TextLayer(controller: controller),
               ),
             ),
           ),
@@ -142,5 +121,32 @@ class SolidBubbleOverlayTemplate implements Template {
   @override
   Widget getIcon(BuildContext context) {
     return const Icon(Icons.bubble_chart_outlined);
+  }
+}
+
+class ImageBackgroundTemplate implements Template {
+  @override
+  ImageLayer getLayers(ImageController controller) {
+    return ImageBackgroundLayer(
+      nextLayer: BlurOverlayLayer(
+        nextLayer: TranlucentOverlayLayer(
+          nextLayer: PageCounterLayer(
+            controller: controller,
+            nextLayer: PaddingLayer(
+              padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 50),
+              nextLayer: TextLayer(controller: controller),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  @override
+  String get name => 'Image Background';
+
+  @override
+  Widget getIcon(BuildContext context) {
+    return const Icon(Symbols.image_rounded);
   }
 }

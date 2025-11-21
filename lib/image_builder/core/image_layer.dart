@@ -1,13 +1,11 @@
 import 'package:flutter/widgets.dart';
 
 abstract class ImageLayer extends StatelessWidget {
-  const ImageLayer({
-    super.key,
-    required this.nextLayer,
-  });
+  const ImageLayer({super.key, required this.nextLayer});
 
   final ImageLayer? nextLayer;
 
+  @mustCallSuper
   List<Widget> getEditingOptions(BuildContext context) {
     if (nextLayer == null) {
       return <Widget>[];
@@ -16,6 +14,7 @@ abstract class ImageLayer extends StatelessWidget {
     return nextLayer!.getEditingOptions(context);
   }
 
+  @mustCallSuper
   EdgeInsets getPadding() {
     if (nextLayer == null) {
       return EdgeInsets.zero;
@@ -24,6 +23,7 @@ abstract class ImageLayer extends StatelessWidget {
     return nextLayer!.getPadding();
   }
 
+  @mustCallSuper
   void dispose() {
     nextLayer?.dispose();
   }
