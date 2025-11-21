@@ -1,3 +1,8 @@
+## 2.6.0 - 21/11/2025
+
+- Added most requested feature - to have _image background_ 🌄
+- Added search for your content 🔎
+
 ## 2.5.0 - 30/10/2025
 
 - Added multiple templates for image generation

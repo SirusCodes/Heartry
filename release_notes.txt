@@ -1,3 +1,2 @@
-- Added multiple templates for image generation
-- Added multiple fonts for image generation
-- Bug fixes
+- Added most requested feature - to have *image background* 🌄
+- Added search for your content 🔎
