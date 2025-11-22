@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../widgets/c_screen_title.dart';
 import '../../widgets/only_back_button_bottom_app_bar.dart';
@@ -6,6 +7,7 @@ import '../about_screen/about_screen.dart';
 import '../backup_setting_screen/backup_setting_screen.dart';
 import '../personalize_theme/personalize_theme.dart';
 import '../profile_screen/profile_screen.dart';
+import '../security_screen/security_screen.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -35,6 +37,15 @@ class SettingsScreen extends StatelessWidget {
               onTap: () => Navigator.push<void>(
                 context,
                 MaterialPageRoute(builder: (_) => const PersonalizeScreen()),
+              ),
+            ),
+            ListTile(
+              leading: const CircleAvatar(child: Icon(Symbols.security)),
+              title: const Text("Privacy and Security"),
+              subtitle: const Text("Manage your data and security settings"),
+              onTap: () => Navigator.push<void>(
+                context,
+                MaterialPageRoute(builder: (_) => const SecurityScreen()),
               ),
             ),
             ListTile(

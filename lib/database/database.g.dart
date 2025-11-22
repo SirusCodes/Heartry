@@ -31,7 +31,7 @@ class $PoemTable extends Poem with TableInfo<$PoemTable, PoemModel> {
     true,
     type: DriftSqlType.dateTime,
     requiredDuringInsert: false,
-    defaultValue: Constant(DateTime.now()),
+    defaultValue: currentDateAndTime,
   );
   static const VerificationMeta _titleMeta = const VerificationMeta('title');
   @override

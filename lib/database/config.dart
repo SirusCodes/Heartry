@@ -19,6 +19,12 @@ class Config extends AsyncNotifier<ConfigModel> {
   static const String _backupEmailKey = "backupEmail";
   static const String _isAutoBackupEnabledKey = "isAutoBackupEnabled";
   static const String _hasCompletedOnboardingKey = "hasCompletedOnboarding";
+  static const String _appLock = "appLock";
+
+  set appLock(bool value) {
+    _sharedPrefs.setBool(_appLock, value);
+    state = state.whenData((data) => data.copyWith(appLock: value));
+  }
 
   set lastBackup(DateTime dateTime) {
     _sharedPrefs.setString(_lastBackupKey, dateTime.toIso8601String());
@@ -88,6 +94,7 @@ class Config extends AsyncNotifier<ConfigModel> {
       lastBackup: _sharedPrefs.getString(_lastBackupKey) != null
           ? DateTime.parse(_sharedPrefs.getString(_lastBackupKey)!)
           : null,
+      appLock: _sharedPrefs.getBool(_appLock) ?? false,
     );
 
     // TODO: Remove this when everyone is above v2.4.0

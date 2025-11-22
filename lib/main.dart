@@ -8,6 +8,7 @@ import 'database/config.dart';
 import 'init_get_it.dart';
 import 'providers/theme_provider.dart';
 import 'screens/intro_screen/intro_screen.dart';
+import 'screens/lock_screen/lock_screen.dart';
 import 'screens/poems_screen/poems_screen.dart';
 import 'utils/custom_email_report_handler.dart';
 import 'utils/theme.dart';
@@ -68,8 +69,12 @@ class MyApp extends StatelessWidget {
                         .watch(configProvider)
                         .when(
                           data: (config) {
-                            if (config.hasCompletedOnboarding)
+                            if (config.hasCompletedOnboarding) {
+                              if (config.appLock) {
+                                return const LockScreen();
+                              }
                               return const PoemScreen();
+                            }
 
                             return const IntroScreen();
                           },

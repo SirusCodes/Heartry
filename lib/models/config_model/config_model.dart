@@ -8,7 +8,7 @@ part 'config_model.g.dart';
 @JsonSerializable()
 class ConfigModel extends Equatable {
   final String? name, profile, backupEmail;
-  final bool isAutoBackupEnabled, hasCompletedOnboarding;
+  final bool isAutoBackupEnabled, hasCompletedOnboarding, appLock;
   @DateTimeConverter()
   final DateTime? lastBackup;
 
@@ -19,6 +19,7 @@ class ConfigModel extends Equatable {
     this.hasCompletedOnboarding = false,
     this.profile,
     this.lastBackup,
+    this.appLock = false,
   });
 
   factory ConfigModel.fromJson(Map<String, dynamic> json) =>
@@ -33,6 +34,7 @@ class ConfigModel extends Equatable {
     bool? isAutoBackupEnabled,
     bool? hasCompletedOnboarding,
     DateTime? lastBackup,
+    bool? appLock,
   }) {
     return ConfigModel(
       name: name ?? this.name,
@@ -42,6 +44,7 @@ class ConfigModel extends Equatable {
       isAutoBackupEnabled: isAutoBackupEnabled ?? this.isAutoBackupEnabled,
       hasCompletedOnboarding:
           hasCompletedOnboarding ?? this.hasCompletedOnboarding,
+      appLock: appLock ?? this.appLock,
     );
   }
 

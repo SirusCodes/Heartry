@@ -284,7 +284,8 @@ class BackupRestoreManagerProvider {
     final prefs = <String, dynamic>{};
     for (final key in keys) {
       // To avoid saving the last backup file hash in the backup file
-      if (["lastBackupFileHash", "lastBackup"].contains(key)) continue;
+      if (["lastBackupFileHash", "lastBackup", "appLock"].contains(key))
+        continue;
       prefs[key] = sharedPrefs.get(key);
     }
     return prefs;

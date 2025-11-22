@@ -16,6 +16,7 @@ ConfigModel _$ConfigModelFromJson(Map<String, dynamic> json) => ConfigModel(
     json['lastBackup'],
     const DateTimeConverter().fromJson,
   ),
+  appLock: json['appLock'] as bool? ?? false,
 );
 
 Map<String, dynamic> _$ConfigModelToJson(ConfigModel instance) =>
@@ -25,6 +26,7 @@ Map<String, dynamic> _$ConfigModelToJson(ConfigModel instance) =>
       'backupEmail': instance.backupEmail,
       'isAutoBackupEnabled': instance.isAutoBackupEnabled,
       'hasCompletedOnboarding': instance.hasCompletedOnboarding,
+      'appLock': instance.appLock,
       'lastBackup': _$JsonConverterToJson<String, DateTime>(
         instance.lastBackup,
         const DateTimeConverter().toJson,
