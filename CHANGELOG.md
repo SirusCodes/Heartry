@@ -1,3 +1,7 @@
+## 2.6.1 - 27/11/2025
+
+Squashed 🐞 in search
+
 ## 2.6.0 - 21/11/2025
 
 - Added most requested feature - to have _image background_ 🌄

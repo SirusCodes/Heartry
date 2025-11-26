@@ -1,2 +1,1 @@
-- Added most requested feature - to have *image background* 🌄
-- Added search for your content 🔎
+Squashed 🐞 in search

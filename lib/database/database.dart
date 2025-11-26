@@ -19,7 +19,7 @@ class Database extends _$Database {
   Database([QueryExecutor? e]) : super(e ?? openConnection());
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -36,43 +36,20 @@ class Database extends _$Database {
         // To update default type of lastEdit column
         await m.alterTable(TableMigration(schema.poem));
 
-        await transaction(() async {
-          await customStatement('''
-          CREATE VIRTUAL TABLE poem_fts USING fts5(
-            title,
-            poem,
-            content='poem',
-            content_rowid='id'
-          );
-        ''');
+        await _createFTS5();
 
-          await customStatement(
-            'INSERT INTO poem_fts(poem_fts) VALUES(\'rebuild\')',
-          );
+        await customStatement('PRAGMA foreign_keys = ON');
+      },
+      from2To3: (m, schema) async {
+        final ftsExists = await customSelect(
+          "SELECT name FROM sqlite_master WHERE type='table' AND name='poem_fts';",
+        ).get();
 
-          // Trigger to sync FTS table on INSERT
-          await customStatement('''
-          CREATE TRIGGER poem_fts_insert AFTER INSERT ON poem BEGIN
-            INSERT INTO poem_fts(rowid, title, poem)
-            VALUES (new.id, new.title, new.poem);
-          END;
-        ''');
+        if (ftsExists.isNotEmpty) {
+          return;
+        }
 
-          // Trigger to sync FTS table on UPDATE
-          await customStatement('''
-          CREATE TRIGGER poem_fts_update AFTER UPDATE ON poem BEGIN
-            UPDATE poem_fts SET title = new.title, poem = new.poem
-            WHERE rowid = new.id;
-          END;
-        ''');
-
-          // Trigger to sync FTS table on DELETE
-          await customStatement('''
-          CREATE TRIGGER poem_fts_delete AFTER DELETE ON poem BEGIN
-            DELETE FROM poem_fts WHERE rowid = old.id;
-          END;
-        ''');
-        });
+        await _createFTS5();
       },
     ),
   );
@@ -115,5 +92,45 @@ class Database extends _$Database {
 
   Future<int> deletePoems(Iterable<int> poemIds) {
     return poem.deleteWhere((f) => f.id.isIn(poemIds));
+  }
+
+  Future<void> _createFTS5() async {
+    await transaction(() async {
+      await customStatement('''
+          CREATE VIRTUAL TABLE poem_fts USING fts5(
+            title,
+            poem,
+            content='poem',
+            content_rowid='id'
+          );
+        ''');
+
+      await customStatement(
+        'INSERT INTO poem_fts(poem_fts) VALUES(\'rebuild\')',
+      );
+
+      // Trigger to sync FTS table on INSERT
+      await customStatement('''
+          CREATE TRIGGER poem_fts_insert AFTER INSERT ON poem BEGIN
+            INSERT INTO poem_fts(rowid, title, poem)
+            VALUES (new.id, new.title, new.poem);
+          END;
+        ''');
+
+      // Trigger to sync FTS table on UPDATE
+      await customStatement('''
+          CREATE TRIGGER poem_fts_update AFTER UPDATE ON poem BEGIN
+            UPDATE poem_fts SET title = new.title, poem = new.poem
+            WHERE rowid = new.id;
+          END;
+        ''');
+
+      // Trigger to sync FTS table on DELETE
+      await customStatement('''
+          CREATE TRIGGER poem_fts_delete AFTER DELETE ON poem BEGIN
+            DELETE FROM poem_fts WHERE rowid = old.id;
+          END;
+        ''');
+    });
   }
 }
