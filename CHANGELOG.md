@@ -1,3 +1,7 @@
+## 2.6.2 - 09/12/2025
+
+Minor bug fixes in search functionality
+
 ## 2.6.1 - 27/11/2025
 
 Squashed 🐞 in search
