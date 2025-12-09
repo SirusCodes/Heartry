@@ -31,7 +31,7 @@ class $PoemTable extends Poem with TableInfo<$PoemTable, PoemModel> {
     true,
     type: DriftSqlType.dateTime,
     requiredDuringInsert: false,
-    defaultValue: Constant(DateTime.now()),
+    defaultValue: currentDateAndTime,
   );
   static const VerificationMeta _titleMeta = const VerificationMeta('title');
   @override
@@ -52,8 +52,19 @@ class $PoemTable extends Poem with TableInfo<$PoemTable, PoemModel> {
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _deletedAtMeta = const VerificationMeta(
+    'deletedAt',
+  );
   @override
-  List<GeneratedColumn> get $columns => [id, lastEdit, title, poem];
+  late final GeneratedColumn<DateTime> deletedAt = GeneratedColumn<DateTime>(
+    'deleted_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, lastEdit, title, poem, deletedAt];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -89,6 +100,12 @@ class $PoemTable extends Poem with TableInfo<$PoemTable, PoemModel> {
     } else if (isInserting) {
       context.missing(_poemMeta);
     }
+    if (data.containsKey('deleted_at')) {
+      context.handle(
+        _deletedAtMeta,
+        deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta),
+      );
+    }
     return context;
   }
 
@@ -114,6 +131,10 @@ class $PoemTable extends Poem with TableInfo<$PoemTable, PoemModel> {
         DriftSqlType.string,
         data['${effectivePrefix}poem'],
       )!,
+      deletedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}deleted_at'],
+      ),
     );
   }
 
@@ -128,11 +149,13 @@ class PoemModel extends DataClass implements Insertable<PoemModel> {
   final DateTime? lastEdit;
   final String title;
   final String poem;
+  final DateTime? deletedAt;
   const PoemModel({
     this.id,
     this.lastEdit,
     required this.title,
     required this.poem,
+    this.deletedAt,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -145,6 +168,9 @@ class PoemModel extends DataClass implements Insertable<PoemModel> {
     }
     map['title'] = Variable<String>(title);
     map['poem'] = Variable<String>(poem);
+    if (!nullToAbsent || deletedAt != null) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt);
+    }
     return map;
   }
 
@@ -156,6 +182,9 @@ class PoemModel extends DataClass implements Insertable<PoemModel> {
           : Value(lastEdit),
       title: Value(title),
       poem: Value(poem),
+      deletedAt: deletedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deletedAt),
     );
   }
 
@@ -169,6 +198,7 @@ class PoemModel extends DataClass implements Insertable<PoemModel> {
       lastEdit: serializer.fromJson<DateTime?>(json['lastEdit']),
       title: serializer.fromJson<String>(json['title']),
       poem: serializer.fromJson<String>(json['poem']),
+      deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
     );
   }
   @override
@@ -179,6 +209,7 @@ class PoemModel extends DataClass implements Insertable<PoemModel> {
       'lastEdit': serializer.toJson<DateTime?>(lastEdit),
       'title': serializer.toJson<String>(title),
       'poem': serializer.toJson<String>(poem),
+      'deletedAt': serializer.toJson<DateTime?>(deletedAt),
     };
   }
 
@@ -187,11 +218,13 @@ class PoemModel extends DataClass implements Insertable<PoemModel> {
     Value<DateTime?> lastEdit = const Value.absent(),
     String? title,
     String? poem,
+    Value<DateTime?> deletedAt = const Value.absent(),
   }) => PoemModel(
     id: id.present ? id.value : this.id,
     lastEdit: lastEdit.present ? lastEdit.value : this.lastEdit,
     title: title ?? this.title,
     poem: poem ?? this.poem,
+    deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
   );
   PoemModel copyWithCompanion(PoemCompanion data) {
     return PoemModel(
@@ -199,6 +232,7 @@ class PoemModel extends DataClass implements Insertable<PoemModel> {
       lastEdit: data.lastEdit.present ? data.lastEdit.value : this.lastEdit,
       title: data.title.present ? data.title.value : this.title,
       poem: data.poem.present ? data.poem.value : this.poem,
+      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
     );
   }
 
@@ -208,13 +242,14 @@ class PoemModel extends DataClass implements Insertable<PoemModel> {
           ..write('id: $id, ')
           ..write('lastEdit: $lastEdit, ')
           ..write('title: $title, ')
-          ..write('poem: $poem')
+          ..write('poem: $poem, ')
+          ..write('deletedAt: $deletedAt')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, lastEdit, title, poem);
+  int get hashCode => Object.hash(id, lastEdit, title, poem, deletedAt);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -222,7 +257,8 @@ class PoemModel extends DataClass implements Insertable<PoemModel> {
           other.id == this.id &&
           other.lastEdit == this.lastEdit &&
           other.title == this.title &&
-          other.poem == this.poem);
+          other.poem == this.poem &&
+          other.deletedAt == this.deletedAt);
 }
 
 class PoemCompanion extends UpdateCompanion<PoemModel> {
@@ -230,29 +266,34 @@ class PoemCompanion extends UpdateCompanion<PoemModel> {
   final Value<DateTime?> lastEdit;
   final Value<String> title;
   final Value<String> poem;
+  final Value<DateTime?> deletedAt;
   const PoemCompanion({
     this.id = const Value.absent(),
     this.lastEdit = const Value.absent(),
     this.title = const Value.absent(),
     this.poem = const Value.absent(),
+    this.deletedAt = const Value.absent(),
   });
   PoemCompanion.insert({
     this.id = const Value.absent(),
     this.lastEdit = const Value.absent(),
     this.title = const Value.absent(),
     required String poem,
+    this.deletedAt = const Value.absent(),
   }) : poem = Value(poem);
   static Insertable<PoemModel> custom({
     Expression<int>? id,
     Expression<DateTime>? lastEdit,
     Expression<String>? title,
     Expression<String>? poem,
+    Expression<DateTime>? deletedAt,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (lastEdit != null) 'last_edit': lastEdit,
       if (title != null) 'title': title,
       if (poem != null) 'poem': poem,
+      if (deletedAt != null) 'deleted_at': deletedAt,
     });
   }
 
@@ -261,12 +302,14 @@ class PoemCompanion extends UpdateCompanion<PoemModel> {
     Value<DateTime?>? lastEdit,
     Value<String>? title,
     Value<String>? poem,
+    Value<DateTime?>? deletedAt,
   }) {
     return PoemCompanion(
       id: id ?? this.id,
       lastEdit: lastEdit ?? this.lastEdit,
       title: title ?? this.title,
       poem: poem ?? this.poem,
+      deletedAt: deletedAt ?? this.deletedAt,
     );
   }
 
@@ -285,6 +328,9 @@ class PoemCompanion extends UpdateCompanion<PoemModel> {
     if (poem.present) {
       map['poem'] = Variable<String>(poem.value);
     }
+    if (deletedAt.present) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt.value);
+    }
     return map;
   }
 
@@ -294,7 +340,8 @@ class PoemCompanion extends UpdateCompanion<PoemModel> {
           ..write('id: $id, ')
           ..write('lastEdit: $lastEdit, ')
           ..write('title: $title, ')
-          ..write('poem: $poem')
+          ..write('poem: $poem, ')
+          ..write('deletedAt: $deletedAt')
           ..write(')'))
         .toString();
   }
@@ -317,6 +364,7 @@ typedef $$PoemTableCreateCompanionBuilder =
       Value<DateTime?> lastEdit,
       Value<String> title,
       required String poem,
+      Value<DateTime?> deletedAt,
     });
 typedef $$PoemTableUpdateCompanionBuilder =
     PoemCompanion Function({
@@ -324,6 +372,7 @@ typedef $$PoemTableUpdateCompanionBuilder =
       Value<DateTime?> lastEdit,
       Value<String> title,
       Value<String> poem,
+      Value<DateTime?> deletedAt,
     });
 
 class $$PoemTableFilterComposer extends Composer<_$Database, $PoemTable> {
@@ -351,6 +400,11 @@ class $$PoemTableFilterComposer extends Composer<_$Database, $PoemTable> {
 
   ColumnFilters<String> get poem => $composableBuilder(
     column: $table.poem,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -382,6 +436,11 @@ class $$PoemTableOrderingComposer extends Composer<_$Database, $PoemTable> {
     column: $table.poem,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<DateTime> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$PoemTableAnnotationComposer extends Composer<_$Database, $PoemTable> {
@@ -403,6 +462,9 @@ class $$PoemTableAnnotationComposer extends Composer<_$Database, $PoemTable> {
 
   GeneratedColumn<String> get poem =>
       $composableBuilder(column: $table.poem, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get deletedAt =>
+      $composableBuilder(column: $table.deletedAt, builder: (column) => column);
 }
 
 class $$PoemTableTableManager
@@ -437,11 +499,13 @@ class $$PoemTableTableManager
                 Value<DateTime?> lastEdit = const Value.absent(),
                 Value<String> title = const Value.absent(),
                 Value<String> poem = const Value.absent(),
+                Value<DateTime?> deletedAt = const Value.absent(),
               }) => PoemCompanion(
                 id: id,
                 lastEdit: lastEdit,
                 title: title,
                 poem: poem,
+                deletedAt: deletedAt,
               ),
           createCompanionCallback:
               ({
@@ -449,11 +513,13 @@ class $$PoemTableTableManager
                 Value<DateTime?> lastEdit = const Value.absent(),
                 Value<String> title = const Value.absent(),
                 required String poem,
+                Value<DateTime?> deletedAt = const Value.absent(),
               }) => PoemCompanion.insert(
                 id: id,
                 lastEdit: lastEdit,
                 title: title,
                 poem: poem,
+                deletedAt: deletedAt,
               ),
           withReferenceMapper: (p0) => p0
               .map((e) => (e.readTable(table), BaseReferences(db, table, e)))

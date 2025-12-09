@@ -8,6 +8,8 @@ import 'generated/schema.dart';
 
 import 'generated/schema_v1.dart' as v1;
 import 'generated/schema_v2.dart' as v2;
+import 'generated/schema_v3.dart' as v3;
+import 'generated/schema_v4.dart' as v4;
 
 void main() {
   driftRuntimeOptions.dontWarnAboutMultipleDatabases = true;
@@ -148,6 +150,52 @@ void main() {
                   .getSingle())
               .data['c'],
         );
+      },
+    );
+  });
+
+  test('migration from v3 to v4 does not corrupt data', () async {
+    // Add data to insert into the old database, and the expected rows after the
+    // migration.
+    final oldPoemData = <v3.PoemData>[
+      v3.PoemData(
+        id: 1,
+        lastEdit: DateTime(2025, 11, 13, 12, 0, 0),
+        title: 'Title 1',
+        poem: 'Poem 1',
+      ),
+      v3.PoemData(
+        id: 2,
+        lastEdit: DateTime(2025, 11, 13, 12, 0, 0),
+        title: 'Title 2',
+        poem: 'Poem 2',
+      ),
+    ];
+
+    await verifier.testWithDataIntegrity(
+      oldVersion: 3,
+      newVersion: 4,
+      createOld: v3.DatabaseAtV3.new,
+      createNew: v4.DatabaseAtV4.new,
+      openTestedDatabase: Database.new,
+      createItems: (batch, oldDb) {
+        batch.insertAll(oldDb.poem, oldPoemData);
+      },
+      validateItems: (newDb) async {
+        final db = Database(newDb.executor);
+        final poems = await db.getPoems();
+        for (int i = 0; i < poems.length; i++) {
+          expect(poems[i].deletedAt, null);
+        }
+
+        await db.softDeletePoem(poems.first);
+
+        final updatedPoems = await db.getPoems();
+        expect(updatedPoems.length, poems.length);
+        expect(updatedPoems.first.deletedAt, isNot(null));
+
+        final search = await db.searchPoems('1');
+        expect(search.length, 0);
       },
     );
   });

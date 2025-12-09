@@ -79,7 +79,7 @@ class _WritingScreenState extends State<WritingScreen>
       body: PopScope(
         onPopInvokedWithResult: (_, __) {
           if (_isEmpty && widget.model != null)
-            poemDB.deletePoem(widget.model!);
+            poemDB.softDeletePoem(widget.model!);
         },
         child: SafeArea(
           child: Stack(

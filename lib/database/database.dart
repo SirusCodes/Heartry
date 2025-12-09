@@ -12,6 +12,7 @@ class Poem extends Table {
       dateTime().nullable().withDefault(currentDateAndTime)();
   TextColumn get title => text().withDefault(const Constant(""))();
   TextColumn get poem => text()();
+  DateTimeColumn get deletedAt => dateTime().nullable()();
 }
 
 @DriftDatabase(tables: [Poem])
@@ -19,12 +20,15 @@ class Database extends _$Database {
   Database([QueryExecutor? e]) : super(e ?? openConnection());
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 4;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
     onCreate: (m) async {
       await m.createAll();
+
+      // Create the FTS table and triggers on a fwresh install so search works
+      await _createFTS5();
     },
     beforeOpen: (details) async {
       await customStatement('PRAGMA foreign_keys = ON');
@@ -41,34 +45,48 @@ class Database extends _$Database {
         await customStatement('PRAGMA foreign_keys = ON');
       },
       from2To3: (m, schema) async {
-        final ftsExists = await customSelect(
-          "SELECT name FROM sqlite_master WHERE type='table' AND name='poem_fts';",
-        ).get();
+        await _createFTSTableIfNotExist();
+      },
+      from3To4: (m, schema) async {
+        await _createFTSTableIfNotExist();
 
-        if (ftsExists.isNotEmpty) {
-          return;
-        }
-
-        await _createFTS5();
+        await m.addColumn(poem, poem.deletedAt);
       },
     ),
   );
 
-  Future<List<PoemModel>> searchPoems(String query) {
+  Future<List<PoemModel>> searchPoems(String query) async {
     final ftsQuery = '$query*';
+    final hasDeletedAt = await _poemHasDeletedAt();
+
+    final whereClause = hasDeletedAt
+        ? 'WHERE p.deleted_at IS NULL AND poem_fts MATCH ?'
+        : 'WHERE poem_fts MATCH ?';
+
     return customSelect(
       'SELECT p.* FROM poem as p JOIN poem_fts as fts ON p.id = fts.rowid '
-      'WHERE poem_fts MATCH ? ORDER BY rank LIMIT 10',
+      '$whereClause ORDER BY rank LIMIT 10',
       variables: [Variable<String>(ftsQuery)],
       readsFrom: {poem},
     ).map((row) => PoemModel.fromJson(row.data)).get();
   }
 
+  Future<bool> _poemHasDeletedAt() async {
+    final columns = await customSelect('PRAGMA table_info(poem);').get();
+    return columns.any((row) => row.data['name'] == 'deleted_at');
+  }
+
   Stream<List<PoemModel>> get getPoemStream =>
-      (select(poem)..orderBy([(u) => OrderingTerm.desc(u.lastEdit)])).watch();
+      (select(poem)
+            ..where((tbl) => tbl.deletedAt.isNull())
+            ..orderBy([(u) => OrderingTerm.desc(u.lastEdit)]))
+          .watch();
 
   Future<List<PoemModel>> getPoems() =>
-      (select(poem)..orderBy([(u) => OrderingTerm.desc(u.lastEdit)])).get();
+      (select(poem)
+            ..where((tbl) => tbl.deletedAt.isNull())
+            ..orderBy([(u) => OrderingTerm.desc(u.lastEdit)]))
+          .get();
 
   Future<void> insertBatchPoems(List<PoemModel> models) => batch((batch) {
     batch.insertAll(poem, models);
@@ -86,12 +104,27 @@ class Database extends _$Database {
     )..where((tbl) => tbl.id.equals(model.id!))).write(model);
   }
 
+  Future<int> softDeletePoem(PoemModel model) {
+    final updatedModel = model.copyWith(deletedAt: Value(DateTime.now()));
+    return updatePoem(updatedModel);
+  }
+
   Future<int> deletePoem(PoemModel model) {
     return delete(poem).delete(model);
   }
 
   Future<int> deletePoems(Iterable<int> poemIds) {
     return poem.deleteWhere((f) => f.id.isIn(poemIds));
+  }
+
+  Future<void> _createFTSTableIfNotExist() async {
+    final ftsExists = await customSelect(
+      "SELECT name FROM sqlite_master WHERE type='table' AND name='poem_fts';",
+    ).get();
+
+    if (ftsExists.isEmpty) {
+      await _createFTS5();
+    }
   }
 
   Future<void> _createFTS5() async {
