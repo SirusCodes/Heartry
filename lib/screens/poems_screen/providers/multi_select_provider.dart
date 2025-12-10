@@ -3,6 +3,7 @@ import 'package:heartry/database/database.dart';
 
 final multiSelectEnabledProvider = Provider(
   (ref) => ref.watch(selectedPoemsProvider).isNotEmpty,
+  dependencies: [selectedPoemsProvider],
 );
 
 final selectedPoemsProvider = StateNotifierProvider((_) => SelectedPoems());

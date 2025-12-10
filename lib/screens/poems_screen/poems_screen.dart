@@ -286,7 +286,7 @@ class _Toolbar extends ConsumerWidget {
           ],
           IconButton(
             icon: const Icon(Icons.delete),
-            onPressed: () => _showWarning(context, selectedPoems, ref),
+            onPressed: () => _moveToBin(context, selectedPoems, ref),
           ),
         ],
       ),
@@ -328,49 +328,28 @@ class _Toolbar extends ConsumerWidget {
     );
   }
 
-  void _showWarning(
-    BuildContext context,
-    List<PoemModel> selectedPoems,
-    WidgetRef ref,
-  ) {
-    showDialog<void>(
-      context: context,
-      builder: (_) => AlertDialog(
-        title: const Text("Do you really want to delete it?"),
-        content: const Text(
-          "There would be no other way to get back you art."
-          " Are you really sure?",
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => _delete(context, selectedPoems, ref),
-            child: const Text("Yes"),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text("No"),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Future<void> _delete(
+  Future<void> _moveToBin(
     BuildContext context,
     List<PoemModel> selectedPoems,
     WidgetRef ref,
   ) async {
-    final navigator = Navigator.of(context);
     final scaffoldMessenger = ScaffoldMessenger.of(context);
 
-    final result = await locator<Database>().deletePoems(
-      selectedPoems.map((p) => p.id!),
+    final result = await locator<Database>().softDeletePoems(selectedPoems);
+
+    final String msg = result == 0 ? "Couldn't move to bin" : "Moved to bin";
+
+    scaffoldMessenger.showSnackBar(
+      SnackBar(
+        content: Text(msg),
+        action: SnackBarAction(
+          label: "Undo",
+          onPressed: () {
+            locator<Database>().restorePoems(selectedPoems);
+          },
+        ),
+      ),
     );
-
-    final String msg = result == 0 ? "Failed to delete" : "Deleted";
-
-    navigator.pop();
-    scaffoldMessenger.showSnackBar(SnackBar(content: Text(msg)));
     ref.read(selectedPoemsProvider.notifier).clear();
   }
 }

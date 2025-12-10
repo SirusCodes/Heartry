@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../widgets/c_screen_title.dart';
 import '../../widgets/only_back_button_bottom_app_bar.dart';
 import '../about_screen/about_screen.dart';
 import '../backup_setting_screen/backup_setting_screen.dart';
+import '../bin_screen/bin_screen.dart';
 import '../personalize_theme/personalize_theme.dart';
 import '../profile_screen/profile_screen.dart';
 
@@ -44,6 +46,15 @@ class SettingsScreen extends StatelessWidget {
               onTap: () => Navigator.push<void>(
                 context,
                 MaterialPageRoute(builder: (_) => const BackupSettingScreen()),
+              ),
+            ),
+            ListTile(
+              leading: const CircleAvatar(child: Icon(Symbols.delete_rounded)),
+              title: const Text("Bin"),
+              subtitle: const Text("Restore from bin or delete permanently"),
+              onTap: () => Navigator.push<void>(
+                context,
+                MaterialPageRoute(builder: (_) => const BinScreen()),
               ),
             ),
             ListTile(

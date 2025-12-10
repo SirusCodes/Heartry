@@ -82,6 +82,12 @@ class Database extends _$Database {
             ..orderBy([(u) => OrderingTerm.desc(u.lastEdit)]))
           .watch();
 
+  Stream<List<PoemModel>> get getBin =>
+      (select(poem)
+            ..where((tbl) => tbl.deletedAt.isNotNull())
+            ..orderBy([(u) => OrderingTerm.desc(u.deletedAt)]))
+          .watch();
+
   Future<List<PoemModel>> getPoems() =>
       (select(poem)
             ..where((tbl) => tbl.deletedAt.isNull())
@@ -113,8 +119,20 @@ class Database extends _$Database {
     return delete(poem).delete(model);
   }
 
-  Future<int> deletePoems(Iterable<int> poemIds) {
-    return poem.deleteWhere((f) => f.id.isIn(poemIds));
+  Future<int> softDeletePoems(Iterable<PoemModel> models) {
+    return (update(poem)..where((tbl) => tbl.id.isIn(models.map((e) => e.id!))))
+        .write(PoemCompanion(deletedAt: Value(DateTime.now())));
+  }
+
+  Future<int> restorePoems(Iterable<PoemModel> models) {
+    return (update(poem)..where((tbl) => tbl.id.isIn(models.map((e) => e.id!))))
+        .write(PoemCompanion(deletedAt: const Value(null)));
+  }
+
+  Future<int> hardDeletePoems(Iterable<PoemModel> models) {
+    return (delete(
+      poem,
+    )..where((tbl) => tbl.id.isIn(models.map((e) => e.id!)))).go();
   }
 
   Future<void> _createFTSTableIfNotExist() async {
