@@ -7,6 +7,7 @@ import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:heartry/screens/poems_screen/providers/multi_select_provider.dart';
+import 'package:heartry/utils/workmanager_helper.dart';
 import '../../database/database.dart';
 import '../../init_get_it.dart';
 import 'package:url_launcher/url_launcher_string.dart';
@@ -339,14 +340,15 @@ class _Toolbar extends ConsumerWidget {
 
     final String msg = result == 0 ? "Couldn't move to bin" : "Moved to bin";
 
+    registerDeleteBinWorkmanager();
+
     scaffoldMessenger.showSnackBar(
       SnackBar(
         content: Text(msg),
+        duration: Duration(seconds: result == 0 ? 2 : 5),
         action: SnackBarAction(
           label: "Undo",
-          onPressed: () {
-            locator<Database>().restorePoems(selectedPoems);
-          },
+          onPressed: () => locator<Database>().restorePoems(selectedPoems),
         ),
       ),
     );

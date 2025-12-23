@@ -129,6 +129,16 @@ class Database extends _$Database {
         .write(PoemCompanion(deletedAt: const Value(null)));
   }
 
+  Future<int> deleteBinAfter30Days() {
+    // soft delete date + 30 days <= current date
+    // => deletedAt <= current date - 30 days
+    final pastDate = DateTime.now().subtract(const Duration(days: 30));
+
+    return (delete(
+      poem,
+    )..where((tbl) => tbl.deletedAt.isSmallerOrEqualValue(pastDate))).go();
+  }
+
   Future<int> hardDeletePoems(Iterable<PoemModel> models) {
     return (delete(
       poem,

@@ -7,6 +7,7 @@ import 'package:riverpod/riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:workmanager/workmanager.dart';
 
+import '../database/database.dart';
 import '../init_get_it.dart';
 import '../providers/backup_restore_manager_provider.dart';
 
@@ -20,6 +21,12 @@ const AndroidNotificationDetails androidNotificationDetails =
       icon: "@mipmap/ic_launcher",
     );
 
+const _backupName = "backup-task";
+const _backupTask = "backup";
+
+const _deleteBinName = "delete-bin-task";
+const _deleteBinTask = "deleteBin";
+
 @pragma('vm:entry-point')
 void callbackDispatcher() {
   Workmanager().executeTask((task, inputData) async {
@@ -30,6 +37,22 @@ void callbackDispatcher() {
     }
 
     final container = ProviderContainer();
+    print('Workmanager executing task: $task');
+
+    if (task == _deleteBinTask) {
+      final db = locator<Database>();
+      final rows = await db.deleteBinAfter30Days();
+
+      print('Deleted $rows rows from bin');
+
+      if (rows == 0) {
+        print('No more rows in bin, unregistering delete bin task');
+        unregisterDeleteBinWorkmanager();
+      }
+
+      return true;
+    }
+
     final backupManager = container.read(backupRestoreManagerProvider);
     try {
       final file = await backupManager.createBackupFile();
@@ -80,8 +103,8 @@ void registerBackupWorkmanager() {
   const backupFrequency = Duration(days: 1);
 
   Workmanager().registerPeriodicTask(
-    "backup-task",
-    "backup",
+    _backupName,
+    _backupTask,
     frequency: backupFrequency,
     initialDelay: startBackupAt.difference(now),
     backoffPolicy: BackoffPolicy.linear,
@@ -94,5 +117,21 @@ void registerBackupWorkmanager() {
 }
 
 void unregisterBackupWorkmanager() {
-  Workmanager().cancelByUniqueName("backup-task");
+  Workmanager().cancelByUniqueName(_backupName);
+}
+
+void registerDeleteBinWorkmanager() {
+  Workmanager().registerPeriodicTask(
+    _deleteBinName,
+    _deleteBinTask,
+    frequency: const Duration(seconds: 10),
+    constraints: Constraints(
+      requiresBatteryNotLow: true,
+      networkType: NetworkType.notRequired,
+    ),
+  );
+}
+
+void unregisterDeleteBinWorkmanager() {
+  Workmanager().cancelByUniqueName(_deleteBinName);
 }
