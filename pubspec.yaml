@@ -26,7 +26,6 @@ dependencies:
   animated_icon_button: ^1.0.2
   animations: ^2.0.7
   badges: ^3.1.1
-  catcher_2: ^2.1.2
   drift: ^2.29.0
   flex_color_picker: ^3.0.0
   flutter_markdown: ^0.7.7
@@ -40,6 +39,7 @@ dependencies:
   path: ^1.8.1
   path_provider: ^2.0.8
   screenshot: ^3.0.0
+  sentry_flutter: ^9.9.1
   share_plus: ^12.0.0
   shared_preferences: ^2.0.12
   sqlite3_flutter_libs: ^0.5.3
@@ -61,6 +61,7 @@ dependencies:
   material_symbols_icons: ^4.2874.0
 
 dev_dependencies:
+  sentry_dart_plugin: ^3.2.0
   flutter_test:
     sdk: flutter
   build_runner: null
@@ -130,3 +131,9 @@ flutter:
     - family: Quicksand
       fonts:
         - asset: assets/fonts/Quicksand.ttf
+
+sentry:
+  upload_debug_symbols: true
+  upload_source_maps: true
+  project: flutter
+  org: heartry

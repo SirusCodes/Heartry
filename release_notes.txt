@@ -1,1 +1,1 @@
-Bug fixes, if you are still facing issues please contact us at heartryapp@gmail.com
+Improved error tracking for easier resolution of bugs.

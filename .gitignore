@@ -51,3 +51,4 @@ app.*.map.json
 *.jks
 .env
 android/app/.cxx/Debug/**
+sentry.properties

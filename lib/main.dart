@@ -1,5 +1,3 @@
-import 'package:catcher_2/catcher_2.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -9,30 +7,37 @@ import 'init_get_it.dart';
 import 'providers/theme_provider.dart';
 import 'screens/intro_screen/intro_screen.dart';
 import 'screens/poems_screen/poems_screen.dart';
-import 'utils/custom_email_report_handler.dart';
 import 'utils/theme.dart';
 import 'utils/workmanager_helper.dart';
 import 'widgets/color_scheme_builder.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 
 Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+  SentryWidgetsFlutterBinding.ensureInitialized();
 
   initGetIt();
   initWorkmanager();
 
-  final releaseCatcher = Catcher2Options(DialogReportMode(), [
-    CustomEmailReportHandler(),
-  ]);
-
-  if (kDebugMode) {
-    return runApp(const ProviderScope(child: MyApp()));
-  }
-
-  Catcher2(
-    releaseConfig: releaseCatcher,
-    profileConfig: releaseCatcher,
-    ensureInitialized: true,
-    rootWidget: const ProviderScope(child: MyApp()),
+  await SentryFlutter.init(
+    (options) {
+      options.dsn = String.fromEnvironment("SENTRY_DSN", defaultValue: "");
+      // Adds request headers and IP for users, for more info visit:
+      // https://docs.sentry.io/platforms/dart/guides/flutter/data-management/data-collected/
+      options.sendDefaultPii = true;
+      options.enableLogs = true;
+      // Set tracesSampleRate to 1.0 to capture 100% of transactions for tracing
+      // We recommend adjusting this value in production.
+      options.tracesSampleRate = 0.2;
+      // The sampling rate for profiling is relative to tracesSampleRate
+      // Setting to 1.0 will profile 100% of sampled transactions:
+      options.profilesSampleRate = 1.0;
+      // Configure Session Replay
+      options.replay.sessionSampleRate = 0.1;
+      options.replay.onErrorSampleRate = 1.0;
+      options.autoInitializeNativeSdk = true;
+    },
+    appRunner: () =>
+        runApp(SentryWidget(child: const ProviderScope(child: MyApp()))),
   );
 
   SystemChrome.setPreferredOrientations([
@@ -56,7 +61,6 @@ class MyApp extends StatelessWidget {
             builder: (lightColorScheme, darkColorScheme) {
               return MaterialApp(
                 title: "Heartry",
-                navigatorKey: Catcher2.navigatorKey,
                 themeMode: _getThemeMode(theme.themeType),
                 theme: getLightTheme(lightColorScheme),
                 darkTheme: theme.themeType == ThemeType.dark

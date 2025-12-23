@@ -1,3 +1,7 @@
+## 2.6.3 - 23/12/2025
+
+Improved error tracking for easier resolution of bugs.
+
 ## 2.6.2 - 09/12/2025
 
 Minor bug fixes in search functionality
