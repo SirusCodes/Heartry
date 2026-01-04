@@ -88,6 +88,9 @@ class Database extends _$Database {
             ..orderBy([(u) => OrderingTerm.desc(u.deletedAt)]))
           .watch();
 
+  Future<List<PoemModel>> getBinPoems() =>
+      (select(poem)..where((tbl) => tbl.deletedAt.isNotNull())).get();
+
   Future<List<PoemModel>> getPoems() =>
       (select(poem)
             ..where((tbl) => tbl.deletedAt.isNull())

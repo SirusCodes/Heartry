@@ -9,9 +9,10 @@ import '../../widgets/share_option_list.dart';
 import '../writing_screen/writing_screen.dart';
 
 class ReaderScreen extends StatelessWidget {
-  const ReaderScreen({super.key, required this.model});
+  const ReaderScreen({super.key, required this.model, this.isFromBin = false});
 
   final PoemModel model;
+  final bool isFromBin;
 
   @override
   Widget build(BuildContext context) {
@@ -38,17 +39,21 @@ class ReaderScreen extends StatelessWidget {
                 icon: const Icon(Icons.arrow_back_ios_rounded),
                 onPressed: () => Navigator.pop(context),
               ),
-            IconButton(
-              icon: const Icon(Icons.edit),
-              onPressed: () => Navigator.pushReplacement<void, void>(
-                context,
-                MaterialPageRoute(builder: (_) => WritingScreen(model: model)),
+            if (!isFromBin) ...[
+              IconButton(
+                icon: const Icon(Icons.edit),
+                onPressed: () => Navigator.pushReplacement<void, void>(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => WritingScreen(model: model),
+                  ),
+                ),
               ),
-            ),
-            IconButton(
-              onPressed: () => _showShareBottomSheet(context),
-              icon: const Icon(Icons.share),
-            ),
+              IconButton(
+                onPressed: () => _showShareBottomSheet(context),
+                icon: const Icon(Icons.share),
+              ),
+            ],
           ],
         ),
       ),

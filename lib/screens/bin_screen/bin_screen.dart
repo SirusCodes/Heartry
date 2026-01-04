@@ -228,7 +228,9 @@ class _CBody extends ConsumerWidget {
                   Navigator.push<void>(
                     context,
                     MaterialPageRoute(
-                      builder: (_) => ReaderScreen(model: poem),
+                      builder: (_) {
+                        return ReaderScreen(model: poem, isFromBin: true);
+                      },
                     ),
                   );
                 },

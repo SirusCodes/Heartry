@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -35,6 +36,7 @@ Future<void> main() async {
       options.replay.sessionSampleRate = 0.1;
       options.replay.onErrorSampleRate = 1.0;
       options.autoInitializeNativeSdk = true;
+      options.debug = kDebugMode;
     },
     appRunner: () =>
         runApp(SentryWidget(child: const ProviderScope(child: MyApp()))),

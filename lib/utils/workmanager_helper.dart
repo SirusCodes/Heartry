@@ -37,16 +37,14 @@ void callbackDispatcher() {
     }
 
     final container = ProviderContainer();
-    print('Workmanager executing task: $task');
 
     if (task == _deleteBinTask) {
       final db = locator<Database>();
-      final rows = await db.deleteBinAfter30Days();
+      await db.deleteBinAfter30Days();
 
-      print('Deleted $rows rows from bin');
-
-      if (rows == 0) {
-        print('No more rows in bin, unregistering delete bin task');
+      // Unregister if bin is empty
+      final rows = await db.getBinPoems();
+      if (rows.isEmpty) {
         unregisterDeleteBinWorkmanager();
       }
 
@@ -120,11 +118,11 @@ void unregisterBackupWorkmanager() {
   Workmanager().cancelByUniqueName(_backupName);
 }
 
-void registerDeleteBinWorkmanager() {
-  Workmanager().registerPeriodicTask(
+Future<void> registerDeleteBinWorkmanager() async {
+  await Workmanager().registerPeriodicTask(
     _deleteBinName,
     _deleteBinTask,
-    frequency: const Duration(seconds: 10),
+    frequency: const Duration(days: 1),
     constraints: Constraints(
       requiresBatteryNotLow: true,
       networkType: NetworkType.notRequired,
