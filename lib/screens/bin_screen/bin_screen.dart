@@ -135,7 +135,10 @@ class _Toolbar extends ConsumerWidget {
 
     navigator.pop();
     scaffoldMessenger.showSnackBar(
-      const SnackBar(content: Text("Restored from bin")),
+      const SnackBar(
+        content: Text("Restored from bin"),
+        duration: Duration(seconds: 3),
+      ),
     );
   }
 
@@ -176,10 +179,12 @@ class _Toolbar extends ConsumerWidget {
 
     final result = await locator<Database>().hardDeletePoems(selectedPoems);
 
-    final String msg = result == 0 ? "Couldn't move to bin" : "Moved to bin";
+    final String msg = result == 0 ? "Couldn't delete" : "Deleted";
 
     navigator.pop();
-    scaffoldMessenger.showSnackBar(SnackBar(content: Text(msg)));
+    scaffoldMessenger.showSnackBar(
+      SnackBar(content: Text(msg), duration: Duration(seconds: 3)),
+    );
     ref.read(selectedPoemsProvider.notifier).clear();
   }
 }

@@ -134,18 +134,6 @@ class _WritingScreenState extends State<WritingScreen>
                         .watch(configProvider)
                         .whenOrNull(data: (data) => data.name);
                     return _WritingBottomAppBar(
-                      showSharePanel: () {
-                        if (undoRedo.textEditingController.text.isNotEmpty)
-                          return true;
-
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text("Please write something!"),
-                          ),
-                        );
-
-                        return false;
-                      },
                       onShareAsText: () {
                         ShareHelper.shareAsText(
                           title: _titleTextController.text,
@@ -225,17 +213,13 @@ class _WritingScreenState extends State<WritingScreen>
   }
 }
 
-typedef BoolCallBack = bool Function();
-
 class _WritingBottomAppBar extends StatelessWidget {
   const _WritingBottomAppBar({
     required this.onShareAsImage,
     required this.onShareAsText,
-    required this.showSharePanel,
   });
 
   final VoidCallback onShareAsImage, onShareAsText;
-  final BoolCallBack showSharePanel;
 
   @override
   Widget build(BuildContext context) {

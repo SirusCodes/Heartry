@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../database/config.dart';
 import '../../database/database.dart';
+import '../../init_get_it.dart';
 import '../../utils/share_helper.dart';
 import '../../widgets/c_screen_title.dart';
 import '../../widgets/share_option_list.dart';
@@ -39,7 +40,54 @@ class ReaderScreen extends StatelessWidget {
                 icon: const Icon(Icons.arrow_back_ios_rounded),
                 onPressed: () => Navigator.pop(context),
               ),
-            if (!isFromBin) ...[
+            if (isFromBin) ...[
+              IconButton(
+                icon: const Icon(Icons.delete),
+                onPressed: () async {
+                  final navigator = Navigator.of(context);
+                  final scaffoldMessenger = ScaffoldMessenger.of(context);
+
+                  final result = await locator<Database>().hardDeletePoems([
+                    model,
+                  ]);
+
+                  final String msg = result == 0
+                      ? "Couldn't delete"
+                      : "Deleted";
+
+                  navigator.pop();
+                  scaffoldMessenger.showSnackBar(
+                    SnackBar(
+                      content: Text(msg),
+                      duration: Duration(seconds: result == 0 ? 5 : 2),
+                    ),
+                  );
+                },
+              ),
+              IconButton(
+                icon: const Icon(Icons.restore),
+                onPressed: () async {
+                  final navigator = Navigator.of(context);
+                  final scaffoldMessenger = ScaffoldMessenger.of(context);
+
+                  final result = await locator<Database>().restorePoems([
+                    model,
+                  ]);
+
+                  final String msg = result == 0
+                      ? "Couldn't restore"
+                      : "Restored";
+
+                  navigator.pop();
+                  scaffoldMessenger.showSnackBar(
+                    SnackBar(
+                      content: Text(msg),
+                      duration: Duration(seconds: result == 0 ? 5 : 2),
+                    ),
+                  );
+                },
+              ),
+            ] else ...[
               IconButton(
                 icon: const Icon(Icons.edit),
                 onPressed: () => Navigator.pushReplacement<void, void>(

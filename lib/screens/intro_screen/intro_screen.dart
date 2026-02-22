@@ -88,13 +88,19 @@ class _IntroScreenState extends State<IntroScreen> {
 
     if (next is AsyncError) {
       scaffoldMessenger.showSnackBar(
-        SnackBar(content: Text(next.error.toString())),
+        SnackBar(
+          content: Text(next.error.toString()),
+          duration: Duration(seconds: 3),
+        ),
       );
       return;
     }
 
     scaffoldMessenger.showSnackBar(
-      const SnackBar(content: Text("Authentication failed")),
+      const SnackBar(
+        content: Text("Authentication failed"),
+        duration: Duration(seconds: 3),
+      ),
     );
   }
 }
@@ -352,7 +358,10 @@ class _ProfilePage extends ConsumerWidget {
       config.profile = await _saveImageInAppStorage(pickedImage);
     } on PlatformException {
       scaffoldMessenger.showSnackBar(
-        const SnackBar(content: Text("Permission denied")),
+        const SnackBar(
+          content: Text("Permission denied"),
+          duration: Duration(seconds: 3),
+        ),
       );
     }
   }

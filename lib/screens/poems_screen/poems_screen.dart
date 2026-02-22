@@ -212,12 +212,17 @@ class _DefaultAppBar extends ConsumerWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            "Heartry",
-            style: Theme.of(context).textTheme.displaySmall!.copyWith(
-              fontWeight: FontWeight.w600,
-              fontFamily: "Caveat",
-              color: Theme.of(context).colorScheme.primary,
+          GestureDetector(
+            onLongPress: () {
+              throw Exception("Test crash");
+            },
+            child: Text(
+              "Heartry",
+              style: Theme.of(context).textTheme.displaySmall!.copyWith(
+                fontWeight: FontWeight.w600,
+                fontFamily: "Caveat",
+                color: Theme.of(context).colorScheme.primary,
+              ),
             ),
           ),
           const Spacer(),
@@ -345,11 +350,7 @@ class _Toolbar extends ConsumerWidget {
     scaffoldMessenger.showSnackBar(
       SnackBar(
         content: Text(msg),
-        duration: Duration(seconds: result == 0 ? 2 : 5),
-        action: SnackBarAction(
-          label: "Undo",
-          onPressed: () => locator<Database>().restorePoems(selectedPoems),
-        ),
+        duration: Duration(seconds: result == 0 ? 5 : 2),
       ),
     );
     ref.read(selectedPoemsProvider.notifier).clear();
@@ -383,6 +384,7 @@ class _SearchIcon extends StatelessWidget {
           (poem) => PoemCard(
             model: poem,
             onPressed: () {
+              controller.closeView(null);
               Navigator.push<void>(
                 context,
                 MaterialPageRoute(builder: (_) => WritingScreen(model: poem)),

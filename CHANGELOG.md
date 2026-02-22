@@ -1,3 +1,8 @@
+## 2.8.0
+
+- Implement bin for deleting poems
+- Minor UX improvements in the search flow
+
 ## 2.7.0 - 25/03/2026
 
 🚨 Updated authentication server

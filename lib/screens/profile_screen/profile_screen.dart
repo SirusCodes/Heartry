@@ -53,9 +53,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
           final name = _nameController.text;
           if (name.isEmpty) {
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(const SnackBar(content: Text(noNameError)));
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text(noNameError),
+                duration: Duration(seconds: 3),
+              ),
+            );
             return;
           }
           if (_name != _nameController.text)
@@ -261,7 +264,10 @@ class _ProfileUpdateDialog extends StatelessWidget {
       navigator.pop(pickedImage);
     } on PlatformException {
       scaffoldMessenger.showSnackBar(
-        const SnackBar(content: Text("Permission denied")),
+        const SnackBar(
+          content: Text("Permission denied"),
+          duration: Duration(seconds: 3),
+        ),
       );
     }
   }
