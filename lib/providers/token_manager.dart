@@ -16,7 +16,7 @@ class TokenManager {
       _refreshToken = "refreshToken",
       _expireDate = "expireDate";
 
-  final Uri _uri = Uri.parse('https://heartry-server.globeapp.dev');
+  final Uri _uri = Uri.parse('https://api.heartry.darshanrander.com');
 
   Future<String> getAccessToken() async {
     if (!(await _isTokenExpired())) {

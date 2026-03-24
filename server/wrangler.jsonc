@@ -4,7 +4,7 @@
  */
 {
 	"$schema": "node_modules/wrangler/config-schema.json",
-	"name": "server-node",
+	"name": "server",
 	"main": "src/index.ts",
 	"compatibility_date": "2025-09-27",
 	"observability": {
@@ -13,6 +13,12 @@
 	"upload_source_maps": true,
 	"compatibility_flags": [
 		"nodejs_compat"
+	],
+	"routes": [
+		{
+			"pattern": "api.heartry.darshanrander.com",
+			"custom_domain": true
+		}
 	]
 	/**
 	 * Smart Placement
