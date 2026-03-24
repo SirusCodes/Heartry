@@ -1,3 +1,7 @@
+## 2.7.0 - 25/03/2026
+
+🚨 Updated authentication server
+
 ## 2.6.3 - 23/12/2025
 
 Improved error tracking for easier resolution of bugs.
