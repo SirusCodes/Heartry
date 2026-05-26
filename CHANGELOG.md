@@ -1,6 +1,6 @@
-## 2.8.0
+## 2.8.0 - 26/06/2026
 
-- Implement bin for deleting poems
+- Implement bin so you can recover deleted items from the bin within 30 days 🗑️
 - Minor UX improvements in the search flow
 
 ## 2.7.0 - 25/03/2026

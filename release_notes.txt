@@ -1,1 +1,2 @@
-🚨 Updated authentication server
+- Implement bin so you can recover deleted items from the bin within 30 days 🗑️
+- Minor UX improvements in the search flow

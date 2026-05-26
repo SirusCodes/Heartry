@@ -128,7 +128,9 @@ void main() {
           PoemModel(id: 3, title: 'Updated Title 3', poem: 'Updated Poem 3'),
         );
 
-        final allPoems = await db.getPoems();
+        final allPoems = await db.customSelect('SELECT * FROM poem;')
+            .map((row) => PoemModel.fromJson(row.data))
+            .get();
         final ftsPeom = await db.searchPoems("Update");
 
         expect(
@@ -191,8 +193,12 @@ void main() {
         await db.softDeletePoem(poems.first);
 
         final updatedPoems = await db.getPoems();
-        expect(updatedPoems.length, poems.length);
-        expect(updatedPoems.first.deletedAt, isNot(null));
+        expect(updatedPoems.length, poems.length - 1);
+
+        final binPoems = await db.getBinPoems();
+        expect(binPoems.length, 1);
+        expect(binPoems.first.id, poems.first.id);
+        expect(binPoems.first.deletedAt, isNot(null));
 
         final search = await db.searchPoems('1');
         expect(search.length, 0);

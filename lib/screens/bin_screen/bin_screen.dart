@@ -115,7 +115,7 @@ class _Toolbar extends ConsumerWidget {
           const Spacer(),
           IconButton(
             icon: const Icon(Symbols.restore_rounded),
-            onPressed: () => _restore(context, selectedPoems),
+            onPressed: () => _restore(context, selectedPoems, ref),
           ),
 
           IconButton(
@@ -127,19 +127,22 @@ class _Toolbar extends ConsumerWidget {
     );
   }
 
-  Future<void> _restore(BuildContext context, List<PoemModel> poems) async {
-    final navigator = Navigator.of(context);
+  Future<void> _restore(
+    BuildContext context,
+    List<PoemModel> poems,
+    WidgetRef ref,
+  ) async {
     final scaffoldMessenger = ScaffoldMessenger.of(context);
 
     await locator<Database>().restorePoems(poems);
 
-    navigator.pop();
     scaffoldMessenger.showSnackBar(
       const SnackBar(
         content: Text("Restored from bin"),
         duration: Duration(seconds: 3),
       ),
     );
+    ref.read(selectedPoemsProvider.notifier).clear();
   }
 
   void _showWarning(
