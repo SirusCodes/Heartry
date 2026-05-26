@@ -147,8 +147,8 @@ class _ImageScreenState extends State<ImageScreen> {
     );
   }
 
-  void onSharePressed(BuildContext context, int numberOfPages) async {
-    final navigator = Navigator.of(context);
+  Future<void> onSharePressed(BuildContext context, int numberOfPages) async {
+    final rootNavigator = Navigator.of(context, rootNavigator: true);
 
     imageCache.clear();
 
@@ -162,7 +162,12 @@ class _ImageScreenState extends State<ImageScreen> {
       images.add(image);
     }
 
-    navigator.pop();
+    if (rootNavigator.canPop()) {
+      rootNavigator.pop();
+    }
+
+    // Give the dialog dismissal a frame before opening the platform share sheet.
+    await Future<void>.delayed(const Duration(milliseconds: 16));
 
     if (images.length == 1) {
       await _shareAll(images);
@@ -219,6 +224,7 @@ class _ImageScreenState extends State<ImageScreen> {
   void _showProgressDialog(BuildContext context) {
     showDialog<void>(
       context: context,
+      useRootNavigator: true,
       barrierDismissible: false,
       builder: (context) {
         return const Dialog(

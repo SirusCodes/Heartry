@@ -1,3 +1,7 @@
+## 2.8.1
+
+- Fix single image share bug 🐞🔨
+
 ## 2.8.0 - 26/06/2026
 
 - Implement bin so you can recover deleted items from the bin within 30 days 🗑️

@@ -128,7 +128,8 @@ void main() {
           PoemModel(id: 3, title: 'Updated Title 3', poem: 'Updated Poem 3'),
         );
 
-        final allPoems = await db.customSelect('SELECT * FROM poem;')
+        final allPoems = await db
+            .customSelect('SELECT * FROM poem;')
             .map((row) => PoemModel.fromJson(row.data))
             .get();
         final ftsPeom = await db.searchPoems("Update");

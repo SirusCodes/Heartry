@@ -35,12 +35,12 @@ dependencies:
   googleapis: ^14.0.0
   image_picker: ^1.2.1
   liquid_swipe: ^3.0.0
-  package_info_plus: ^8.3.0
+  package_info_plus: ^10.1.0
   path: ^1.8.1
   path_provider: ^2.0.8
   screenshot: ^3.0.0
   sentry_flutter: ^9.9.1
-  share_plus: ^12.0.0
+  share_plus: ^13.1.0
   shared_preferences: ^2.0.12
   sqlite3_flutter_libs: ^0.5.3
   url_launcher: ^6.0.18
@@ -55,7 +55,7 @@ dependencies:
       path: workmanager
       ref: main
   flutter_local_notifications: ^19.1.0
-  flutter_secure_storage: ^9.0.0
+  flutter_secure_storage: ^10.3.0
   equatable: ^2.0.5
   crypto: ^3.0.3
   material_symbols_icons: ^4.2874.0
