@@ -96,40 +96,49 @@ class TextSplittingService {
       return pages;
     }
 
-    final line = remainingLines.first;
-    final heightToSub = _calcTextSize(
-      text: line,
-      fontSize: POEM_TEXT_SIZE,
-      scale: textScale,
-      maxWidth: maxWidth,
-      fontFamily: _textStyle.fontFamily!,
-    ).height;
+    // Find the maximum number of whole lines we can fit in availableHeight
+    int k = 0;
+    double currentHeight = 0;
+    for (int i = 0; i < remainingLines.length; i++) {
+      final line = remainingLines[i];
+      final height = _calcTextSize(
+        text: line,
+        fontSize: POEM_TEXT_SIZE,
+        scale: textScale,
+        maxWidth: maxWidth,
+        fontFamily: _textStyle.fontFamily!,
+      ).height;
 
-    if (heightToSub > availableHeight) {
-      // Split the line into two parts
-      final (firstPart, remaining) = _splitLine(
-        context,
-        textScale,
-        remainingLines.removeAt(0),
-        maxWidth,
-        availableHeight,
-      );
+      if (currentHeight + height <= availableHeight) {
+        currentHeight += height;
+        k = i + 1;
+      } else {
+        break;
+      }
+    }
 
-      // Add the first part to the current page
-      if (firstPart.isNotEmpty) {
-        pages.last.add(firstPart);
+    // If all remaining lines fit on the current page, add them and return
+    if (k == remainingLines.length) {
+      pages.last.addAll(remainingLines);
+      return pages;
+    }
+
+    // If at least one whole line fits, we try to split at a paragraph end or line end
+    if (k > 0) {
+      // Priority 1: Split at paragraph ends (empty lines)
+      int? paragraphSplitIndex;
+      for (int i = k - 1; i >= 1; i--) {
+        if (remainingLines[i].trim().isEmpty) {
+          paragraphSplitIndex = i;
+          break;
+        }
       }
 
-      // Add the remaining part back to the remaining lines
-      if (remaining.isNotEmpty) {
-        remainingLines.insert(0, remaining);
-      }
-
-      if (remainingLines.isNotEmpty) {
-        // Create a new page as the current one is full
+      if (paragraphSplitIndex != null) {
+        pages.last.addAll(remainingLines.sublist(0, paragraphSplitIndex));
         return _getPoemPages(
           context: context,
-          remainingLines: remainingLines,
+          remainingLines: remainingLines.sublist(paragraphSplitIndex),
           pages: [...pages, []],
           textScale: textScale,
           maxWidth: maxWidth,
@@ -137,23 +146,53 @@ class TextSplittingService {
           spaceForPoemY: spaceForPoemY,
         );
       }
+
+      // Priority 2: Split at line ends (after the last whole line that fits)
+      pages.last.addAll(remainingLines.sublist(0, k));
+      return _getPoemPages(
+        context: context,
+        remainingLines: remainingLines.sublist(k),
+        pages: [...pages, []],
+        textScale: textScale,
+        maxWidth: maxWidth,
+        availableHeight: spaceForPoemY,
+        spaceForPoemY: spaceForPoemY,
+      );
     }
 
-    pages.last.add(line);
-    // Return if no remaining lines
-    if (remainingLines.isEmpty) {
-      return pages;
-    }
-    // Recursively call the function with the remaining lines
-    return _getPoemPages(
-      context: context,
-      remainingLines: remainingLines.sublist(1),
-      pages: pages,
-      textScale: textScale,
-      maxWidth: maxWidth,
-      availableHeight: availableHeight - heightToSub,
-      spaceForPoemY: spaceForPoemY,
+    // Priority 3: Split the first line itself since not even one whole line fits
+    final lineToSplit = remainingLines.first;
+    final (firstPart, remaining) = _splitLine(
+      context,
+      textScale,
+      lineToSplit,
+      maxWidth,
+      availableHeight,
     );
+
+    if (firstPart.isNotEmpty) {
+      pages.last.add(firstPart);
+    }
+
+    final nextRemaining = <String>[];
+    if (remaining.isNotEmpty) {
+      nextRemaining.add(remaining);
+    }
+    nextRemaining.addAll(remainingLines.sublist(1));
+
+    if (nextRemaining.isNotEmpty) {
+      return _getPoemPages(
+        context: context,
+        remainingLines: nextRemaining,
+        pages: [...pages, []],
+        textScale: textScale,
+        maxWidth: maxWidth,
+        availableHeight: spaceForPoemY,
+        spaceForPoemY: spaceForPoemY,
+      );
+    }
+
+    return pages;
   }
 
   (String line, String remaining) _splitLine(

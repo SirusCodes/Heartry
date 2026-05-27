@@ -1,5 +1,6 @@
-## 2.8.1
+## Next
 
+- Improve image generation algorithms to have better page splits.
 - Fix single image share bug 🐞🔨
 
 ## 2.8.0 - 26/06/2026
