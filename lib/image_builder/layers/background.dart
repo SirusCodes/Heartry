@@ -1,18 +1,44 @@
-import 'dart:io';
+part of '../core/image_layer.dart';
 
-import 'package:flutter/material.dart';
-import 'package:heartry/image_builder/widgets/editing_option.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:material_symbols_icons/symbols.dart';
+sealed class BackgroundLayer extends ImageLayer {
+  const BackgroundLayer({super.key, required super.nextLayer});
+}
 
-import '../../widgets/color_picker_dialog.dart';
-import '../../widgets/gradient_palette_selector.dart';
-import '../core/image_layer.dart';
+class SolidBackgroundLayer extends BackgroundLayer {
+  SolidBackgroundLayer({
+    super.key,
+    required super.nextLayer,
+    Color? initialColor,
+  }) {
+    if (initialColor != null) {
+      color.value = initialColor;
+    }
+  }
 
-class SolidBackgroundLayer extends ImageLayer {
-  SolidBackgroundLayer({super.key, required super.nextLayer});
+  factory SolidBackgroundLayer.fromJson(
+    Map<String, dynamic> json,
+    ImageLayer? nextLayer,
+  ) {
+    final colorVal = json['color'] as int?;
+    return SolidBackgroundLayer(
+      nextLayer: nextLayer!,
+      initialColor: colorVal != null ? Color(colorVal) : null,
+    );
+  }
+
+  @override
+  LayerType get type => LayerType.solidBackground;
 
   final color = ValueNotifier<Color?>(null);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return {
+      'type': type.value,
+      'color': color.value?.toARGB32(),
+      'next': super.toJson(),
+    };
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -67,10 +93,41 @@ class SolidBackgroundLayer extends ImageLayer {
   }
 }
 
-class GradientBackgroundLayer extends ImageLayer {
-  GradientBackgroundLayer({super.key, super.nextLayer});
+class GradientBackgroundLayer extends BackgroundLayer {
+  GradientBackgroundLayer({
+    super.key,
+    super.nextLayer,
+    List<Color>? initialGradient,
+  }) {
+    if (initialGradient != null) {
+      gradient.value = initialGradient;
+    }
+  }
+
+  factory GradientBackgroundLayer.fromJson(
+    Map<String, dynamic> json,
+    ImageLayer? nextLayer,
+  ) {
+    final gradientList = json['gradient'] as List<dynamic>?;
+    return GradientBackgroundLayer(
+      nextLayer: nextLayer!,
+      initialGradient: gradientList?.map((c) => Color(c as int)).toList(),
+    );
+  }
+
+  @override
+  LayerType get type => LayerType.gradientBackground;
 
   final gradient = ValueNotifier<List<Color>?>(null);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return {
+      'type': type.value,
+      'gradient': gradient.value?.map((c) => c.toARGB32()).toList(),
+      'next': super.toJson(),
+    };
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -136,15 +193,46 @@ class GradientBackgroundLayer extends ImageLayer {
   }
 }
 
-class ImageBackgroundLayer extends ImageLayer {
-  ImageBackgroundLayer({super.key, super.nextLayer});
+class ImageBackgroundLayer extends BackgroundLayer {
+  ImageBackgroundLayer({
+    super.key,
+    super.nextLayer,
+    String? initialImageBase64,
+  }) {
+    if (initialImageBase64 != null) {
+      imageBase64.value = initialImageBase64;
+    }
+  }
 
-  final filePath = ValueNotifier<XFile?>(null);
+  factory ImageBackgroundLayer.fromJson(
+    Map<String, dynamic> json,
+    ImageLayer? nextLayer,
+  ) {
+    final imageBase64 = json['image_base64'] as String?;
+    return ImageBackgroundLayer(
+      nextLayer: nextLayer!,
+      initialImageBase64: imageBase64,
+    );
+  }
+
+  @override
+  LayerType get type => LayerType.imageBackground;
+
+  final imageBase64 = ValueNotifier<String?>(null);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return {
+      'type': type.value,
+      'image_base64': imageBase64.value,
+      'next': super.toJson(),
+    };
+  }
 
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder(
-      valueListenable: filePath,
+      valueListenable: imageBase64,
       builder: (context, value, child) {
         if (value == null) {
           _pickImage();
@@ -158,7 +246,7 @@ class ImageBackgroundLayer extends ImageLayer {
         return Container(
           decoration: BoxDecoration(
             image: DecorationImage(
-              image: FileImage(File(filePath.value!.path)),
+              image: MemoryImage(base64Decode(value)),
               fit: BoxFit.cover,
             ),
           ),
@@ -185,17 +273,20 @@ class ImageBackgroundLayer extends ImageLayer {
     final picker = ImagePicker();
     final picked = await picker.pickImage(
       source: ImageSource.gallery,
-      imageQuality: 90,
+      imageQuality: 50,
+      maxWidth: 800,
+      maxHeight: 800,
     );
 
     if (picked != null) {
-      filePath.value = picked;
+      final bytes = await picked.readAsBytes();
+      imageBase64.value = base64Encode(bytes);
     }
   }
 
   @override
   void dispose() {
-    filePath.dispose();
+    imageBase64.dispose();
     super.dispose();
   }
 }

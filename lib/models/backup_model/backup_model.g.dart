@@ -12,6 +12,9 @@ BackupModel _$BackupModelFromJson(Map<String, dynamic> json) => BackupModel(
   image: (json['image'] as List<dynamic>?)
       ?.map((e) => (e as num).toInt())
       .toList(),
+  templates: (json['templates'] as List<dynamic>?)
+      ?.map((e) => e as Map<String, dynamic>)
+      .toList(),
 );
 
 Map<String, dynamic> _$BackupModelToJson(BackupModel instance) =>
@@ -19,4 +22,5 @@ Map<String, dynamic> _$BackupModelToJson(BackupModel instance) =>
       'poems': const PoemModelConverter().toJson(instance.poems),
       'prefs': instance.prefs,
       'image': instance.image,
+      'templates': instance.templates,
     };

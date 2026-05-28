@@ -1,5 +1,6 @@
 ## Next
 
+- Create your own templates for image generation!
 - Improve image generation algorithms to have better page splits.
 - Fix single image share bug 🐞🔨
 

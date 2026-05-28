@@ -1,14 +1,38 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+part of '../core/image_layer.dart';
 
-import '../core/image_controller.dart';
-import '../core/image_layer.dart';
-import '../widgets/page_details.dart';
+sealed class UtilsLayer extends ImageLayer {
+  const UtilsLayer({super.key, required super.nextLayer});
+}
 
-class PaddingLayer extends ImageLayer {
+class PaddingLayer extends UtilsLayer {
   const PaddingLayer({super.key, required this.padding, super.nextLayer});
 
   final EdgeInsets padding;
+
+  factory PaddingLayer.fromJson(
+    Map<String, dynamic> json,
+    ImageLayer? nextLayer,
+  ) {
+    final h = (json['horizontal'] as num?)?.toDouble() ?? 40.0;
+    final v = (json['vertical'] as num?)?.toDouble() ?? 50.0;
+    return PaddingLayer(
+      padding: EdgeInsets.symmetric(horizontal: h, vertical: v),
+      nextLayer: nextLayer!,
+    );
+  }
+
+  @override
+  LayerType get type => LayerType.padding;
+
+  @override
+  Map<String, dynamic> toJson() {
+    return {
+      'type': type.value,
+      'horizontal': padding.left,
+      'vertical': padding.top,
+      'next': super.toJson(),
+    };
+  }
 
   @override
   EdgeInsets getPadding() {
@@ -21,7 +45,7 @@ class PaddingLayer extends ImageLayer {
   }
 }
 
-class PageCounterLayer extends ImageLayer {
+class PageCounterLayer extends UtilsLayer {
   const PageCounterLayer({
     super.key,
     super.nextLayer,
@@ -29,6 +53,22 @@ class PageCounterLayer extends ImageLayer {
   });
 
   final ImageController controller;
+
+  factory PageCounterLayer.fromJson(
+    Map<String, dynamic> json,
+    ImageLayer? nextLayer,
+    ImageController controller,
+  ) {
+    return PageCounterLayer(controller: controller, nextLayer: nextLayer!);
+  }
+
+  @override
+  LayerType get type => LayerType.pageCounter;
+
+  @override
+  Map<String, dynamic> toJson() {
+    return {'type': type.value, 'next': super.toJson()};
+  }
 
   @override
   Widget build(BuildContext context) {

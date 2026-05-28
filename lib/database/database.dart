@@ -15,12 +15,20 @@ class Poem extends Table {
   DateTimeColumn get deletedAt => dateTime().nullable()();
 }
 
-@DriftDatabase(tables: [Poem])
+@DataClassName("TemplateModel")
+class Templates extends Table {
+  IntColumn get id => integer().nullable().autoIncrement()();
+  TextColumn get name => text()();
+  TextColumn get data => text()(); // Stores recursive JSON layer tree
+  BoolColumn get isDefault => boolean().withDefault(const Constant(false))();
+}
+
+@DriftDatabase(tables: [Poem, Templates])
 class Database extends _$Database {
   Database([QueryExecutor? e]) : super(e ?? openConnection());
 
   @override
-  int get schemaVersion => 4;
+  int get schemaVersion => 5;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -29,6 +37,7 @@ class Database extends _$Database {
 
       // Create the FTS table and triggers on a fwresh install so search works
       await _createFTS5();
+      await _prepopulateDefaultTemplates();
     },
     beforeOpen: (details) async {
       await customStatement('PRAGMA foreign_keys = ON');
@@ -51,6 +60,10 @@ class Database extends _$Database {
         await _createFTSTableIfNotExist();
 
         await m.addColumn(poem, poem.deletedAt);
+      },
+      from4To5: (m, schema) async {
+        await m.createTable(schema.templates);
+        await _prepopulateDefaultTemplates();
       },
     ),
   );
@@ -197,4 +210,179 @@ class Database extends _$Database {
         ''');
     });
   }
+
+  Future<void> _prepopulateDefaultTemplates() async {
+    final defaultTemplates = [
+      const TemplateModel(
+        id: 1,
+        name: 'Solid Background',
+        data: _solidBackgroundTemplate,
+        isDefault: true,
+      ),
+      const TemplateModel(
+        id: 2,
+        name: 'Gradient Background',
+        data: _gradientBackgroundTemplate,
+        isDefault: true,
+      ),
+      const TemplateModel(
+        id: 3,
+        name: 'Gradient Bubble Overlay',
+        data: _gradientBubbleOverlayTemplate,
+        isDefault: true,
+      ),
+      const TemplateModel(
+        id: 4,
+        name: 'Solid Bubble Overlay',
+        data: _solidBubbleOverlayTemplate,
+        isDefault: true,
+      ),
+      const TemplateModel(
+        id: 5,
+        name: 'Image Background',
+        data: _imageBackgroundTemplate,
+        isDefault: true,
+      ),
+    ];
+
+    await batch((batch) {
+      batch.insertAll(templates, defaultTemplates);
+    });
+  }
+
+  Future<List<TemplateModel>> getTemplates() => select(templates).get();
+
+  Stream<List<TemplateModel>> getTemplatesStream() => select(templates).watch();
+
+  Future<int> insertTemplate(TemplateModel model) =>
+      into(templates).insert(model);
+
+  Future<bool> updateTemplate(TemplateModel model) =>
+      update(templates).replace(model);
+
+  Future<int> deleteTemplate(TemplateModel model) =>
+      delete(templates).delete(model);
+
+  Future<void> insertBatchTemplates(List<TemplateModel> models) =>
+      batch((batch) {
+        batch.insertAll(templates, models);
+      });
+
+  Future<void> deleteAllTemplates() => delete(templates).go();
 }
+
+const String _solidBackgroundTemplate = '''
+{
+  "type": "solid_background",
+  "color": null,
+  "next": {
+    "type": "page_counter",
+    "next": {
+      "type": "padding",
+      "horizontal": 40.0,
+      "vertical": 50.0,
+      "next": {
+        "type": "text"
+      }
+    }
+  }
+}''';
+
+const String _gradientBackgroundTemplate = '''
+{
+  "type": "gradient_background",
+  "gradient": null,
+  "next": {
+    "type": "page_counter",
+    "next": {
+      "type": "padding",
+      "horizontal": 40.0,
+      "vertical": 50.0,
+      "next": {
+        "type": "text"
+      }
+    }
+  }
+}''';
+
+const String _gradientBubbleOverlayTemplate = '''
+{
+  "type": "gradient_background",
+  "gradient": null,
+  "next": {
+    "type": "bubble_overlay",
+    "next": {
+      "type": "page_counter",
+      "next": {
+        "type": "padding",
+        "horizontal": 40.0,
+        "vertical": 50.0,
+        "next": {
+          "type": "frosted_glass",
+          "next": {
+            "type": "padding",
+            "horizontal": 16.0,
+            "vertical": 16.0,
+            "next": {
+              "type": "text"
+            }
+          }
+        }
+      }
+    }
+  }
+}''';
+
+const String _solidBubbleOverlayTemplate = '''
+{
+  "type": "solid_background",
+  "color": null,
+  "next": {
+    "type": "bubble_overlay",
+    "next": {
+      "type": "page_counter",
+      "next": {
+        "type": "padding",
+        "horizontal": 40.0,
+        "vertical": 50.0,
+        "next": {
+          "type": "frosted_glass",
+          "next": {
+            "type": "padding",
+            "horizontal": 16.0,
+            "vertical": 16.0,
+            "next": {
+              "type": "text"
+            }
+          }
+        }
+      }
+    }
+  }
+}''';
+
+const String _imageBackgroundTemplate = '''
+{
+  "type": "image_background",
+  "image_base64": null,
+  "next": {
+    "type": "blur_overlay",
+    "blur": 5.0,
+    "next": {
+      "type": "translucent_overlay",
+      "color": 4294967295,
+      "opacity": 0.2,
+      "next": {
+        "type": "page_counter",
+        "next": {
+          "type": "padding",
+          "horizontal": 40.0,
+          "vertical": 50.0,
+          "next": {
+            "type": "text"
+          }
+        }
+      }
+    }
+  }
+}''';

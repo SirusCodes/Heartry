@@ -1,10 +1,26 @@
-import 'dart:ui';
+part of '../core/image_layer.dart';
 
-import 'package:flutter/material.dart';
-import '../core/image_layer.dart';
+sealed class FrameLayer extends ImageLayer {
+  const FrameLayer({super.key, required super.nextLayer});
+}
 
-class FrostedGlassLayer extends ImageLayer {
+class FrostedGlassLayer extends FrameLayer {
   const FrostedGlassLayer({super.key, super.nextLayer});
+
+  factory FrostedGlassLayer.fromJson(
+    Map<String, dynamic> json,
+    ImageLayer? nextLayer,
+  ) {
+    return FrostedGlassLayer(nextLayer: nextLayer!);
+  }
+
+  @override
+  LayerType get type => LayerType.frostedGlass;
+
+  @override
+  Map<String, dynamic> toJson() {
+    return {'type': type.value, 'next': super.toJson()};
+  }
 
   @override
   Widget build(BuildContext context) {

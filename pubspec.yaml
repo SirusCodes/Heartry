@@ -64,6 +64,8 @@ dev_dependencies:
   sentry_dart_plugin: ^3.2.0
   flutter_test:
     sdk: flutter
+  integration_test:
+    sdk: flutter
   build_runner: null
   drift_dev: ^2.29.0
   flutter_native_splash: ^2.4.7

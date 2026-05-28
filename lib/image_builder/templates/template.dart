@@ -1,152 +1,73 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import '../core/image_controller.dart';
-
 import '../core/image_layer.dart';
-import '../layers/background.dart';
-import '../layers/frames.dart';
-import '../layers/overlay.dart';
-import '../layers/text.dart';
-import '../layers/utils.dart';
 
-abstract class Template {
-  Template({required this.name});
-
-  ImageLayer getLayers(ImageController controller);
+class Template {
+  final int? id;
   final String name;
+  final String data;
+  final bool isDefault;
 
-  Widget getIcon(BuildContext context);
-}
+  Template({
+    this.id,
+    required this.name,
+    required this.data,
+    this.isDefault = false,
+  });
 
-class SolidBackgroundTemplate implements Template {
-  @override
   ImageLayer getLayers(ImageController controller) {
-    return SolidBackgroundLayer(
-      nextLayer: PageCounterLayer(
-        controller: controller,
-        nextLayer: PaddingLayer(
-          padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 50),
-          nextLayer: TextLayer(controller: controller),
-        ),
-      ),
-    );
+    final Map<String, dynamic> decoded = json.decode(data);
+    return buildLayerChainFromJson(decoded, controller);
   }
 
-  @override
-  String get name => 'Solid Background';
-
-  @override
   Widget getIcon(BuildContext context) {
-    return const Icon(Icons.circle);
-  }
-}
-
-class GradientBackgroundTemplate implements Template {
-  @override
-  ImageLayer getLayers(ImageController controller) {
-    return GradientBackgroundLayer(
-      nextLayer: PageCounterLayer(
-        controller: controller,
-        nextLayer: PaddingLayer(
-          padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 50),
-          nextLayer: TextLayer(controller: controller),
-        ),
-      ),
-    );
-  }
-
-  @override
-  String get name => 'Gradient Background';
-
-  @override
-  Widget getIcon(BuildContext context) {
-    return const Icon(Icons.gradient);
+    if (name.contains('Solid')) {
+      return const Icon(Icons.circle);
+    } else if (name.contains('Gradient')) {
+      return const Icon(Icons.gradient);
+    } else if (name.contains('Image')) {
+      return const Icon(Symbols.image_rounded);
+    }
+    return const Icon(Icons.brush_rounded);
   }
 }
 
-class GradientBubbleOverlayTemplate implements Template {
-  @override
-  ImageLayer getLayers(ImageController controller) {
-    return GradientBackgroundLayer(
-      nextLayer: BubbleOverlayLayer(
-        nextLayer: PageCounterLayer(
-          controller: controller,
-          nextLayer: PaddingLayer(
-            padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 50),
-            nextLayer: FrostedGlassLayer(
-              nextLayer: PaddingLayer(
-                padding: const EdgeInsets.all(16),
-                nextLayer: TextLayer(controller: controller),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
+ImageLayer buildLayerChainFromJson(
+  Map<String, dynamic> jsonMap,
+  ImageController controller,
+) {
+  final typeString = jsonMap['type'] as String;
+  final type = LayerType.fromValue(typeString);
+  final nextJson = jsonMap['next'] as Map<String, dynamic>?;
 
-  @override
-  String get name => 'Gradient Bubble Overlay';
+  final ImageLayer? nextLayer = nextJson != null
+      ? buildLayerChainFromJson(nextJson, controller)
+      : null;
 
-  @override
-  Widget getIcon(BuildContext context) {
-    return const Icon(Icons.bubble_chart);
-  }
-}
-
-class SolidBubbleOverlayTemplate implements Template {
-  @override
-  ImageLayer getLayers(ImageController controller) {
-    return SolidBackgroundLayer(
-      nextLayer: BubbleOverlayLayer(
-        nextLayer: PageCounterLayer(
-          controller: controller,
-          nextLayer: PaddingLayer(
-            padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 50),
-            nextLayer: FrostedGlassLayer(
-              nextLayer: PaddingLayer(
-                padding: const EdgeInsets.all(16),
-                nextLayer: TextLayer(controller: controller),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  @override
-  String get name => 'Solid Bubble Overlay';
-
-  @override
-  Widget getIcon(BuildContext context) {
-    return const Icon(Icons.bubble_chart_outlined);
-  }
-}
-
-class ImageBackgroundTemplate implements Template {
-  @override
-  ImageLayer getLayers(ImageController controller) {
-    return ImageBackgroundLayer(
-      nextLayer: BlurOverlayLayer(
-        nextLayer: TranlucentOverlayLayer(
-          nextLayer: PageCounterLayer(
-            controller: controller,
-            nextLayer: PaddingLayer(
-              padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 50),
-              nextLayer: TextLayer(controller: controller),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  @override
-  String get name => 'Image Background';
-
-  @override
-  Widget getIcon(BuildContext context) {
-    return const Icon(Symbols.image_rounded);
+  switch (type) {
+    case LayerType.solidBackground:
+      return SolidBackgroundLayer.fromJson(jsonMap, nextLayer);
+    case LayerType.gradientBackground:
+      return GradientBackgroundLayer.fromJson(jsonMap, nextLayer);
+    case LayerType.imageBackground:
+      return ImageBackgroundLayer.fromJson(jsonMap, nextLayer);
+    case LayerType.blurOverlay:
+      return BlurOverlayLayer.fromJson(jsonMap, nextLayer);
+    case LayerType.translucentOverlay:
+      return TranlucentOverlayLayer.fromJson(jsonMap, nextLayer);
+    case LayerType.bubbleOverlay:
+      return BubbleOverlayLayer.fromJson(jsonMap, nextLayer);
+    case LayerType.frostedGlass:
+      return FrostedGlassLayer.fromJson(jsonMap, nextLayer);
+    case LayerType.padding:
+      return PaddingLayer.fromJson(jsonMap, nextLayer);
+    case LayerType.pageCounter:
+      return PageCounterLayer.fromJson(jsonMap, nextLayer, controller);
+    case LayerType.text:
+      return TextLayer.fromJson(jsonMap, controller);
+    case null:
+      throw Exception('Unknown layer type: $typeString');
   }
 }

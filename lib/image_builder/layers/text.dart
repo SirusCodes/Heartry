@@ -1,23 +1,34 @@
-import 'package:flutter/material.dart';
-import 'package:heartry/image_builder/widgets/editing_option.dart';
-import 'package:heartry/image_builder/widgets/slider_option.dart';
-import '../core/font_family.dart';
-import 'package:material_symbols_icons/symbols.dart';
-
-import '../../widgets/color_picker_dialog.dart';
-import '../widgets/page_details.dart';
-import '../widgets/poem_image_text.dart';
-import '../core/image_controller.dart';
-import '../core/image_layer.dart';
+part of '../core/image_layer.dart';
 
 class TextLayer extends ImageLayer {
   TextLayer({super.key, required this.controller}) : super(nextLayer: null);
+
+  factory TextLayer.fromJson(
+    Map<String, dynamic> json,
+    ImageController controller,
+  ) {
+    return TextLayer(controller: controller);
+  }
+
+  @override
+  LayerType get type => LayerType.text;
 
   final _textScale = ValueNotifier<double>(1.0);
   final _textColor = ValueNotifier<Color?>(null);
   final _fontFamily = ValueNotifier<FontFamily>(FontFamily.caveat);
 
   final ImageController controller;
+
+  @override
+  Map<String, dynamic> toJson() {
+    return {
+      'type': type.value,
+      'textScale': _textScale.value,
+      'textColor': _textColor.value?.toARGB32(),
+      'fontFamily': _fontFamily.value.name,
+      'next': super.toJson(),
+    };
+  }
 
   @override
   Widget build(BuildContext context) {

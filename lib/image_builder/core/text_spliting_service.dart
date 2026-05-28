@@ -170,6 +170,35 @@ class TextSplittingService {
       availableHeight,
     );
 
+    if (firstPart.isEmpty && availableHeight == spaceForPoemY) {
+      // Safety guard: if we are on a fresh page and not even the first word fits,
+      // we must force-add at least the first word to make progress and avoid infinite recursion.
+      final firstWord = lineToSplit.split(" ").first;
+      final rest = lineToSplit.substring(
+        math.min(firstWord.length + 1, lineToSplit.length),
+      );
+      pages.last.add(firstWord);
+
+      final nextRemaining = <String>[];
+      if (rest.isNotEmpty) {
+        nextRemaining.add(rest);
+      }
+      nextRemaining.addAll(remainingLines.sublist(1));
+
+      if (nextRemaining.isEmpty) {
+        return pages;
+      }
+      return _getPoemPages(
+        context: context,
+        remainingLines: nextRemaining,
+        pages: [...pages, []],
+        textScale: textScale,
+        maxWidth: maxWidth,
+        availableHeight: spaceForPoemY,
+        spaceForPoemY: spaceForPoemY,
+      );
+    }
+
     if (firstPart.isNotEmpty) {
       pages.last.add(firstPart);
     }

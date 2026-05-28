@@ -1,20 +1,33 @@
-import 'dart:io';
-import 'dart:ui';
+part of '../core/image_layer.dart';
 
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:material_symbols_icons/symbols.dart';
+sealed class OverlayLayer extends ImageLayer {
+  const OverlayLayer({super.key, required super.nextLayer});
+}
 
-import '../../database/config.dart';
-import '../../widgets/color_picker_dialog.dart';
-import '../core/image_layer.dart';
-import '../widgets/editing_option.dart';
-import '../widgets/slider_option.dart';
+class BlurOverlayLayer extends OverlayLayer {
+  BlurOverlayLayer({super.key, required super.nextLayer, double? initialBlur}) {
+    if (initialBlur != null) {
+      blur.value = initialBlur;
+    }
+  }
 
-class BlurOverlayLayer extends ImageLayer {
-  BlurOverlayLayer({super.key, super.nextLayer});
+  factory BlurOverlayLayer.fromJson(
+    Map<String, dynamic> json,
+    ImageLayer? nextLayer,
+  ) {
+    final blurVal = (json['blur'] as num?)?.toDouble();
+    return BlurOverlayLayer(nextLayer: nextLayer!, initialBlur: blurVal);
+  }
+
+  @override
+  LayerType get type => LayerType.blurOverlay;
 
   final blur = ValueNotifier<double>(5.0);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return {'type': type.value, 'blur': blur.value, 'next': super.toJson()};
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -63,11 +76,49 @@ class BlurOverlayLayer extends ImageLayer {
   }
 }
 
-class TranlucentOverlayLayer extends ImageLayer {
-  TranlucentOverlayLayer({super.key, required super.nextLayer});
+class TranlucentOverlayLayer extends OverlayLayer {
+  TranlucentOverlayLayer({
+    super.key,
+    required super.nextLayer,
+    Color? initialColor,
+    double? initialOpacity,
+  }) {
+    if (initialColor != null) {
+      color.value = initialColor;
+    }
+    if (initialOpacity != null) {
+      opacity.value = initialOpacity;
+    }
+  }
+
+  factory TranlucentOverlayLayer.fromJson(
+    Map<String, dynamic> json,
+    ImageLayer? nextLayer,
+  ) {
+    final colorVal = json['color'] as int?;
+    final opacityVal = (json['opacity'] as num?)?.toDouble();
+    return TranlucentOverlayLayer(
+      nextLayer: nextLayer!,
+      initialColor: colorVal != null ? Color(colorVal) : null,
+      initialOpacity: opacityVal,
+    );
+  }
+
+  @override
+  LayerType get type => LayerType.translucentOverlay;
 
   final opacity = ValueNotifier<double>(0.2);
   final color = ValueNotifier<Color>(Colors.white);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return {
+      'type': type.value,
+      'color': color.value.toARGB32(),
+      'opacity': opacity.value,
+      'next': super.toJson(),
+    };
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -136,8 +187,23 @@ class TranlucentOverlayLayer extends ImageLayer {
   }
 }
 
-class BubbleOverlayLayer extends ImageLayer {
-  const BubbleOverlayLayer({super.key, super.nextLayer});
+class BubbleOverlayLayer extends OverlayLayer {
+  const BubbleOverlayLayer({super.key, required super.nextLayer});
+
+  factory BubbleOverlayLayer.fromJson(
+    Map<String, dynamic> json,
+    ImageLayer? nextLayer,
+  ) {
+    return BubbleOverlayLayer(nextLayer: nextLayer!);
+  }
+
+  @override
+  LayerType get type => LayerType.bubbleOverlay;
+
+  @override
+  Map<String, dynamic> toJson() {
+    return {'type': type.value, 'next': super.toJson()};
+  }
 
   @override
   Widget build(BuildContext context) {

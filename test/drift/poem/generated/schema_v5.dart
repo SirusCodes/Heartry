@@ -186,14 +186,174 @@ class PoemData extends DataClass implements Insertable<PoemData> {
           other.deletedAt == this.deletedAt);
 }
 
-class DatabaseAtV4 extends GeneratedDatabase {
-  DatabaseAtV4(QueryExecutor e) : super(e);
+class Templates extends Table with TableInfo<Templates, TemplatesData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  Templates(this.attachedDatabase, [this._alias]);
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    true,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  late final GeneratedColumn<String> data = GeneratedColumn<String>(
+    'data',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  late final GeneratedColumn<bool> isDefault = GeneratedColumn<bool>(
+    'is_default',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_default" IN (0, 1))',
+    ),
+    defaultValue: const CustomExpression('0'),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, name, data, isDefault];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'templates';
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  TemplatesData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return TemplatesData(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      ),
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      )!,
+      data: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}data'],
+      )!,
+      isDefault: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_default'],
+      )!,
+    );
+  }
+
+  @override
+  Templates createAlias(String alias) {
+    return Templates(attachedDatabase, alias);
+  }
+}
+
+class TemplatesData extends DataClass implements Insertable<TemplatesData> {
+  final int? id;
+  final String name;
+  final String data;
+  final bool isDefault;
+  const TemplatesData({
+    this.id,
+    required this.name,
+    required this.data,
+    required this.isDefault,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (!nullToAbsent || id != null) {
+      map['id'] = Variable<int>(id);
+    }
+    map['name'] = Variable<String>(name);
+    map['data'] = Variable<String>(data);
+    map['is_default'] = Variable<bool>(isDefault);
+    return map;
+  }
+
+  factory TemplatesData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return TemplatesData(
+      id: serializer.fromJson<int?>(json['id']),
+      name: serializer.fromJson<String>(json['name']),
+      data: serializer.fromJson<String>(json['data']),
+      isDefault: serializer.fromJson<bool>(json['isDefault']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int?>(id),
+      'name': serializer.toJson<String>(name),
+      'data': serializer.toJson<String>(data),
+      'isDefault': serializer.toJson<bool>(isDefault),
+    };
+  }
+
+  TemplatesData copyWith({
+    Value<int?> id = const Value.absent(),
+    String? name,
+    String? data,
+    bool? isDefault,
+  }) => TemplatesData(
+    id: id.present ? id.value : this.id,
+    name: name ?? this.name,
+    data: data ?? this.data,
+    isDefault: isDefault ?? this.isDefault,
+  );
+  @override
+  String toString() {
+    return (StringBuffer('TemplatesData(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('data: $data, ')
+          ..write('isDefault: $isDefault')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, name, data, isDefault);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is TemplatesData &&
+          other.id == this.id &&
+          other.name == this.name &&
+          other.data == this.data &&
+          other.isDefault == this.isDefault);
+}
+
+class DatabaseAtV5 extends GeneratedDatabase {
+  DatabaseAtV5(QueryExecutor e) : super(e);
   late final Poem poem = Poem(this);
+  late final Templates templates = Templates(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
-  List<DatabaseSchemaEntity> get allSchemaEntities => [poem];
+  List<DatabaseSchemaEntity> get allSchemaEntities => [poem, templates];
   @override
-  int get schemaVersion => 4;
+  int get schemaVersion => 5;
 }

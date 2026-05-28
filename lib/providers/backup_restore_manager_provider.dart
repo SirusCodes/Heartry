@@ -90,6 +90,16 @@ class BackupRestoreManagerProvider {
     await db.deleteAllPoems();
     await db.insertBatchPoems(backup.poems);
 
+    if (backup.templates != null) {
+      await db.transaction(() async {
+        await db.deleteAllTemplates();
+        final templatesModels = backup.templates!
+            .map((t) => TemplateModel.fromJson(t))
+            .toList();
+        await db.insertBatchTemplates(templatesModels);
+      });
+    }
+
     await _setAllSharedPrefs(backup.prefs);
 
     if (backup.image != null) {
@@ -149,6 +159,7 @@ class BackupRestoreManagerProvider {
 
   Future<io.File> createBackupFile() async {
     final poems = await locator.get<Database>().getPoems();
+    final templates = await locator.get<Database>().getTemplates();
     final allPrefs = await _getAllSharedPrefs();
 
     List<int>? imageBytes;
@@ -159,6 +170,7 @@ class BackupRestoreManagerProvider {
       poems: poems,
       prefs: allPrefs,
       image: imageBytes,
+      templates: templates.map((t) => t.toJson()).toList(),
     );
 
     final data = json.encode(backup);

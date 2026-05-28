@@ -15,6 +15,7 @@ let package = Package(
         .library(name: "FlutterGeneratedPluginSwiftPackage", type: .static, targets: ["FlutterGeneratedPluginSwiftPackage"])
     ],
     dependencies: [
+        .package(name: "integration_test", path: "../.packages/integration_test"),
         .package(name: "flutter_native_splash", path: "../.packages/flutter_native_splash-2.4.7"),
         .package(name: "url_launcher_ios", path: "../.packages/url_launcher_ios-6.4.1"),
         .package(name: "sqlite3_flutter_libs", path: "../.packages/sqlite3_flutter_libs-0.5.42"),
@@ -32,6 +33,7 @@ let package = Package(
         .target(
             name: "FlutterGeneratedPluginSwiftPackage",
             dependencies: [
+                .product(name: "integration-test", package: "integration_test"),
                 .product(name: "flutter-native-splash", package: "flutter_native_splash"),
                 .product(name: "url-launcher-ios", package: "url_launcher_ios"),
                 .product(name: "sqlite3-flutter-libs", package: "sqlite3_flutter_libs"),
