@@ -93,7 +93,8 @@ void main() {
   });
 
   testWidgets(
-    'Updating image background value using type mutates target layer and serializes correctly',
+    '''
+Updating image background value using type mutates target layer and serializes correctly''',
     (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(

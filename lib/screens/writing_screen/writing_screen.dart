@@ -1,20 +1,23 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:drift/drift.dart' show Value;
+import 'package:go_router/go_router.dart';
 
 import '../../database/config.dart';
 import '../../database/database.dart';
 import '../../init_get_it.dart';
 import '../../utils/share_helper.dart';
-import '../../utils/undo_redo.dart';
 import '../../widgets/share_option_list.dart';
 
 class WritingScreen extends StatefulWidget {
-  const WritingScreen({super.key, this.model});
+  const WritingScreen({super.key, this.model, this.poemId});
+
+  static const String routePath = '/writing';
+  static const String routePathWithId = '/writing/:id';
+  static String route([int? id]) => id == null ? '/writing' : '/writing/$id';
 
   final PoemModel? model;
+  final int? poemId;
 
   @override
   State<WritingScreen> createState() => _WritingScreenState();
@@ -24,14 +27,14 @@ class _WritingScreenState extends State<WritingScreen>
     with WidgetsBindingObserver {
   late FocusNode titleNode, poemNode;
 
-  final UndoRedo undoRedo = locator<UndoRedo>();
   final Database poemDB = locator<Database>();
+  final UndoHistoryController _undoController = UndoHistoryController();
 
   PoemModel? _poemModel;
-
-  Timer? searchOnStoppedTyping;
+  bool _isLoading = false;
 
   late TextEditingController _titleTextController;
+  late TextEditingController _poemTextController;
 
   @override
   void initState() {
@@ -39,29 +42,54 @@ class _WritingScreenState extends State<WritingScreen>
     titleNode = FocusNode();
     poemNode = FocusNode();
 
+    _titleTextController = TextEditingController();
+    _poemTextController = TextEditingController();
+
     _poemModel = widget.model;
 
-    _titleTextController = TextEditingController(text: _poemModel?.title);
-    undoRedo.textEditingController = TextEditingController(
-      text: _poemModel?.poem,
-    );
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      undoRedo.registerChange(undoRedo.textEditingController.text);
-    });
+    if (_poemModel == null && widget.poemId != null) {
+      _isLoading = true;
+      _loadPoemFromDb();
+    } else {
+      _initializeControllers();
+    }
 
     WidgetsBinding.instance.addObserver(this);
+  }
+
+  void _initializeControllers() {
+    _titleTextController.text = _poemModel?.title ?? "";
+    _poemTextController.text = _poemModel?.poem ?? "";
+  }
+
+  Future<void> _loadPoemFromDb() async {
+    final poem = await poemDB.getPoemById(widget.poemId!);
+    if (!mounted) return;
+
+    if (poem == null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          context.go(WritingScreen.routePath);
+        }
+      });
+      return;
+    }
+
+    setState(() {
+      _poemModel = poem;
+      _isLoading = false;
+      _initializeControllers();
+    });
   }
 
   @override
   void dispose() {
     titleNode.dispose();
     poemNode.dispose();
-    searchOnStoppedTyping?.cancel();
-    undoRedo.clearAllStack();
+    _undoController.dispose();
 
     _titleTextController.dispose();
-    undoRedo.textEditingController.dispose();
+    _poemTextController.dispose();
 
     _handleDBChanges();
     WidgetsBinding.instance.removeObserver(this);
@@ -75,6 +103,9 @@ class _WritingScreenState extends State<WritingScreen>
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
     return Scaffold(
       body: PopScope(
         onPopInvokedWithResult: (_, __) {
@@ -109,7 +140,8 @@ class _WritingScreenState extends State<WritingScreen>
                     ),
                     TextFormField(
                       textCapitalization: TextCapitalization.sentences,
-                      controller: undoRedo.textEditingController,
+                      controller: _poemTextController,
+                      undoController: _undoController,
                       scrollPadding: const EdgeInsets.only(bottom: 100),
                       focusNode: poemNode,
                       maxLines: null,
@@ -118,7 +150,6 @@ class _WritingScreenState extends State<WritingScreen>
                         hintText: "Start writing your heart out....",
                         border: InputBorder.none,
                       ),
-                      onChanged: _onChangeHandler,
                       style: const TextStyle(fontSize: 20),
                     ),
                     const SizedBox(height: kBottomNavigationBarHeight),
@@ -137,7 +168,7 @@ class _WritingScreenState extends State<WritingScreen>
                       onShareAsText: () {
                         ShareHelper.shareAsText(
                           title: _titleTextController.text,
-                          poem: undoRedo.textEditingController.text,
+                          poem: _poemTextController.text,
                           poet: poet ?? "Anonymous",
                         );
                         _handleDBChanges();
@@ -146,11 +177,12 @@ class _WritingScreenState extends State<WritingScreen>
                         ShareHelper.shareAsImage(
                           context,
                           title: _titleTextController.text,
-                          poem: undoRedo.textEditingController.text,
+                          poem: _poemTextController.text,
                           poet: poet ?? "Anonymous",
                         );
                         _handleDBChanges();
                       },
+                      undoController: _undoController,
                     );
                   },
                 ),
@@ -162,26 +194,14 @@ class _WritingScreenState extends State<WritingScreen>
     );
   }
 
-  void _onChangeHandler(String value) {
-    const duration = Duration(milliseconds: 800);
-
-    if (searchOnStoppedTyping != null) {
-      searchOnStoppedTyping!.cancel();
-    }
-    searchOnStoppedTyping = Timer(
-      duration,
-      () => undoRedo.registerChange(value),
-    );
-  }
-
   bool get _hasChanged {
     return _poemModel?.title != _titleTextController.text ||
-        _poemModel?.poem != undoRedo.textEditingController.text;
+        _poemModel?.poem != _poemTextController.text;
   }
 
   bool get _isNotEmpty =>
       (_titleTextController.text).isNotEmpty ||
-      (undoRedo.textEditingController.text).isNotEmpty;
+      (_poemTextController.text).isNotEmpty;
 
   bool get _isEmpty => !_isNotEmpty;
 
@@ -197,7 +217,7 @@ class _WritingScreenState extends State<WritingScreen>
   Future<void> _save() async {
     _poemModel = PoemModel(
       title: _titleTextController.text.trim(),
-      poem: undoRedo.textEditingController.text.trim(),
+      poem: _poemTextController.text.trim(),
     );
     final id = await poemDB.insertPoem(_poemModel!);
     _poemModel = _poemModel!.copyWith(id: Value(id));
@@ -207,7 +227,7 @@ class _WritingScreenState extends State<WritingScreen>
     _poemModel = _poemModel!.copyWith(
       lastEdit: Value(DateTime.now()),
       title: _titleTextController.text.trim(),
-      poem: undoRedo.textEditingController.text.trim(),
+      poem: _poemTextController.text.trim(),
     );
     poemDB.updatePoem(_poemModel!);
   }
@@ -217,9 +237,11 @@ class _WritingBottomAppBar extends StatelessWidget {
   const _WritingBottomAppBar({
     required this.onShareAsImage,
     required this.onShareAsText,
+    required this.undoController,
   });
 
   final VoidCallback onShareAsImage, onShareAsText;
+  final UndoHistoryController undoController;
 
   @override
   Widget build(BuildContext context) {
@@ -228,25 +250,25 @@ class _WritingBottomAppBar extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Consumer(
-            builder: (context, ref, child) {
-              final undoRedo = ref.watch(undoRedoProvider);
+          ValueListenableBuilder<UndoHistoryValue>(
+            valueListenable: undoController,
+            builder: (context, undoState, child) {
               return Row(
                 children: <Widget>[
                   if (isIOS)
                     IconButton(
                       icon: const Icon(Icons.arrow_back_ios_rounded),
-                      onPressed: () => Navigator.pop(context),
+                      onPressed: () => context.pop(),
                     ),
                   if (!isIOS) const SizedBox(width: 48),
                   const Spacer(),
                   IconButton(
                     icon: const Icon(Icons.undo_rounded),
-                    onPressed: undoRedo.canUndo ? undoRedo.undo : null,
+                    onPressed: undoState.canUndo ? undoController.undo : null,
                   ),
                   IconButton(
                     icon: const Icon(Icons.redo_rounded),
-                    onPressed: undoRedo.canRedo ? undoRedo.redo : null,
+                    onPressed: undoState.canRedo ? undoController.redo : null,
                   ),
                   const Spacer(),
                   IconButton(

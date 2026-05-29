@@ -8,6 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:heartry/screens/poems_screen/providers/multi_select_provider.dart';
 import 'package:heartry/utils/workmanager_helper.dart';
+import 'package:go_router/go_router.dart';
 import '../../database/database.dart';
 import '../../init_get_it.dart';
 import 'package:url_launcher/url_launcher_string.dart';
@@ -19,14 +20,16 @@ import '../../providers/list_grid_provider.dart';
 import '../../providers/stream_poem_provider.dart';
 import '../../utils/share_helper.dart';
 import '../../widgets/share_option_list.dart';
+import '../settings_screen/settings_screen.dart';
 import '../profile_screen/profile_screen.dart';
 import '../reader_screen/reader_screen.dart';
-import '../settings_screen/settings_screen.dart';
 import '../writing_screen/writing_screen.dart';
 import 'widgets/poem_card.dart';
 
 class PoemScreen extends ConsumerStatefulWidget {
   const PoemScreen({super.key});
+
+  static const String routePath = '/poems';
 
   @override
   ConsumerState<PoemScreen> createState() => _PoemScreenState();
@@ -93,10 +96,7 @@ class _PoemScreenState extends ConsumerState<PoemScreen> {
         child: Row(
           children: [
             IconButton(
-              onPressed: () => Navigator.push<void>(
-                context,
-                MaterialPageRoute(builder: (_) => const SettingsScreen()),
-              ),
+              onPressed: () => context.push(SettingsScreen.routePath),
               icon: const Icon(Icons.settings),
             ),
           ],
@@ -160,7 +160,7 @@ class _ChangelogDialog extends StatelessWidget {
           Row(
             children: [
               TextButton(
-                onPressed: () => Navigator.pop(context),
+                onPressed: () => context.pop(),
                 child: const Text("Close"),
               ),
               FilledButton(
@@ -240,12 +240,7 @@ class _DefaultAppBar extends ConsumerWidget {
           _SearchIcon(isGrid: isGrid),
           const SizedBox(width: 10),
           GestureDetector(
-            onTap: () {
-              Navigator.push<void>(
-                context,
-                MaterialPageRoute(builder: (_) => const ProfileScreen()),
-              );
-            },
+            onTap: () => context.push(ProfileScreen.routePath),
             child: CircleAvatar(
               backgroundImage: imagePath != null
                   ? FileImage(File(imagePath))
@@ -328,10 +323,7 @@ class _Toolbar extends ConsumerWidget {
   }
 
   void _navigateToReaderScreen(BuildContext context, PoemModel poem) {
-    Navigator.push<void>(
-      context,
-      MaterialPageRoute(builder: (_) => ReaderScreen(model: poem)),
-    );
+    context.push(ReaderScreen.route(poem.id!), extra: poem);
   }
 
   Future<void> _moveToBin(
@@ -385,10 +377,7 @@ class _SearchIcon extends StatelessWidget {
             model: poem,
             onPressed: () {
               controller.closeView(null);
-              Navigator.push<void>(
-                context,
-                MaterialPageRoute(builder: (_) => WritingScreen(model: poem)),
-              );
+              context.push(WritingScreen.route(poem.id), extra: poem);
             },
           ),
         );
@@ -425,10 +414,7 @@ class _CBody extends ConsumerWidget {
       data: (poems) {
         if (poems.isEmpty) {
           return InkWell(
-            onTap: () => Navigator.push<void>(
-              context,
-              MaterialPageRoute(builder: (_) => const WritingScreen()),
-            ),
+            onTap: () => context.push(WritingScreen.routePath),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -464,12 +450,7 @@ class _CBody extends ConsumerWidget {
                     ref.read(selectedPoemsProvider.notifier).toggle(poem);
                     return;
                   }
-                  Navigator.push<void>(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => WritingScreen(model: poem),
-                    ),
-                  );
+                  context.push(WritingScreen.route(poem.id), extra: poem);
                 },
                 onLongPress: () {
                   ref.read(selectedPoemsProvider.notifier).toggle(poem);

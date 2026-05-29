@@ -8,17 +8,18 @@ import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../image_builder/core/image_controller.dart';
 import '../../image_builder/core/image_layer.dart';
 import '../../image_builder/templates/template.dart';
 import '../../image_builder/widgets/editing_option.dart';
 import '../../image_builder/widgets/page_details.dart';
-import '../share_images_screen/share_images_screen.dart';
 import '../../database/database.dart';
 import '../../init_get_it.dart';
 import '../../widgets/save_template_dialog.dart';
 import 'custom_template_creator.dart';
+import '../share_images_screen/share_images_screen.dart';
 
 class ImageScreen extends StatefulWidget {
   const ImageScreen({
@@ -27,6 +28,8 @@ class ImageScreen extends StatefulWidget {
     required this.poem,
     required this.poet,
   });
+
+  static const String routePath = '/image';
 
   final String? title, poet;
   final String poem;
@@ -102,7 +105,9 @@ class _ImageScreenState extends State<ImageScreen> {
 
   Future<void> _saveExistingTemplate(ImageLayer rootLayer) async {
     final serialized = rootLayer.toJson();
-    if (serialized != null && selectedTemplate != null && selectedTemplate!.id != null) {
+    if (serialized != null &&
+        selectedTemplate != null &&
+        selectedTemplate!.id != null) {
       final updatedModel = TemplateModel(
         id: selectedTemplate!.id!,
         name: selectedTemplate!.name,
@@ -115,7 +120,9 @@ class _ImageScreenState extends State<ImageScreen> {
       if (mounted) {
         ScaffoldMessenger.of(this.context).showSnackBar(
           SnackBar(
-            content: Text('Template "${selectedTemplate!.name}" updated successfully!'),
+            content: Text(
+              'Template "${selectedTemplate!.name}" updated successfully!',
+            ),
           ),
         );
       }
@@ -203,21 +210,18 @@ class _ImageScreenState extends State<ImageScreen> {
                         return _TemplateSelector(
                           selectedTemplate: selectedTemplate!,
                           templates: _templates,
-                           onSaveTemplate: () {
-                             Navigator.pop(context);
-                             if (selectedTemplate!.isDefault) {
-                               _showSaveTemplateDialog(context, layer);
-                             } else {
-                               _saveExistingTemplate(layer);
-                             }
-                           },
+                          onSaveTemplate: () {
+                            context.pop();
+                            if (selectedTemplate!.isDefault) {
+                              _showSaveTemplateDialog(context, layer);
+                            } else {
+                              _saveExistingTemplate(layer);
+                            }
+                          },
                           onCreateTemplate: () async {
-                            Navigator.pop(context);
-                            final newTemplate = await Navigator.push<Template?>(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => const CustomTemplateCreator(),
-                              ),
+                            context.pop();
+                            final newTemplate = await context.push<Template?>(
+                              CustomTemplateCreator.routePath,
                             );
                             if (newTemplate != null) {
                               await _loadTemplates();
@@ -262,14 +266,14 @@ class _ImageScreenState extends State<ImageScreen> {
                                   selectedTemplate = updatedTemplate;
                                 });
                                 if (context.mounted) {
-                                  Navigator.pop(context);
+                                  context.pop();
                                 }
                               }
                             } else {
                               setState(() {
                                 selectedTemplate = template;
                               });
-                              Navigator.pop(context);
+                              context.pop();
                             }
                           },
                           onTemplateDeleted: (template) async {
@@ -333,7 +337,8 @@ class _ImageScreenState extends State<ImageScreen> {
       rootNavigator.pop();
     }
 
-    // Give the dialog dismissal a frame before opening the platform share sheet.
+    // Give the dialog dismissal a frame before
+    // opening the platform share sheet.
     await Future<void>.delayed(const Duration(milliseconds: 16));
 
     if (images.length == 1) {
@@ -358,18 +363,15 @@ class _ImageScreenState extends State<ImageScreen> {
         children: [
           ElevatedButton(
             onPressed: () async {
-              Navigator.pop(context);
+              context.pop();
               await _shareAll(images);
             },
             child: const Text("Share all"),
           ),
           ElevatedButton(
-            onPressed: () => Navigator.push<void>(
-              context,
-              MaterialPageRoute(
-                builder: (_) => ShareImagesScreen(images: images),
-              ),
-            ),
+            onPressed: () {
+              context.push(ShareImagesScreen.routePath, extra: images);
+            },
             child: const Text("Share in parts"),
           ),
         ],
@@ -476,7 +478,7 @@ class _TemplateSelector extends StatelessWidget {
                       ),
                       IconButton(
                         icon: const Icon(Icons.close_rounded),
-                        onPressed: () => Navigator.pop(context),
+                        onPressed: () => context.pop(),
                         tooltip: "Close",
                       ),
                     ],

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../database/config.dart';
@@ -11,6 +12,8 @@ import '../about_screen/widgets/base_info_widget.dart';
 
 class BackupSettingScreen extends ConsumerWidget {
   const BackupSettingScreen({super.key});
+
+  static const String routePath = '/backup';
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -112,9 +115,9 @@ class BackupSettingScreen extends ConsumerWidget {
     if (next == BackupRestoreState.backingUp) {
       _showBackupDialog(context);
     } else if (next == BackupRestoreState.success) {
-      Navigator.pop(context);
+      context.pop();
     } else if (next == BackupRestoreState.error) {
-      Navigator.pop(context);
+      context.pop();
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(const SnackBar(content: Text("Backup failed")));

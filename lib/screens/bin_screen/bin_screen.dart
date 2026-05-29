@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:heartry/screens/reader_screen/reader_screen.dart';
 import 'package:material_symbols_icons/symbols.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../database/database.dart';
 import '../../init_get_it.dart';
@@ -10,9 +10,12 @@ import '../../providers/list_grid_provider.dart';
 import '../../providers/stream_poem_provider.dart';
 import '../poems_screen/providers/multi_select_provider.dart';
 import '../poems_screen/widgets/poem_card.dart';
+import '../reader_screen/reader_screen.dart';
 
 class BinScreen extends StatelessWidget {
   const BinScreen({super.key});
+
+  static const String routePath = '/bin';
 
   @override
   Widget build(BuildContext context) {
@@ -163,10 +166,7 @@ class _Toolbar extends ConsumerWidget {
             onPressed: () => _delete(context, selectedPoems, ref),
             child: const Text("Yes"),
           ),
-          FilledButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text("No"),
-          ),
+          FilledButton(onPressed: () => context.pop(), child: const Text("No")),
         ],
       ),
     );
@@ -233,13 +233,9 @@ class _CBody extends ConsumerWidget {
                     ref.read(selectedPoemsProvider.notifier).toggle(poem);
                     return;
                   }
-                  Navigator.push<void>(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) {
-                        return ReaderScreen(model: poem, isFromBin: true);
-                      },
-                    ),
+                  context.push(
+                    ReaderScreen.route(poem.id!, bin: true),
+                    extra: poem,
                   );
                 },
                 onLongPress: () {

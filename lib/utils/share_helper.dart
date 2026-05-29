@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import '../screens/image_screen/image_screen.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:go_router/go_router.dart';
+import '../screens/image_screen/image_screen.dart';
 
 class ShareHelper {
   static void shareAsText({
@@ -24,11 +25,9 @@ class ShareHelper {
     required String poem,
     required String poet,
   }) {
-    Navigator.push<void>(
-      context,
-      MaterialPageRoute<void>(
-        builder: (_) => ImageScreen(title: title, poem: poem, poet: poet),
-      ),
+    context.push(
+      ImageScreen.routePath,
+      extra: {'title': title, 'poem': poem, 'poet': poet},
     );
   }
 }

@@ -250,6 +250,9 @@ class Database extends _$Database {
     });
   }
 
+  Future<PoemModel?> getPoemById(int id) =>
+      (select(poem)..where((tbl) => tbl.id.equals(id))).getSingleOrNull();
+
   Future<List<TemplateModel>> getTemplates() => select(templates).get();
 
   Stream<List<TemplateModel>> getTemplatesStream() => select(templates).watch();

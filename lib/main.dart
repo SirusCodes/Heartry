@@ -2,16 +2,14 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 
-import 'database/config.dart';
 import 'init_get_it.dart';
 import 'providers/theme_provider.dart';
-import 'screens/intro_screen/intro_screen.dart';
-import 'screens/poems_screen/poems_screen.dart';
+import 'utils/router.dart';
 import 'utils/theme.dart';
 import 'utils/workmanager_helper.dart';
 import 'widgets/color_scheme_builder.dart';
-import 'package:sentry_flutter/sentry_flutter.dart';
 
 Future<void> main() async {
   SentryWidgetsFlutterBinding.ensureInitialized();
@@ -61,32 +59,14 @@ class MyApp extends StatelessWidget {
           data: (theme) => ColorSchemeBuilder(
             accentColor: theme.accentColor,
             builder: (lightColorScheme, darkColorScheme) {
-              return MaterialApp(
+              return MaterialApp.router(
                 title: "Heartry",
                 themeMode: _getThemeMode(theme.themeType),
                 theme: getLightTheme(lightColorScheme),
                 darkTheme: theme.themeType == ThemeType.dark
                     ? getDarkTheme(darkColorScheme)
                     : getBlackTheme(darkColorScheme),
-                home: Consumer(
-                  builder: (context, ref, _) {
-                    return ref
-                        .watch(configProvider)
-                        .when(
-                          data: (config) {
-                            if (config.hasCompletedOnboarding)
-                              return const PoemScreen();
-
-                            return const IntroScreen();
-                          },
-                          error: (err, st) =>
-                              Center(child: Text("$err\n${"_" * 25}\n$st")),
-                          loading: () => const Material(
-                            child: Center(child: CircularProgressIndicator()),
-                          ),
-                        );
-                  },
-                ),
+                routerConfig: goRouter,
               );
             },
           ),

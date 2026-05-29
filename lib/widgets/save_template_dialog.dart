@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../database/database.dart';
 import '../image_builder/core/image_layer.dart';
 import '../init_get_it.dart';
@@ -40,10 +41,7 @@ class _SaveTemplateDialogState extends State<SaveTemplateDialog> {
         autofocus: true,
       ),
       actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: const Text("Cancel"),
-        ),
+        TextButton(onPressed: () => context.pop(), child: const Text("Cancel")),
         TextButton(
           onPressed: () async {
             final name = _controller.text.trim();
@@ -61,7 +59,7 @@ class _SaveTemplateDialogState extends State<SaveTemplateDialog> {
                 widget.onSaved();
 
                 if (context.mounted) {
-                  Navigator.pop(context);
+                  context.pop();
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text('Template "$name" saved successfully!'),

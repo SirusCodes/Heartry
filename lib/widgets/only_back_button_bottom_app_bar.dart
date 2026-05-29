@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class OnlyBackButtonBottomAppBar extends StatelessWidget {
   const OnlyBackButtonBottomAppBar({super.key});
@@ -15,7 +16,7 @@ class OnlyBackButtonBottomAppBar extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.arrow_back_ios),
             onPressed: () {
-              Navigator.pop(context);
+              context.pop();
             },
           ),
         ],

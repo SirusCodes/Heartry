@@ -9,6 +9,8 @@ import 'widgets/support_development.dart';
 class AboutScreen extends StatelessWidget {
   const AboutScreen({super.key});
 
+  static const String routePath = '/about';
+
   @override
   Widget build(BuildContext context) {
     final isIOS = Theme.of(context).platform == TargetPlatform.iOS;

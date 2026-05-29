@@ -13,6 +13,8 @@ import 'custom_template_builder.dart';
 class CustomTemplateCreator extends StatefulWidget {
   const CustomTemplateCreator({super.key});
 
+  static const String routePath = '/create-template';
+
   @override
   State<CustomTemplateCreator> createState() => _CustomTemplateCreatorState();
 }
@@ -240,26 +242,23 @@ Adjust the configurations below to design it.""",
                       const [],
                       Icons.do_not_disturb_on_rounded,
                     ),
-                    _buildOverlayChip(
-                      "Bubble",
-                      const [LayerType.bubbleOverlay],
-                      Icons.bubble_chart_rounded,
-                    ),
-                    _buildOverlayChip(
-                      "Blur",
-                      const [LayerType.blurOverlay],
-                      Icons.blur_on_rounded,
-                    ),
-                    _buildOverlayChip(
-                      "Translucent",
-                      const [LayerType.translucentOverlay],
-                      Icons.opacity_rounded,
-                    ),
-                    _buildOverlayChip(
-                      "Blur + Translucent",
-                      const [LayerType.translucentOverlay, LayerType.blurOverlay],
-                      Icons.blur_linear_rounded,
-                    ),
+
+                    _buildOverlayChip("Bubble", const [
+                      LayerType.bubbleOverlay,
+                    ], Icons.bubble_chart_rounded),
+
+                    _buildOverlayChip("Blur", const [
+                      LayerType.blurOverlay,
+                    ], Icons.blur_on_rounded),
+
+                    _buildOverlayChip("Translucent", const [
+                      LayerType.translucentOverlay,
+                    ], Icons.opacity_rounded),
+
+                    _buildOverlayChip("Blur + Translucent", const [
+                      LayerType.translucentOverlay,
+                      LayerType.blurOverlay,
+                    ], Icons.blur_linear_rounded),
                   ],
                 ),
                 const SizedBox(height: 24),

@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../database/config.dart';
 import '../../widgets/c_screen_title.dart';
@@ -16,6 +17,8 @@ const String noNameError = "Please enter your name...";
 
 class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({super.key});
+
+  static const String routePath = '/profile';
 
   @override
   ConsumerState<ProfileScreen> createState() => _ProfileScreenState();
@@ -64,7 +67,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           if (_name != _nameController.text)
             ref.read(configProvider.notifier).name = _nameController.text;
 
-          Navigator.pop(context);
+          context.pop();
         },
         child: SafeArea(
           child: Column(
@@ -220,7 +223,7 @@ class _ProfileUpdateDialog extends StatelessWidget {
                         context,
                         onPressed: () {
                           ref.read(configProvider.notifier).profile = null;
-                          Navigator.pop(context);
+                          context.pop();
                         },
                         icon: const Icon(Icons.remove_circle),
                         text: "Remove profile",

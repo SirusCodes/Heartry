@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../database/config.dart';
 import '../../providers/restore_manager_provider.dart';
@@ -7,6 +8,8 @@ import '../poems_screen/poems_screen.dart';
 
 class RestoreScreen extends ConsumerWidget {
   const RestoreScreen({super.key});
+
+  static const String routePath = '/restore';
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -58,10 +61,7 @@ class RestoreScreen extends ConsumerWidget {
     return FilledButton(
       onPressed: () {
         ref.read(configProvider.notifier).hasCompletedOnboarding = true;
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (_) => const PoemScreen()),
-        );
+        context.go(PoemScreen.routePath);
       },
       child: const Text("Next"),
     );
@@ -109,10 +109,7 @@ class RestoreScreen extends ConsumerWidget {
     return FilledButton.tonal(
       onPressed: () {
         ref.read(configProvider.notifier).hasCompletedOnboarding = true;
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (_) => const PoemScreen()),
-        );
+        context.replace(PoemScreen.routePath);
       },
       child: const Text("Skip"),
     );

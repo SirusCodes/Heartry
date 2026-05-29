@@ -11,6 +11,8 @@ import '../about_screen/widgets/base_info_widget.dart';
 class PersonalizeScreen extends StatelessWidget {
   const PersonalizeScreen({super.key});
 
+  static const String routePath = '/personalize';
+
   @override
   Widget build(BuildContext context) {
     final isIOS = Theme.of(context).platform == TargetPlatform.iOS;

@@ -9,6 +9,8 @@ import '../../widgets/only_back_button_bottom_app_bar.dart';
 class ShareImagesScreen extends StatelessWidget {
   const ShareImagesScreen({super.key, required this.images});
 
+  static const String routePath = '/share-images';
+
   final List<String> images;
 
   @override

@@ -123,7 +123,8 @@ class TextSplittingService {
       return pages;
     }
 
-    // If at least one whole line fits, we try to split at a paragraph end or line end
+    // If at least one whole line fits,
+    // we try to split at a paragraph end or line end
     if (k > 0) {
       // Priority 1: Split at paragraph ends (empty lines)
       int? paragraphSplitIndex;
@@ -160,7 +161,8 @@ class TextSplittingService {
       );
     }
 
-    // Priority 3: Split the first line itself since not even one whole line fits
+    // Priority 3: Split the first line itself
+    // since not even one whole line fits
     final lineToSplit = remainingLines.first;
     final (firstPart, remaining) = _splitLine(
       context,
@@ -171,8 +173,9 @@ class TextSplittingService {
     );
 
     if (firstPart.isEmpty && availableHeight == spaceForPoemY) {
-      // Safety guard: if we are on a fresh page and not even the first word fits,
-      // we must force-add at least the first word to make progress and avoid infinite recursion.
+      // Safety guard: if we are on a fresh page and not even the first word
+      // fits, we must force-add at least the first word to make progress
+      // and avoid infinite recursion.
       final firstWord = lineToSplit.split(" ").first;
       final rest = lineToSplit.substring(
         math.min(firstWord.length + 1, lineToSplit.length),
