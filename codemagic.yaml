@@ -1,0 +1,48 @@
+workflows:
+  flutter-android:
+    name: Flutter Android
+    instance_type: mac_mini_m2
+    max_build_duration: 120
+    environment:
+      android_signing:
+        - codemagic_keystore
+      groups:
+        - google_play
+        - sentry
+      vars:
+        PACKAGE_NAME: "com.darshan.heartry"
+        GOOGLE_PLAY_TRACK: "beta"
+      flutter: stable
+    scripts:
+      - name: Set up local.properties
+        script: |
+          echo "flutter.sdk=$HOME/programs/flutter" > "$CM_BUILD_DIR/android/local.properties"
+      - name: Get Flutter packages
+        script: |
+          flutter packages pub get
+      - name: Run Flutter tests
+        script: |
+          flutter test
+      - name: Setup sentry.properties
+        script: |
+          echo "$SENTRY_PROPERTIES" | base64 --decode > sentry.properties
+      - name: Build AAB with Flutter
+        script: |
+          LATEST_BUILD_NUMBER=$(($(google-play get-latest-build-number --package-name "$PACKAGE_NAME" --tracks="$GOOGLE_PLAY_TRACK")))
+          flutter build appbundle --release \
+            --dart-define="GOOGLE_CLIENT_ID=$GOOGLE_CLIENT_ID" \
+            --dart-define="SENTRY_DSN=$SENTRY_DSN"
+    artifacts:
+      - build/**/outputs/**/*.aab
+      - build/**/outputs/**/mapping.txt
+      - flutter_drive.log
+    publishing:
+      email:
+        recipients:
+          - darshandrander@outlook.com
+        notify:
+          success: true
+          failure: true
+      google_play:
+        credentials: $GOOGLE_PLAY_SERVICE_ACCOUNT_CREDENTIALS
+        track: $GOOGLE_PLAY_TRACK
