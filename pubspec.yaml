@@ -39,7 +39,7 @@ dependencies:
   path: ^1.8.1
   path_provider: ^2.0.8
   screenshot: ^3.0.0
-  sentry_flutter: ^9.9.1
+  sentry_flutter: ^9.21.0
   share_plus: ^13.1.0
   shared_preferences: ^2.0.12
   sqlite3_flutter_libs: ^0.5.3

@@ -21,7 +21,7 @@ let package = Package(
         .package(name: "sqlite3_flutter_libs", path: "../.packages/sqlite3_flutter_libs-0.5.42"),
         .package(name: "shared_preferences_foundation", path: "../.packages/shared_preferences_foundation-2.5.6"),
         .package(name: "share_plus", path: "../.packages/share_plus-13.1.0"),
-        .package(name: "sentry_flutter", path: "../.packages/sentry_flutter-9.20.0"),
+        .package(name: "sentry_flutter", path: "../.packages/sentry_flutter-9.21.0"),
         .package(name: "package_info_plus", path: "../.packages/package_info_plus-10.1.0"),
         .package(name: "image_picker_ios", path: "../.packages/image_picker_ios-0.8.13+6"),
         .package(name: "google_sign_in_ios", path: "../.packages/google_sign_in_ios-5.9.0"),
