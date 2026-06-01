@@ -1,2 +1,3 @@
-- Implement bin so you can recover deleted items from the bin within 30 days 🗑️
-- Minor UX improvements in the search flow
+- Create your own templates for image generation!
+- Improve image generation algorithms to have better page splits.
+- Fix single image share bug 🐞🔨

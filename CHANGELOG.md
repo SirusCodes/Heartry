@@ -1,10 +1,10 @@
-## Next
+## 2.9.0 - 01/06/2026
 
 - Create your own templates for image generation!
 - Improve image generation algorithms to have better page splits.
 - Fix single image share bug 🐞🔨
 
-## 2.8.0 - 26/06/2026
+## 2.8.0 - 26/05/2026
 
 - Implement bin so you can recover deleted items from the bin within 30 days 🗑️
 - Minor UX improvements in the search flow
