@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../widgets/c_screen_title.dart';
+import '../../widgets/constrained_width_container.dart';
 import '../../widgets/only_back_button_bottom_app_bar.dart';
 import 'widgets/contributors.dart';
 import 'widgets/others.dart';
@@ -17,13 +18,15 @@ class AboutScreen extends StatelessWidget {
 
     return Scaffold(
       body: SafeArea(
-        child: ListView(
-          children: const <Widget>[
-            CScreenTitle(title: "About"),
-            Contributors(),
-            SupportDevelopment(),
-            Others(),
-          ],
+        child: ConstrainedWidthContainer(
+          child: ListView(
+            children: const <Widget>[
+              CScreenTitle(title: "About"),
+              Contributors(),
+              SupportDevelopment(),
+              Others(),
+            ],
+          ),
         ),
       ),
       bottomNavigationBar: isIOS ? const OnlyBackButtonBottomAppBar() : null,

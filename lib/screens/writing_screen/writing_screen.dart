@@ -8,6 +8,7 @@ import '../../database/database.dart';
 import '../../init_get_it.dart';
 import '../../utils/share_helper.dart';
 import '../../widgets/share_option_list.dart';
+import '../../widgets/constrained_width_container.dart';
 
 class WritingScreen extends StatefulWidget {
   const WritingScreen({super.key, this.model, this.poemId});
@@ -113,81 +114,88 @@ class _WritingScreenState extends State<WritingScreen>
             poemDB.softDeletePoem(widget.model!);
         },
         child: SafeArea(
-          child: Stack(
-            children: [
-              Positioned.fill(
-                child: ListView(
-                  padding: const EdgeInsets.all(15.0),
-                  children: <Widget>[
-                    TextFormField(
-                      textCapitalization: TextCapitalization.sentences,
-                      textInputAction: TextInputAction.next,
-                      focusNode: titleNode,
-                      controller: _titleTextController,
-                      decoration: InputDecoration(
-                        hintText: "Title",
-                        enabledBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(
-                            color: Theme.of(context).colorScheme.secondary,
+          child: ConstrainedWidthContainer(
+            padding: const EdgeInsets.symmetric(horizontal: 24.0),
+            child: Stack(
+              children: [
+                Positioned.fill(
+                  child: ListView(
+                    padding: const EdgeInsets.only(
+                      top: 15.0,
+                      bottom: kBottomNavigationBarHeight + 20,
+                    ),
+                    children: <Widget>[
+                      TextFormField(
+                        textCapitalization: TextCapitalization.sentences,
+                        textInputAction: TextInputAction.next,
+                        focusNode: titleNode,
+                        controller: _titleTextController,
+                        decoration: InputDecoration(
+                          hintText: "Title",
+                          enabledBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(
+                              color: Theme.of(context).colorScheme.secondary,
+                            ),
                           ),
                         ),
+                        onFieldSubmitted: (value) {
+                          titleNode.unfocus();
+                          FocusScope.of(context).requestFocus(poemNode);
+                        },
+                        style: const TextStyle(fontSize: 24),
                       ),
-                      onFieldSubmitted: (value) {
-                        titleNode.unfocus();
-                        FocusScope.of(context).requestFocus(poemNode);
-                      },
-                      style: const TextStyle(fontSize: 24),
-                    ),
-                    TextFormField(
-                      textCapitalization: TextCapitalization.sentences,
-                      controller: _poemTextController,
-                      undoController: _undoController,
-                      scrollPadding: const EdgeInsets.only(bottom: 100),
-                      focusNode: poemNode,
-                      maxLines: null,
-                      minLines: 25,
-                      decoration: const InputDecoration(
-                        hintText: "Start writing your heart out....",
-                        border: InputBorder.none,
+                      TextFormField(
+                        textCapitalization: TextCapitalization.sentences,
+                        controller: _poemTextController,
+                        undoController: _undoController,
+                        scrollPadding: const EdgeInsets.only(bottom: 100),
+                        focusNode: poemNode,
+                        maxLines: null,
+                        minLines: 25,
+                        decoration: const InputDecoration(
+                          hintText: "Start writing your heart out....",
+                          border: InputBorder.none,
+                        ),
+                        style: const TextStyle(fontSize: 20),
                       ),
-                      style: const TextStyle(fontSize: 20),
-                    ),
-                    const SizedBox(height: kBottomNavigationBarHeight),
-                  ],
+                      const SizedBox(height: kBottomNavigationBarHeight),
+                    ],
+                  ),
                 ),
-              ),
-              Positioned(
-                bottom: 0,
-                width: MediaQuery.of(context).size.width,
-                child: Consumer(
-                  builder: (context, ref, child) {
-                    final poet = ref
-                        .watch(configProvider)
-                        .whenOrNull(data: (data) => data.name);
-                    return _WritingBottomAppBar(
-                      onShareAsText: () {
-                        ShareHelper.shareAsText(
-                          title: _titleTextController.text,
-                          poem: _poemTextController.text,
-                          poet: poet ?? "Anonymous",
-                        );
-                        _handleDBChanges();
-                      },
-                      onShareAsImage: () {
-                        ShareHelper.shareAsImage(
-                          context,
-                          title: _titleTextController.text,
-                          poem: _poemTextController.text,
-                          poet: poet ?? "Anonymous",
-                        );
-                        _handleDBChanges();
-                      },
-                      undoController: _undoController,
-                    );
-                  },
+                Positioned(
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  child: Consumer(
+                    builder: (context, ref, child) {
+                      final poet = ref
+                          .watch(configProvider)
+                          .whenOrNull(data: (data) => data.name);
+                      return _WritingBottomAppBar(
+                        onShareAsText: () {
+                          ShareHelper.shareAsText(
+                            title: _titleTextController.text,
+                            poem: _poemTextController.text,
+                            poet: poet ?? "Anonymous",
+                          );
+                          _handleDBChanges();
+                        },
+                        onShareAsImage: () {
+                          ShareHelper.shareAsImage(
+                            context,
+                            title: _titleTextController.text,
+                            poem: _poemTextController.text,
+                            poet: poet ?? "Anonymous",
+                          );
+                          _handleDBChanges();
+                        },
+                        undoController: _undoController,
+                      );
+                    },
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -255,12 +263,14 @@ class _WritingBottomAppBar extends StatelessWidget {
             builder: (context, undoState, child) {
               return Row(
                 children: <Widget>[
-                  if (isIOS)
-                    IconButton(
-                      icon: const Icon(Icons.arrow_back_ios_rounded),
-                      onPressed: () => context.pop(),
+                  IconButton(
+                    icon: Icon(
+                      isIOS
+                          ? Icons.arrow_back_ios_rounded
+                          : Icons.arrow_back_rounded,
                     ),
-                  if (!isIOS) const SizedBox(width: 48),
+                    onPressed: () => context.pop(),
+                  ),
                   const Spacer(),
                   IconButton(
                     icon: const Icon(Icons.undo_rounded),

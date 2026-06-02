@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../providers/theme_provider.dart';
 import '../../utils/theme.dart';
 import '../../widgets/c_screen_title.dart';
+import '../../widgets/constrained_width_container.dart';
 import '../../widgets/color_picker_dialog.dart';
 import '../../widgets/only_back_button_bottom_app_bar.dart';
 import '../about_screen/widgets/base_info_widget.dart';
@@ -19,11 +20,13 @@ class PersonalizeScreen extends StatelessWidget {
 
     return Scaffold(
       body: SafeArea(
-        child: ListView(
-          children: const <Widget>[
-            CScreenTitle(title: "Personalize"),
-            _Body(),
-          ],
+        child: ConstrainedWidthContainer(
+          child: ListView(
+            children: const <Widget>[
+              CScreenTitle(title: "Personalize"),
+              _Body(),
+            ],
+          ),
         ),
       ),
       bottomNavigationBar: isIOS ? const OnlyBackButtonBottomAppBar() : null,

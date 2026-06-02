@@ -8,8 +8,10 @@ import '../../init_get_it.dart';
 import '../../utils/share_helper.dart';
 import '../../widgets/c_screen_title.dart';
 import '../../widgets/share_option_list.dart';
+
 import '../poems_screen/poems_screen.dart';
 import '../writing_screen/writing_screen.dart';
+import '../../widgets/constrained_width_container.dart';
 
 class ReaderScreen extends ConsumerStatefulWidget {
   const ReaderScreen({
@@ -111,90 +113,100 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
     final model = _poemModel!;
 
     return Scaffold(
-      body: ListView(
-        children: [
-          CScreenTitle(title: model.title == "" ? "No title" : model.title),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 15.0),
-            child: Text(
-              model.poem,
-              style: Theme.of(context).textTheme.headlineSmall,
+      body: ConstrainedWidthContainer(
+        padding: const EdgeInsets.symmetric(horizontal: 24.0),
+        child: ListView(
+          children: [
+            CScreenTitle(title: model.title == "" ? "No title" : model.title),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 15.0),
+              child: Text(
+                model.poem,
+                style: Theme.of(context).textTheme.headlineSmall,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
       bottomNavigationBar: BottomAppBar(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            if (isIOS)
+        child: ConstrainedWidthContainer(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
               IconButton(
-                icon: const Icon(Icons.arrow_back_ios_rounded),
+                icon: Icon(
+                  isIOS
+                      ? Icons.arrow_back_ios_rounded
+                      : Icons.arrow_back_rounded,
+                ),
                 onPressed: () => context.pop(),
               ),
-            if (widget.isFromBin) ...[
-              IconButton(
-                icon: const Icon(Icons.delete),
-                onPressed: () async {
-                  final scaffoldMessenger = ScaffoldMessenger.of(context);
+              if (widget.isFromBin) ...[
+                IconButton(
+                  icon: const Icon(Icons.delete),
+                  onPressed: () async {
+                    final scaffoldMessenger = ScaffoldMessenger.of(context);
 
-                  final result = await locator<Database>().hardDeletePoems([
-                    model,
-                  ]);
+                    final result = await locator<Database>().hardDeletePoems([
+                      model,
+                    ]);
 
-                  final String msg = result == 0
-                      ? "Couldn't delete"
-                      : "Deleted";
+                    final String msg = result == 0
+                        ? "Couldn't delete"
+                        : "Deleted";
 
-                  if (context.mounted) {
-                    context.pop();
-                  }
-                  scaffoldMessenger.showSnackBar(
-                    SnackBar(
-                      content: Text(msg),
-                      duration: Duration(seconds: result == 0 ? 5 : 2),
-                    ),
-                  );
-                },
-              ),
-              IconButton(
-                icon: const Icon(Icons.restore),
-                onPressed: () async {
-                  final scaffoldMessenger = ScaffoldMessenger.of(context);
-
-                  final result = await locator<Database>().restorePoems([
-                    model,
-                  ]);
-
-                  final String msg = result == 0
-                      ? "Couldn't restore"
-                      : "Restored";
-
-                  if (context.mounted) {
-                    context.pop();
-                  }
-                  scaffoldMessenger.showSnackBar(
-                    SnackBar(
-                      content: Text(msg),
-                      duration: Duration(seconds: result == 0 ? 5 : 2),
-                    ),
-                  );
-                },
-              ),
-            ] else ...[
-              IconButton(
-                icon: const Icon(Icons.edit),
-                onPressed: () => context.pushReplacement(
-                  WritingScreen.route(model.id),
-                  extra: model,
+                    if (context.mounted) {
+                      context.pop();
+                    }
+                    scaffoldMessenger.showSnackBar(
+                      SnackBar(
+                        content: Text(msg),
+                        duration: Duration(seconds: result == 0 ? 5 : 2),
+                      ),
+                    );
+                  },
                 ),
-              ),
-              IconButton(
-                onPressed: () => _showShareBottomSheet(context, model),
-                icon: const Icon(Icons.share),
-              ),
+                IconButton(
+                  icon: const Icon(Icons.restore),
+                  onPressed: () async {
+                    final scaffoldMessenger = ScaffoldMessenger.of(context);
+
+                    final result = await locator<Database>().restorePoems([
+                      model,
+                    ]);
+
+                    final String msg = result == 0
+                        ? "Couldn't restore"
+                        : "Restored";
+
+                    if (context.mounted) {
+                      context.pop();
+                    }
+                    scaffoldMessenger.showSnackBar(
+                      SnackBar(
+                        content: Text(msg),
+                        duration: Duration(seconds: result == 0 ? 5 : 2),
+                      ),
+                    );
+                  },
+                ),
+              ] else ...[
+                IconButton(
+                  icon: const Icon(Icons.edit),
+                  onPressed: () {
+                    context.pushReplacement(
+                      WritingScreen.route(model.id),
+                      extra: model,
+                    );
+                  },
+                ),
+                IconButton(
+                  onPressed: () => _showShareBottomSheet(context, model),
+                  icon: const Icon(Icons.share),
+                ),
+              ],
             ],
-          ],
+          ),
         ),
       ),
     );

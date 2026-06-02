@@ -17,6 +17,7 @@ import '../../utils/initial_data_setup.dart';
 import '../../utils/theme.dart';
 import '../restore_screen/restore_screen.dart';
 import '../poems_screen/poems_screen.dart';
+import '../../widgets/constrained_width_container.dart';
 
 class IntroScreen extends StatefulWidget {
   const IntroScreen({super.key});
@@ -127,7 +128,8 @@ class _NamePageState extends ConsumerState<_NamePage> {
   Widget build(BuildContext context) {
     return Container(
       color: Colors.deepPurple.shade100,
-      child: Padding(
+      child: ConstrainedWidthContainer(
+        maxWidth: 600,
         padding: const EdgeInsets.all(15.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -237,8 +239,10 @@ class _ProfilePage extends ConsumerWidget {
 
     return Container(
       color: Colors.deepPurple.shade300,
-      child: Center(
+      child: ConstrainedWidthContainer(
+        maxWidth: 600,
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             const Spacer(),
             const Text(
@@ -387,48 +391,51 @@ class _WelcomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       color: Colors.deepPurple.shade500,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          const Text(
-            "Welcome!",
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 50,
-              color: Colors.white,
-              fontWeight: FontWeight.w600,
-              fontFamily: "Caveat",
+      child: ConstrainedWidthContainer(
+        maxWidth: 600,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            const Text(
+              "Welcome!",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 50,
+                color: Colors.white,
+                fontWeight: FontWeight.w600,
+                fontFamily: "Caveat",
+              ),
             ),
-          ),
-          const SizedBox(height: 100),
-          CircleAvatar(
-            minRadius: 80,
-            maxRadius: 100,
-            backgroundColor: Colors.white,
-            child: Image.asset("assets/launcher_icon.png"),
-          ),
-          const SizedBox(height: 50),
-          const Text(
-            "Heart + Poetry = Heartry",
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 25,
-              color: Colors.white,
-              fontFamily: "Caveat",
+            const SizedBox(height: 100),
+            CircleAvatar(
+              minRadius: 80,
+              maxRadius: 100,
+              backgroundColor: Colors.white,
+              child: Image.asset("assets/launcher_icon.png"),
             ),
-          ),
-          const Text(
-            "Swipe left to continue",
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 20,
-              color: Colors.white70,
-              fontFamily: "Caveat",
+            const SizedBox(height: 50),
+            const Text(
+              "Heart + Poetry = Heartry",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 25,
+                color: Colors.white,
+                fontFamily: "Caveat",
+              ),
             ),
-          ),
-          const SizedBox(height: 50),
-        ],
+            const Text(
+              "Swipe left to continue",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 20,
+                color: Colors.white70,
+                fontFamily: "Caveat",
+              ),
+            ),
+            const SizedBox(height: 50),
+          ],
+        ),
       ),
     );
   }

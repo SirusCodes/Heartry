@@ -8,6 +8,7 @@ import '../../database/database.dart';
 import '../../init_get_it.dart';
 import '../../providers/list_grid_provider.dart';
 import '../../providers/stream_poem_provider.dart';
+import '../../widgets/constrained_width_container.dart';
 import '../poems_screen/providers/multi_select_provider.dart';
 import '../poems_screen/widgets/poem_card.dart';
 import '../reader_screen/reader_screen.dart';
@@ -28,12 +29,14 @@ class BinScreen extends StatelessWidget {
       ],
       child: Scaffold(
         body: SafeArea(
-          child: NestedScrollView(
-            floatHeaderSlivers: true,
-            headerSliverBuilder: (_, __) => [
-              const SliverToBoxAdapter(child: _CAppBar()),
-            ],
-            body: const _CBody(),
+          child: ConstrainedWidthContainer(
+            child: NestedScrollView(
+              floatHeaderSlivers: true,
+              headerSliverBuilder: (_, __) => [
+                const SliverToBoxAdapter(child: _CAppBar()),
+              ],
+              body: const _CBody(),
+            ),
           ),
         ),
       ),
@@ -264,15 +267,25 @@ class _PoemsLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return isGrid
-        ? MasonryGridView.count(
-            crossAxisCount: 2,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        if (isGrid) {
+          final int columns = (constraints.maxWidth / 180).floor().clamp(2, 6);
+          return MasonryGridView.count(
+            crossAxisCount: columns,
             crossAxisSpacing: 10,
             padding: const EdgeInsets.all(10.0),
             mainAxisSpacing: 10,
             itemBuilder: itemBuilder,
             itemCount: itemCount,
-          )
-        : ListView.builder(itemCount: itemCount, itemBuilder: itemBuilder);
+          );
+        } else {
+          return ListView.builder(
+            itemCount: itemCount,
+            itemBuilder: itemBuilder,
+          );
+        }
+      },
+    );
   }
 }

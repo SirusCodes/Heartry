@@ -20,8 +20,10 @@ import '../../providers/list_grid_provider.dart';
 import '../../providers/stream_poem_provider.dart';
 import '../../utils/share_helper.dart';
 import '../../widgets/share_option_list.dart';
+
 import '../settings_screen/settings_screen.dart';
 import '../profile_screen/profile_screen.dart';
+import '../../widgets/constrained_width_container.dart';
 import '../reader_screen/reader_screen.dart';
 import '../writing_screen/writing_screen.dart';
 import 'widgets/poem_card.dart';
@@ -69,12 +71,15 @@ class _PoemScreenState extends ConsumerState<PoemScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: NestedScrollView(
-          floatHeaderSlivers: true,
-          headerSliverBuilder: (_, __) => [
-            const SliverToBoxAdapter(child: _CAppBar()),
-          ],
-          body: const _CBody(),
+        child: ConstrainedWidthContainer(
+          maxWidth: 1000,
+          child: NestedScrollView(
+            floatHeaderSlivers: true,
+            headerSliverBuilder: (_, __) => [
+              const SliverToBoxAdapter(child: _CAppBar()),
+            ],
+            body: const _CBody(),
+          ),
         ),
       ),
       floatingActionButton: OpenContainer(
@@ -93,13 +98,16 @@ class _PoemScreenState extends ConsumerState<PoemScreen> {
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endContained,
       bottomNavigationBar: BottomAppBar(
-        child: Row(
-          children: [
-            IconButton(
-              onPressed: () => context.push(SettingsScreen.routePath),
-              icon: const Icon(Icons.settings),
-            ),
-          ],
+        child: ConstrainedWidthContainer(
+          maxWidth: 1000,
+          child: Row(
+            children: [
+              IconButton(
+                onPressed: () => context.push(SettingsScreen.routePath),
+                icon: const Icon(Icons.settings),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -238,6 +246,7 @@ class _DefaultAppBar extends ConsumerWidget {
                 : const Icon(Icons.grid_view),
           ),
           _SearchIcon(isGrid: isGrid),
+
           const SizedBox(width: 10),
           GestureDetector(
             onTap: () => context.push(ProfileScreen.routePath),
@@ -345,6 +354,7 @@ class _Toolbar extends ConsumerWidget {
         duration: Duration(seconds: result == 0 ? 5 : 2),
       ),
     );
+
     ref.read(selectedPoemsProvider.notifier).clear();
   }
 }
@@ -478,15 +488,27 @@ class _PoemsLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return isGrid
-        ? MasonryGridView.count(
-            crossAxisCount: 2,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        if (isGrid) {
+          final int columns = (constraints.maxWidth / 180).floor().clamp(2, 6);
+          return MasonryGridView.count(
+            crossAxisCount: columns,
             crossAxisSpacing: 10,
             padding: const EdgeInsets.all(10.0),
             mainAxisSpacing: 10,
             itemBuilder: itemBuilder,
             itemCount: itemCount,
-          )
-        : ListView.builder(itemCount: itemCount, itemBuilder: itemBuilder);
+          );
+        } else {
+          return ConstrainedWidthContainer(
+            child: ListView.builder(
+              itemCount: itemCount,
+              itemBuilder: itemBuilder,
+            ),
+          );
+        }
+      },
+    );
   }
 }

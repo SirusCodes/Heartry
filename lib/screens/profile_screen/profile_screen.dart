@@ -11,6 +11,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../database/config.dart';
 import '../../widgets/c_screen_title.dart';
+import '../../widgets/constrained_width_container.dart';
 import '../../widgets/only_back_button_bottom_app_bar.dart';
 
 const String noNameError = "Please enter your name...";
@@ -25,14 +26,13 @@ class ProfileScreen extends ConsumerStatefulWidget {
 }
 
 class _ProfileScreenState extends ConsumerState<ProfileScreen> {
-  late TextEditingController _nameController;
-
-  late String _name;
+  late final TextEditingController _nameController;
+  late final String _name;
 
   @override
   void initState() {
     super.initState();
-    _name = ref.read(configProvider).requireValue.name!;
+    _name = ref.read(configProvider).requireValue.name ?? "";
     _nameController = TextEditingController(text: _name);
   }
 
@@ -70,79 +70,81 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           context.pop();
         },
         child: SafeArea(
-          child: Column(
-            children: <Widget>[
-              const Align(
-                alignment: Alignment.centerLeft,
-                child: CScreenTitle(title: "Profile"),
-              ),
-              Consumer(
-                builder: (context, ref, child) {
-                  final imagePath =
-                      ref //
-                          .watch(configProvider)
-                          .requireValue
-                          .profile;
+          child: ConstrainedWidthContainer(
+            child: Column(
+              children: <Widget>[
+                const Align(
+                  alignment: Alignment.centerLeft,
+                  child: CScreenTitle(title: "Profile"),
+                ),
+                Consumer(
+                  builder: (context, ref, child) {
+                    final imagePath =
+                        ref //
+                            .watch(configProvider)
+                            .requireValue
+                            .profile;
 
-                  return Badge(
-                    badgeStyle: BadgeStyle(
-                      badgeColor: theme.colorScheme.onPrimaryContainer,
-                    ),
-                    badgeContent: IconButton(
-                      icon: Icon(
-                        Icons.camera_alt_rounded,
-                        color: theme.colorScheme.surface,
+                    return Badge(
+                      badgeStyle: BadgeStyle(
+                        badgeColor: theme.colorScheme.onPrimaryContainer,
                       ),
-                      onPressed: () => _showChangeProfileDialog(ref),
-                    ),
-                    position: BadgePosition.bottomEnd(bottom: 6, end: 6),
-                    badgeAnimation: const BadgeAnimation.scale(
-                      toAnimate: false,
-                    ),
-                    child: CircleAvatar(
-                      maxRadius: 100,
-                      minRadius: 80,
-                      backgroundImage: imagePath != null
-                          ? FileImage(File(imagePath))
-                          : null,
-                      child: isAndroid
-                          ? FutureBuilder(
-                              future: _retriveImage(ref),
-                              builder: (context, snapshot) {
-                                if (snapshot.connectionState ==
-                                    ConnectionState.done) {
-                                  return imagePath == null
-                                      ? const Icon(Icons.person, size: 100)
-                                      : const SizedBox.shrink();
-                                }
-                                return const CircularProgressIndicator();
-                              },
-                            )
-                          : imagePath == null
-                          ? const Icon(Icons.person, size: 100)
-                          : null,
-                    ),
-                  );
-                },
-              ),
-              const SizedBox(height: 10),
-              Padding(
-                padding: const EdgeInsets.all(15.0),
-                child: TextFormField(
-                  autovalidateMode: AutovalidateMode.always,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) return noNameError;
-                    return null;
+                      badgeContent: IconButton(
+                        icon: Icon(
+                          Icons.camera_alt_rounded,
+                          color: theme.colorScheme.surface,
+                        ),
+                        onPressed: () => _showChangeProfileDialog(ref),
+                      ),
+                      position: BadgePosition.bottomEnd(bottom: 6, end: 6),
+                      badgeAnimation: const BadgeAnimation.scale(
+                        toAnimate: false,
+                      ),
+                      child: CircleAvatar(
+                        maxRadius: 100,
+                        minRadius: 80,
+                        backgroundImage: imagePath != null
+                            ? FileImage(File(imagePath))
+                            : null,
+                        child: isAndroid
+                            ? FutureBuilder(
+                                future: _retriveImage(ref),
+                                builder: (context, snapshot) {
+                                  if (snapshot.connectionState ==
+                                      ConnectionState.done) {
+                                    return imagePath == null
+                                        ? const Icon(Icons.person, size: 100)
+                                        : const SizedBox.shrink();
+                                  }
+                                  return const CircularProgressIndicator();
+                                },
+                              )
+                            : imagePath == null
+                            ? const Icon(Icons.person, size: 100)
+                            : null,
+                      ),
+                    );
                   },
-                  controller: _nameController,
-                  textCapitalization: TextCapitalization.words,
-                  decoration: const InputDecoration(
-                    labelText: "Name",
-                    border: OutlineInputBorder(),
+                ),
+                const SizedBox(height: 10),
+                Padding(
+                  padding: const EdgeInsets.all(15.0),
+                  child: TextFormField(
+                    autovalidateMode: AutovalidateMode.always,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) return noNameError;
+                      return null;
+                    },
+                    controller: _nameController,
+                    textCapitalization: TextCapitalization.words,
+                    decoration: const InputDecoration(
+                      labelText: "Name",
+                      border: OutlineInputBorder(),
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
