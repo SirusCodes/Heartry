@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_quill/flutter_quill.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 
@@ -28,10 +29,10 @@ Future<void> main() async {
       options.enableLogs = true;
       // Set tracesSampleRate to 1.0 to capture 100% of transactions for tracing
       // We recommend adjusting this value in production.
-      options.tracesSampleRate = 0.2;
+      options.tracesSampleRate = 0.5;
       // Configure Session Replay
       options.replay.sessionSampleRate = 0.1;
-      options.replay.onErrorSampleRate = 1.0;
+      options.replay.onErrorSampleRate = 0.5;
       options.autoInitializeNativeSdk = true;
       options.debug = kDebugMode;
     },
@@ -54,6 +55,9 @@ class MyApp extends StatelessWidget {
             accentColor: theme.accentColor,
             builder: (lightColorScheme, darkColorScheme) {
               return MaterialApp.router(
+                localizationsDelegates: const [
+                  FlutterQuillLocalizations.delegate,
+                ],
                 title: "Heartry",
                 themeMode: _getThemeMode(theme.themeType),
                 theme: getLightTheme(lightColorScheme),

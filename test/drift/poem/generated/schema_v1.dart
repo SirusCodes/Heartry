@@ -105,6 +105,17 @@ class PoemData extends DataClass implements Insertable<PoemData> {
     return map;
   }
 
+  PoemCompanion toCompanion(bool nullToAbsent) {
+    return PoemCompanion(
+      id: id == null && nullToAbsent ? const Value.absent() : Value(id),
+      lastEdit: lastEdit == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastEdit),
+      title: Value(title),
+      poem: Value(poem),
+    );
+  }
+
   factory PoemData.fromJson(
     Map<String, dynamic> json, {
     ValueSerializer? serializer,
@@ -139,6 +150,15 @@ class PoemData extends DataClass implements Insertable<PoemData> {
     title: title ?? this.title,
     poem: poem ?? this.poem,
   );
+  PoemData copyWithCompanion(PoemCompanion data) {
+    return PoemData(
+      id: data.id.present ? data.id.value : this.id,
+      lastEdit: data.lastEdit.present ? data.lastEdit.value : this.lastEdit,
+      title: data.title.present ? data.title.value : this.title,
+      poem: data.poem.present ? data.poem.value : this.poem,
+    );
+  }
+
   @override
   String toString() {
     return (StringBuffer('PoemData(')
@@ -160,6 +180,81 @@ class PoemData extends DataClass implements Insertable<PoemData> {
           other.lastEdit == this.lastEdit &&
           other.title == this.title &&
           other.poem == this.poem);
+}
+
+class PoemCompanion extends UpdateCompanion<PoemData> {
+  final Value<int?> id;
+  final Value<DateTime?> lastEdit;
+  final Value<String> title;
+  final Value<String> poem;
+  const PoemCompanion({
+    this.id = const Value.absent(),
+    this.lastEdit = const Value.absent(),
+    this.title = const Value.absent(),
+    this.poem = const Value.absent(),
+  });
+  PoemCompanion.insert({
+    this.id = const Value.absent(),
+    this.lastEdit = const Value.absent(),
+    this.title = const Value.absent(),
+    required String poem,
+  }) : poem = Value(poem);
+  static Insertable<PoemData> custom({
+    Expression<int>? id,
+    Expression<DateTime>? lastEdit,
+    Expression<String>? title,
+    Expression<String>? poem,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (lastEdit != null) 'last_edit': lastEdit,
+      if (title != null) 'title': title,
+      if (poem != null) 'poem': poem,
+    });
+  }
+
+  PoemCompanion copyWith({
+    Value<int?>? id,
+    Value<DateTime?>? lastEdit,
+    Value<String>? title,
+    Value<String>? poem,
+  }) {
+    return PoemCompanion(
+      id: id ?? this.id,
+      lastEdit: lastEdit ?? this.lastEdit,
+      title: title ?? this.title,
+      poem: poem ?? this.poem,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (lastEdit.present) {
+      map['last_edit'] = Variable<DateTime>(lastEdit.value);
+    }
+    if (title.present) {
+      map['title'] = Variable<String>(title.value);
+    }
+    if (poem.present) {
+      map['poem'] = Variable<String>(poem.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PoemCompanion(')
+          ..write('id: $id, ')
+          ..write('lastEdit: $lastEdit, ')
+          ..write('title: $title, ')
+          ..write('poem: $poem')
+          ..write(')'))
+        .toString();
+  }
 }
 
 class DatabaseAtV1 extends GeneratedDatabase {

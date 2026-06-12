@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_quill/quill_delta.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:go_router/go_router.dart';
 import '../screens/image_screen/image_screen.dart';
@@ -22,7 +23,7 @@ class ShareHelper {
   static void shareAsImage(
     BuildContext context, {
     required String? title,
-    required String poem,
+    required Delta poem,
     required String poet,
   }) {
     context.push(

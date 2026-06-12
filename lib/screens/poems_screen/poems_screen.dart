@@ -11,6 +11,7 @@ import 'package:heartry/utils/workmanager_helper.dart';
 import 'package:go_router/go_router.dart';
 import '../../database/database.dart';
 import '../../init_get_it.dart';
+import '../../utils/poem_utils.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 import '../../database/config.dart';
@@ -317,12 +318,12 @@ class _Toolbar extends ConsumerWidget {
             onShareAsImage: () => ShareHelper.shareAsImage(
               context,
               title: poem.title,
-              poem: poem.poem,
+              poem: poem.poemRich,
               poet: poet ?? "Unknown",
             ),
             onShareAsText: () => ShareHelper.shareAsText(
               title: poem.title,
-              poem: poem.poem,
+              poem: poem.poemRich.toMarkdown(),
               poet: poet ?? "Unknown",
             ),
           );

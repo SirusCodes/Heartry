@@ -64,7 +64,24 @@ class $PoemTable extends Poem with TableInfo<$PoemTable, PoemModel> {
     requiredDuringInsert: false,
   );
   @override
-  List<GeneratedColumn> get $columns => [id, lastEdit, title, poem, deletedAt];
+  late final GeneratedColumnWithTypeConverter<Delta, Uint8List> poemRich =
+      GeneratedColumn<Uint8List>(
+        'poem_rich',
+        aliasedName,
+        false,
+        type: DriftSqlType.blob,
+        requiredDuringInsert: false,
+        defaultValue: Constant(Uint8List.fromList([11])),
+      ).withConverter<Delta>($PoemTable.$converterpoemRich);
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    lastEdit,
+    title,
+    poem,
+    deletedAt,
+    poemRich,
+  ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -135,6 +152,12 @@ class $PoemTable extends Poem with TableInfo<$PoemTable, PoemModel> {
         DriftSqlType.dateTime,
         data['${effectivePrefix}deleted_at'],
       ),
+      poemRich: $PoemTable.$converterpoemRich.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.blob,
+          data['${effectivePrefix}poem_rich'],
+        )!,
+      ),
     );
   }
 
@@ -142,6 +165,9 @@ class $PoemTable extends Poem with TableInfo<$PoemTable, PoemModel> {
   $PoemTable createAlias(String alias) {
     return $PoemTable(attachedDatabase, alias);
   }
+
+  static JsonTypeConverter2<Delta, Uint8List, Object?> $converterpoemRich =
+      poemRichConverter;
 }
 
 class PoemModel extends DataClass implements Insertable<PoemModel> {
@@ -150,12 +176,14 @@ class PoemModel extends DataClass implements Insertable<PoemModel> {
   final String title;
   final String poem;
   final DateTime? deletedAt;
+  final Delta poemRich;
   const PoemModel({
     this.id,
     this.lastEdit,
     required this.title,
     required this.poem,
     this.deletedAt,
+    required this.poemRich,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -171,6 +199,11 @@ class PoemModel extends DataClass implements Insertable<PoemModel> {
     if (!nullToAbsent || deletedAt != null) {
       map['deleted_at'] = Variable<DateTime>(deletedAt);
     }
+    {
+      map['poem_rich'] = Variable<Uint8List>(
+        $PoemTable.$converterpoemRich.toSql(poemRich),
+      );
+    }
     return map;
   }
 
@@ -185,6 +218,7 @@ class PoemModel extends DataClass implements Insertable<PoemModel> {
       deletedAt: deletedAt == null && nullToAbsent
           ? const Value.absent()
           : Value(deletedAt),
+      poemRich: Value(poemRich),
     );
   }
 
@@ -199,6 +233,9 @@ class PoemModel extends DataClass implements Insertable<PoemModel> {
       title: serializer.fromJson<String>(json['title']),
       poem: serializer.fromJson<String>(json['poem']),
       deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
+      poemRich: $PoemTable.$converterpoemRich.fromJson(
+        serializer.fromJson<Object?>(json['poemRich']),
+      ),
     );
   }
   @override
@@ -210,6 +247,9 @@ class PoemModel extends DataClass implements Insertable<PoemModel> {
       'title': serializer.toJson<String>(title),
       'poem': serializer.toJson<String>(poem),
       'deletedAt': serializer.toJson<DateTime?>(deletedAt),
+      'poemRich': serializer.toJson<Object?>(
+        $PoemTable.$converterpoemRich.toJson(poemRich),
+      ),
     };
   }
 
@@ -219,12 +259,14 @@ class PoemModel extends DataClass implements Insertable<PoemModel> {
     String? title,
     String? poem,
     Value<DateTime?> deletedAt = const Value.absent(),
+    Delta? poemRich,
   }) => PoemModel(
     id: id.present ? id.value : this.id,
     lastEdit: lastEdit.present ? lastEdit.value : this.lastEdit,
     title: title ?? this.title,
     poem: poem ?? this.poem,
     deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
+    poemRich: poemRich ?? this.poemRich,
   );
   PoemModel copyWithCompanion(PoemCompanion data) {
     return PoemModel(
@@ -233,6 +275,7 @@ class PoemModel extends DataClass implements Insertable<PoemModel> {
       title: data.title.present ? data.title.value : this.title,
       poem: data.poem.present ? data.poem.value : this.poem,
       deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
+      poemRich: data.poemRich.present ? data.poemRich.value : this.poemRich,
     );
   }
 
@@ -243,13 +286,15 @@ class PoemModel extends DataClass implements Insertable<PoemModel> {
           ..write('lastEdit: $lastEdit, ')
           ..write('title: $title, ')
           ..write('poem: $poem, ')
-          ..write('deletedAt: $deletedAt')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('poemRich: $poemRich')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, lastEdit, title, poem, deletedAt);
+  int get hashCode =>
+      Object.hash(id, lastEdit, title, poem, deletedAt, poemRich);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -258,7 +303,8 @@ class PoemModel extends DataClass implements Insertable<PoemModel> {
           other.lastEdit == this.lastEdit &&
           other.title == this.title &&
           other.poem == this.poem &&
-          other.deletedAt == this.deletedAt);
+          other.deletedAt == this.deletedAt &&
+          other.poemRich == this.poemRich);
 }
 
 class PoemCompanion extends UpdateCompanion<PoemModel> {
@@ -267,12 +313,14 @@ class PoemCompanion extends UpdateCompanion<PoemModel> {
   final Value<String> title;
   final Value<String> poem;
   final Value<DateTime?> deletedAt;
+  final Value<Delta> poemRich;
   const PoemCompanion({
     this.id = const Value.absent(),
     this.lastEdit = const Value.absent(),
     this.title = const Value.absent(),
     this.poem = const Value.absent(),
     this.deletedAt = const Value.absent(),
+    this.poemRich = const Value.absent(),
   });
   PoemCompanion.insert({
     this.id = const Value.absent(),
@@ -280,6 +328,7 @@ class PoemCompanion extends UpdateCompanion<PoemModel> {
     this.title = const Value.absent(),
     required String poem,
     this.deletedAt = const Value.absent(),
+    this.poemRich = const Value.absent(),
   }) : poem = Value(poem);
   static Insertable<PoemModel> custom({
     Expression<int>? id,
@@ -287,6 +336,7 @@ class PoemCompanion extends UpdateCompanion<PoemModel> {
     Expression<String>? title,
     Expression<String>? poem,
     Expression<DateTime>? deletedAt,
+    Expression<Uint8List>? poemRich,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -294,6 +344,7 @@ class PoemCompanion extends UpdateCompanion<PoemModel> {
       if (title != null) 'title': title,
       if (poem != null) 'poem': poem,
       if (deletedAt != null) 'deleted_at': deletedAt,
+      if (poemRich != null) 'poem_rich': poemRich,
     });
   }
 
@@ -303,6 +354,7 @@ class PoemCompanion extends UpdateCompanion<PoemModel> {
     Value<String>? title,
     Value<String>? poem,
     Value<DateTime?>? deletedAt,
+    Value<Delta>? poemRich,
   }) {
     return PoemCompanion(
       id: id ?? this.id,
@@ -310,6 +362,7 @@ class PoemCompanion extends UpdateCompanion<PoemModel> {
       title: title ?? this.title,
       poem: poem ?? this.poem,
       deletedAt: deletedAt ?? this.deletedAt,
+      poemRich: poemRich ?? this.poemRich,
     );
   }
 
@@ -331,6 +384,11 @@ class PoemCompanion extends UpdateCompanion<PoemModel> {
     if (deletedAt.present) {
       map['deleted_at'] = Variable<DateTime>(deletedAt.value);
     }
+    if (poemRich.present) {
+      map['poem_rich'] = Variable<Uint8List>(
+        $PoemTable.$converterpoemRich.toSql(poemRich.value),
+      );
+    }
     return map;
   }
 
@@ -341,7 +399,8 @@ class PoemCompanion extends UpdateCompanion<PoemModel> {
           ..write('lastEdit: $lastEdit, ')
           ..write('title: $title, ')
           ..write('poem: $poem, ')
-          ..write('deletedAt: $deletedAt')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('poemRich: $poemRich')
           ..write(')'))
         .toString();
   }
@@ -665,6 +724,7 @@ typedef $$PoemTableCreateCompanionBuilder =
       Value<String> title,
       required String poem,
       Value<DateTime?> deletedAt,
+      Value<Delta> poemRich,
     });
 typedef $$PoemTableUpdateCompanionBuilder =
     PoemCompanion Function({
@@ -673,6 +733,7 @@ typedef $$PoemTableUpdateCompanionBuilder =
       Value<String> title,
       Value<String> poem,
       Value<DateTime?> deletedAt,
+      Value<Delta> poemRich,
     });
 
 class $$PoemTableFilterComposer extends Composer<_$Database, $PoemTable> {
@@ -707,6 +768,12 @@ class $$PoemTableFilterComposer extends Composer<_$Database, $PoemTable> {
     column: $table.deletedAt,
     builder: (column) => ColumnFilters(column),
   );
+
+  ColumnWithTypeConverterFilters<Delta, Delta, Uint8List> get poemRich =>
+      $composableBuilder(
+        column: $table.poemRich,
+        builder: (column) => ColumnWithTypeConverterFilters(column),
+      );
 }
 
 class $$PoemTableOrderingComposer extends Composer<_$Database, $PoemTable> {
@@ -741,6 +808,11 @@ class $$PoemTableOrderingComposer extends Composer<_$Database, $PoemTable> {
     column: $table.deletedAt,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<Uint8List> get poemRich => $composableBuilder(
+    column: $table.poemRich,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$PoemTableAnnotationComposer extends Composer<_$Database, $PoemTable> {
@@ -765,6 +837,9 @@ class $$PoemTableAnnotationComposer extends Composer<_$Database, $PoemTable> {
 
   GeneratedColumn<DateTime> get deletedAt =>
       $composableBuilder(column: $table.deletedAt, builder: (column) => column);
+
+  GeneratedColumnWithTypeConverter<Delta, Uint8List> get poemRich =>
+      $composableBuilder(column: $table.poemRich, builder: (column) => column);
 }
 
 class $$PoemTableTableManager
@@ -800,12 +875,14 @@ class $$PoemTableTableManager
                 Value<String> title = const Value.absent(),
                 Value<String> poem = const Value.absent(),
                 Value<DateTime?> deletedAt = const Value.absent(),
+                Value<Delta> poemRich = const Value.absent(),
               }) => PoemCompanion(
                 id: id,
                 lastEdit: lastEdit,
                 title: title,
                 poem: poem,
                 deletedAt: deletedAt,
+                poemRich: poemRich,
               ),
           createCompanionCallback:
               ({
@@ -814,12 +891,14 @@ class $$PoemTableTableManager
                 Value<String> title = const Value.absent(),
                 required String poem,
                 Value<DateTime?> deletedAt = const Value.absent(),
+                Value<Delta> poemRich = const Value.absent(),
               }) => PoemCompanion.insert(
                 id: id,
                 lastEdit: lastEdit,
                 title: title,
                 poem: poem,
                 deletedAt: deletedAt,
+                poemRich: poemRich,
               ),
           withReferenceMapper: (p0) => p0
               .map((e) => (e.readTable(table), BaseReferences(db, table, e)))

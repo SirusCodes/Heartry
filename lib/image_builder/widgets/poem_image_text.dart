@@ -1,8 +1,8 @@
 import 'dart:ui' as ui;
-
 import 'package:flutter/material.dart';
-import 'package:heartry/image_builder/core/font_family.dart';
+import 'package:flutter_quill/quill_delta.dart';
 
+import '../../image_builder/core/font_family.dart';
 import '../../utils/contants.dart';
 
 class PoemImageText extends StatelessWidget {
@@ -16,7 +16,7 @@ class PoemImageText extends StatelessWidget {
     required this.scale,
   });
 
-  final List<String> poem;
+  final Delta poem;
   final String? title, poet;
 
   final Color color;
@@ -34,13 +34,13 @@ class PoemImageText extends StatelessWidget {
         color: color,
         fontFamily: fontFamily,
       ),
-      child: SizedBox.expand(),
+      child: const SizedBox.expand(),
     );
   }
 }
 
 class PoemTextPainter extends CustomPainter {
-  final List<String> poem;
+  final Delta poem;
   final String? title, poet;
   final double scale;
   final Color color;
@@ -146,19 +146,64 @@ class PoemTextPainter extends CustomPainter {
   ui.Paragraph _buildParagraph(double maxWidth) {
     final ui.ParagraphBuilder paragraphBuilder = ui.ParagraphBuilder(
       ui.ParagraphStyle(
-        textAlign: TextAlign.center,
+        textAlign: ui.TextAlign.center,
         fontFamily: fontFamily.name,
         fontSize: POEM_TEXT_SIZE * scale,
       ),
     );
 
-    paragraphBuilder
-      ..pushStyle(ui.TextStyle(color: color))
-      ..addText(poem.join("\n"));
+    _addDeltaToParagraph(
+      paragraphBuilder,
+      poem,
+      TextStyle(
+        color: color,
+        fontFamily: fontFamily.name,
+        fontSize: POEM_TEXT_SIZE * scale,
+      ),
+    );
 
     final ui.Paragraph paragraph = paragraphBuilder.build()
       ..layout(ui.ParagraphConstraints(width: maxWidth));
     return paragraph;
+  }
+
+  void _addDeltaToParagraph(
+    ui.ParagraphBuilder builder,
+    Delta delta,
+    TextStyle baseStyle,
+  ) {
+    for (final op in delta.toList()) {
+      final insert = op.data;
+      if (insert is String) {
+        final attrs = op.attributes;
+        var style = baseStyle;
+        if (attrs != null) {
+          if (attrs['bold'] == true) {
+            style = style.copyWith(fontWeight: FontWeight.bold);
+          }
+          if (attrs['italic'] == true) {
+            style = style.copyWith(fontStyle: FontStyle.italic);
+          }
+          if (attrs['underline'] == true) {
+            style = style.copyWith(decoration: TextDecoration.underline);
+          }
+          if (attrs['strike'] == true) {
+            style = style.copyWith(decoration: TextDecoration.lineThrough);
+          }
+        }
+
+        builder.pushStyle(
+          ui.TextStyle(
+            color: style.color,
+            fontWeight: style.fontWeight,
+            fontStyle: style.fontStyle,
+            decoration: style.decoration,
+          ),
+        );
+        builder.addText(insert);
+        builder.pop();
+      }
+    }
   }
 
   @override

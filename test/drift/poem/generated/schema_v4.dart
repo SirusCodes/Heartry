@@ -123,6 +123,20 @@ class PoemData extends DataClass implements Insertable<PoemData> {
     return map;
   }
 
+  PoemCompanion toCompanion(bool nullToAbsent) {
+    return PoemCompanion(
+      id: id == null && nullToAbsent ? const Value.absent() : Value(id),
+      lastEdit: lastEdit == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastEdit),
+      title: Value(title),
+      poem: Value(poem),
+      deletedAt: deletedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deletedAt),
+    );
+  }
+
   factory PoemData.fromJson(
     Map<String, dynamic> json, {
     ValueSerializer? serializer,
@@ -161,6 +175,16 @@ class PoemData extends DataClass implements Insertable<PoemData> {
     poem: poem ?? this.poem,
     deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
   );
+  PoemData copyWithCompanion(PoemCompanion data) {
+    return PoemData(
+      id: data.id.present ? data.id.value : this.id,
+      lastEdit: data.lastEdit.present ? data.lastEdit.value : this.lastEdit,
+      title: data.title.present ? data.title.value : this.title,
+      poem: data.poem.present ? data.poem.value : this.poem,
+      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
+    );
+  }
+
   @override
   String toString() {
     return (StringBuffer('PoemData(')
@@ -184,6 +208,92 @@ class PoemData extends DataClass implements Insertable<PoemData> {
           other.title == this.title &&
           other.poem == this.poem &&
           other.deletedAt == this.deletedAt);
+}
+
+class PoemCompanion extends UpdateCompanion<PoemData> {
+  final Value<int?> id;
+  final Value<DateTime?> lastEdit;
+  final Value<String> title;
+  final Value<String> poem;
+  final Value<DateTime?> deletedAt;
+  const PoemCompanion({
+    this.id = const Value.absent(),
+    this.lastEdit = const Value.absent(),
+    this.title = const Value.absent(),
+    this.poem = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+  });
+  PoemCompanion.insert({
+    this.id = const Value.absent(),
+    this.lastEdit = const Value.absent(),
+    this.title = const Value.absent(),
+    required String poem,
+    this.deletedAt = const Value.absent(),
+  }) : poem = Value(poem);
+  static Insertable<PoemData> custom({
+    Expression<int>? id,
+    Expression<DateTime>? lastEdit,
+    Expression<String>? title,
+    Expression<String>? poem,
+    Expression<DateTime>? deletedAt,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (lastEdit != null) 'last_edit': lastEdit,
+      if (title != null) 'title': title,
+      if (poem != null) 'poem': poem,
+      if (deletedAt != null) 'deleted_at': deletedAt,
+    });
+  }
+
+  PoemCompanion copyWith({
+    Value<int?>? id,
+    Value<DateTime?>? lastEdit,
+    Value<String>? title,
+    Value<String>? poem,
+    Value<DateTime?>? deletedAt,
+  }) {
+    return PoemCompanion(
+      id: id ?? this.id,
+      lastEdit: lastEdit ?? this.lastEdit,
+      title: title ?? this.title,
+      poem: poem ?? this.poem,
+      deletedAt: deletedAt ?? this.deletedAt,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (lastEdit.present) {
+      map['last_edit'] = Variable<DateTime>(lastEdit.value);
+    }
+    if (title.present) {
+      map['title'] = Variable<String>(title.value);
+    }
+    if (poem.present) {
+      map['poem'] = Variable<String>(poem.value);
+    }
+    if (deletedAt.present) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PoemCompanion(')
+          ..write('id: $id, ')
+          ..write('lastEdit: $lastEdit, ')
+          ..write('title: $title, ')
+          ..write('poem: $poem, ')
+          ..write('deletedAt: $deletedAt')
+          ..write(')'))
+        .toString();
+  }
 }
 
 class DatabaseAtV4 extends GeneratedDatabase {

@@ -1,8 +1,9 @@
 import 'dart:math' as math;
-
 import 'package:flutter/material.dart';
+import 'package:flutter_quill/quill_delta.dart';
 
 import '../../utils/contants.dart';
+import '../../utils/poem_utils.dart';
 
 class TextSplittingService {
   TextSplittingService({
@@ -19,18 +20,18 @@ class TextSplittingService {
   final BoxConstraints constraints;
   final String? title;
   final String poet;
-  final List<String> poem;
+  final Delta poem;
   final EdgeInsetsGeometry contentPadding;
   final TextStyle _textStyle;
 
-  List<List<String>> getPoemSeparated(double textScale) {
+  List<Delta> getPoemSeparated(double textScale) {
     final double spaceForPoemX =
         constraints.maxWidth - contentPadding.horizontal;
 
     // getting title height
     double titleHeight = 0;
     if (title != null && title!.isNotEmpty) {
-      titleHeight = _calcTextSize(
+      titleHeight = _calcPlainTextSize(
         text: title!,
         fontSize: TITLE_TEXT_SIZE,
         scale: math.min(textScale, 1.2),
@@ -43,7 +44,7 @@ class TextSplittingService {
     }
 
     // getting poet height
-    double poetHeight = _calcTextSize(
+    double poetHeight = _calcPlainTextSize(
       text: poet,
       fontSize: POET_TEXT_SIZE,
       scale: math.min(textScale, 1.2),
@@ -62,31 +63,57 @@ class TextSplittingService {
     final pages = _getPoemPages(
       availableHeight: spaceForPoemY,
       context: context,
-      remainingLines: poem,
+      remainingLines: splitDeltaIntoLines(poem),
       pages: [[]],
       textScale: textScale,
       maxWidth: spaceForPoemX,
       spaceForPoemY: spaceForPoemY,
     );
 
-    return pages.map(_removeEmptyStartAndEnds).toList();
+    return pages
+        .map((page) => _combineLines(_removeEmptyStartAndEnds(page)))
+        .toList();
   }
 
-  List<String> _removeEmptyStartAndEnds(List<String> page) {
-    if (page.isNotEmpty && page[0].isEmpty) {
+  bool _isLineEmpty(Delta line) {
+    final ops = line.toList();
+    if (ops.isEmpty) return true;
+    if (ops.length == 1) {
+      final insert = ops[0].data;
+      return insert is String && (insert == '\n' || insert.trim().isEmpty);
+    }
+    return false;
+  }
+
+  List<Delta> _removeEmptyStartAndEnds(List<Delta> page) {
+    if (page.isNotEmpty && _isLineEmpty(page[0])) {
       page.removeAt(0);
     }
-    if (page.isNotEmpty && page[page.length - 1].isEmpty) {
+    if (page.isNotEmpty && _isLineEmpty(page[page.length - 1])) {
       page.removeAt(page.length - 1);
     }
 
     return page;
   }
 
-  List<List<String>> _getPoemPages({
+  Delta _combineLines(List<Delta> lines) {
+    final docDelta = Delta();
+    for (final line in lines) {
+      for (final op in line.toList()) {
+        docDelta.insert(op.data, op.attributes);
+      }
+    }
+    return docDelta;
+  }
+
+  bool _isEmptyDelta(Delta delta) {
+    return delta.isEmpty || delta.toList().isEmpty;
+  }
+
+  List<List<Delta>> _getPoemPages({
     required BuildContext context,
-    required List<String> remainingLines,
-    required List<List<String>> pages,
+    required List<Delta> remainingLines,
+    required List<List<Delta>> pages,
     required double textScale,
     required double maxWidth,
     required double availableHeight,
@@ -101,8 +128,8 @@ class TextSplittingService {
     double currentHeight = 0;
     for (int i = 0; i < remainingLines.length; i++) {
       final line = remainingLines[i];
-      final height = _calcTextSize(
-        text: line,
+      final height = _calcRichTextSize(
+        lineDelta: line,
         fontSize: POEM_TEXT_SIZE,
         scale: textScale,
         maxWidth: maxWidth,
@@ -129,7 +156,7 @@ class TextSplittingService {
       // Priority 1: Split at paragraph ends (empty lines)
       int? paragraphSplitIndex;
       for (int i = k - 1; i >= 1; i--) {
-        if (remainingLines[i].trim().isEmpty) {
+        if (_isLineEmpty(remainingLines[i])) {
           paragraphSplitIndex = i;
           break;
         }
@@ -172,20 +199,47 @@ class TextSplittingService {
       availableHeight,
     );
 
-    if (firstPart.isEmpty && availableHeight == spaceForPoemY) {
+    if (_isEmptyDelta(firstPart) && availableHeight == spaceForPoemY) {
       // Safety guard: if we are on a fresh page and not even the first word
-      // fits, we must force-add at least the first word to make progress
+      // fits, we must force-add at least the first word/op to make progress
       // and avoid infinite recursion.
-      final firstWord = lineToSplit.split(" ").first;
-      final rest = lineToSplit.substring(
-        math.min(firstWord.length + 1, lineToSplit.length),
-      );
-      pages.last.add(firstWord);
+      final ops = lineToSplit.toList();
+      final firstOp = ops.first;
+      final insert = firstOp.data;
+      final nextRemaining = <Delta>[];
 
-      final nextRemaining = <String>[];
-      if (rest.isNotEmpty) {
-        nextRemaining.add(rest);
+      if (insert is String) {
+        final words = insert.split(" ");
+        final firstWord = words.first;
+        final rest = insert.substring(
+          math.min(firstWord.length + 1, insert.length),
+        );
+        pages.last.add(Delta()..insert(firstWord, firstOp.attributes));
+
+        if (rest.isNotEmpty) {
+          final remainingDelta = Delta()..insert(rest, firstOp.attributes);
+          for (int i = 1; i < ops.length; i++) {
+            remainingDelta.insert(ops[i].data, ops[i].attributes);
+          }
+          nextRemaining.add(remainingDelta);
+        } else if (ops.length > 1) {
+          final remainingDelta = Delta();
+          for (int i = 1; i < ops.length; i++) {
+            remainingDelta.insert(ops[i].data, ops[i].attributes);
+          }
+          nextRemaining.add(remainingDelta);
+        }
+      } else {
+        pages.last.add(Delta()..insert(insert, firstOp.attributes));
+        if (ops.length > 1) {
+          final remainingDelta = Delta();
+          for (int i = 1; i < ops.length; i++) {
+            remainingDelta.insert(ops[i].data, ops[i].attributes);
+          }
+          nextRemaining.add(remainingDelta);
+        }
       }
+
       nextRemaining.addAll(remainingLines.sublist(1));
 
       if (nextRemaining.isEmpty) {
@@ -202,12 +256,12 @@ class TextSplittingService {
       );
     }
 
-    if (firstPart.isNotEmpty) {
+    if (!_isEmptyDelta(firstPart)) {
       pages.last.add(firstPart);
     }
 
-    final nextRemaining = <String>[];
-    if (remaining.isNotEmpty) {
+    final nextRemaining = <Delta>[];
+    if (!_isEmptyDelta(remaining)) {
       nextRemaining.add(remaining);
     }
     nextRemaining.addAll(remainingLines.sublist(1));
@@ -227,21 +281,40 @@ class TextSplittingService {
     return pages;
   }
 
-  (String line, String remaining) _splitLine(
+  (Delta line, Delta remaining) _splitLine(
     BuildContext context,
     double textScale,
-    String line,
+    Delta line,
     double maxWidth,
     double availableHeight,
   ) {
-    List<String> words = line.split(" ");
-    String currentLine = "";
+    final ops = line.toList();
+    final wordsWithAttrs = <(String, Map<String, dynamic>?)>[];
+    for (final op in ops) {
+      final insert = op.data;
+      if (insert is String) {
+        final words = insert.split(" ");
+        for (final word in words) {
+          wordsWithAttrs.add((word, op.attributes));
+        }
+      }
+    }
 
-    for (int i = 0; i < words.length; i++) {
-      final word = words[i];
-      currentLine = "$currentLine $word";
-      final testSize = _calcTextSize(
-        text: currentLine,
+    var currentLine = Delta();
+    for (int i = 0; i < wordsWithAttrs.length; i++) {
+      final word = wordsWithAttrs[i].$1;
+      final attrs = wordsWithAttrs[i].$2;
+      final testLine = Delta();
+      for (final op in currentLine.toList()) {
+        testLine.insert(op.data, op.attributes);
+      }
+      if (testLine.isNotEmpty) {
+        testLine.insert(" ", attrs);
+      }
+      testLine.insert(word, attrs);
+
+      final testSize = _calcRichTextSize(
+        lineDelta: testLine,
         fontSize: POEM_TEXT_SIZE,
         scale: textScale,
         maxWidth: maxWidth,
@@ -249,14 +322,28 @@ class TextSplittingService {
       );
 
       if (testSize.height >= availableHeight) {
-        return (words.sublist(0, i).join(" "), words.sublist(i).join(" "));
+        final remainingDelta = Delta();
+        for (int j = i; j < wordsWithAttrs.length; j++) {
+          final w = wordsWithAttrs[j].$1;
+          final a = wordsWithAttrs[j].$2;
+          if (j > i) {
+            remainingDelta.insert(" ", a);
+          }
+          remainingDelta.insert(w, a);
+        }
+        return (currentLine, remainingDelta);
       }
+
+      if (currentLine.isNotEmpty) {
+        currentLine.insert(" ", attrs);
+      }
+      currentLine.insert(word, attrs);
     }
 
-    return (line, "");
+    return (line, Delta());
   }
 
-  Size _calcTextSize({
+  Size _calcPlainTextSize({
     required String text,
     required double fontSize,
     required double scale,
@@ -270,6 +357,28 @@ class TextSplittingService {
         style: _textStyle.copyWith(fontSize: fontSize, fontFamily: fontFamily),
       ),
       maxLines: maxLines,
+      textScaler: TextScaler.linear(scale),
+      textDirection: TextDirection.ltr,
+    )..layout(maxWidth: maxWidth);
+
+    return painter.size;
+  }
+
+  Size _calcRichTextSize({
+    required Delta lineDelta,
+    required double fontSize,
+    required double scale,
+    required double maxWidth,
+    required String fontFamily,
+  }) {
+    final style = _textStyle.copyWith(
+      fontSize: fontSize,
+      fontFamily: fontFamily,
+    );
+    final textSpan = deltaToTextSpan(lineDelta, style);
+
+    final painter = TextPainter(
+      text: textSpan,
       textScaler: TextScaler.linear(scale),
       textDirection: TextDirection.ltr,
     )..layout(maxWidth: maxWidth);

@@ -23,6 +23,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_quill: ^11.5.1
   animated_icon_button: ^1.0.2
   animations: ^2.0.7
   badges: ^3.1.1
@@ -35,7 +36,7 @@ dependencies:
   googleapis: ^14.0.0
   image_picker: ^1.2.1
   liquid_swipe: ^3.0.0
-  package_info_plus: ^10.1.0
+  package_info_plus: ^8.2.2
   path: ^1.8.1
   path_provider: ^2.0.8
   screenshot: ^3.0.0
@@ -55,11 +56,12 @@ dependencies:
       path: workmanager
       ref: main
   flutter_local_notifications: ^19.1.0
-  flutter_secure_storage: ^10.3.0
+  flutter_secure_storage: ^9.2.2
   equatable: ^2.0.5
   crypto: ^3.0.3
   material_symbols_icons: ^4.2874.0
   go_router: ^17.2.3
+  markdown_quill: ^4.3.0
 
 dev_dependencies:
   sentry_dart_plugin: ^3.2.0
@@ -140,3 +142,7 @@ sentry:
   upload_source_maps: true
   project: flutter
   org: heartry
+
+dependency_overrides:
+  win32: ^5.5.0
+

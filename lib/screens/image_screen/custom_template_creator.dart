@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_quill/quill_delta.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import '../../image_builder/core/image_controller.dart';
@@ -65,10 +66,11 @@ class _CustomTemplateCreatorState extends State<CustomTemplateCreator> {
       context: context,
       title: 'Heartry Preview',
       author: 'Poet Name',
-      poem: '''
+      poem: Delta()
+        ..insert("""
 This is a live preview of your custom template.
 
-Adjust the configurations below to design it.''',
+Adjust the configurations below to design it."""),
     );
     final serialized = _buildTemplateJson(saveController);
     final db = locator<Database>();
@@ -102,10 +104,11 @@ Adjust the configurations below to design it.''',
       context: context,
       title: "Heartry Preview",
       author: "Poet Name",
-      poem: """
+      poem: Delta()
+        ..insert("""
 This is a live preview of your custom template.
 
-Adjust the configurations below to design it.""",
+Adjust the configurations below to design it."""),
       textStyle: TextStyle(color: colorScheme.onPrimary),
     );
 

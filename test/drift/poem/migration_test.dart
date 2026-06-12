@@ -1,15 +1,18 @@
-// dart format width=80
-// ignore_for_file: unused_local_variable, unused_import
+import 'dart:developer';
+
 import 'package:drift/drift.dart';
 import 'package:drift_dev/api/migrations_native.dart';
 import 'package:heartry/database/database.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_quill/quill_delta.dart';
 import 'generated/schema.dart';
 
 import 'generated/schema_v1.dart' as v1;
 import 'generated/schema_v2.dart' as v2;
 import 'generated/schema_v3.dart' as v3;
 import 'generated/schema_v4.dart' as v4;
+import 'generated/schema_v5.dart' as v5;
+import 'generated/schema_v6.dart' as v6;
 
 void main() {
   driftRuntimeOptions.dontWarnAboutMultipleDatabases = true;
@@ -106,15 +109,24 @@ void main() {
               expect(row.data['poem'], 'Poem 1');
             });
 
-        final db = Database(newDb.executor);
-
-        final poem3 = PoemModel(
-          id: 3,
-          lastEdit: DateTime(2025, 11, 14, 12, 0, 0),
-          title: 'Title 3',
-          poem: 'Poem 3',
+        final version = await newDb
+            .customSelect('PRAGMA user_version;')
+            .getSingle();
+        log(
+          'DATABASE VERSION IN TEST: ${version.data['user_version']}',
+          name: 'migration_test',
         );
-        await db.insertPoem(poem3);
+
+        await newDb
+            .into(newDb.poem)
+            .insert(
+              v2.PoemCompanion.insert(
+                id: const Value(3),
+                lastEdit: Value(DateTime(2025, 11, 14, 12, 0, 0)),
+                title: const Value('Title 3'),
+                poem: 'Poem 3',
+              ),
+            );
 
         expect(
           3,
@@ -124,36 +136,28 @@ void main() {
               .data['c'],
         );
 
-        await db.updatePoem(
-          PoemModel(id: 3, title: 'Updated Title 3', poem: 'Updated Poem 3'),
+        await (newDb.update(newDb.poem)..where((t) => t.id.equals(3))).write(
+          v2.PoemCompanion(
+            title: const Value('Updated Title 3'),
+            poem: const Value('Updated Poem 3'),
+          ),
         );
 
-        final allPoems = await db
-            .customSelect('SELECT * FROM poem;')
-            .map((row) => PoemModel.fromJson(row.data))
-            .get();
-        final ftsPeom = await db
+        final ftsRows = await newDb
             .customSelect(
-              'SELECT p.* FROM poem as p JOIN poem_fts '
-              'as fts ON p.id = fts.rowid '
-              'WHERE poem_fts MATCH ? ORDER BY rank LIMIT 10',
-              variables: [Variable<String>('Update*')],
-              readsFrom: {db.poem},
+              'SELECT p.* FROM poem as p '
+              'JOIN poem_fts as fts ON p.id = fts.rowid '
+              'WHERE poem_fts MATCH ?',
+              variables: [Variable<String>('Updated*')],
             )
-            .map((row) => PoemModel.fromJson(row.data))
             .get();
 
-        expect(
-          allPoems
-              .firstWhere((p) => p.id == 3)
-              .copyWith(lastEdit: Value(DateTime(2025, 11, 14, 12, 0, 0)))
-              .toJsonString(),
-          ftsPeom.first
-              .copyWith(lastEdit: Value(DateTime(2025, 11, 14, 12, 0, 0)))
-              .toJsonString(),
-        );
+        expect(ftsRows.length, 1);
+        final firstFtsPoem = ftsRows.first;
+        expect(firstFtsPoem.read<String>('title'), 'Updated Title 3');
+        expect(firstFtsPoem.read<String>('poem'), 'Updated Poem 3');
 
-        await db.deletePoem(poem3);
+        await (newDb.delete(newDb.poem)..where((t) => t.id.equals(3))).go();
 
         expect(
           2,
@@ -212,6 +216,59 @@ void main() {
 
         final search = await db.searchPoems('1');
         expect(search.length, 0);
+      },
+    );
+  });
+
+  test('migration from v5 to v6 does not corrupt data', () async {
+    final oldPoemData = <v5.PoemData>[
+      v5.PoemData(
+        id: 1,
+        lastEdit: DateTime(2025, 11, 13, 12, 0, 0),
+        title: 'Title 1',
+        poem: 'Poem 1',
+      ),
+      v5.PoemData(
+        id: 2,
+        lastEdit: DateTime(2025, 11, 13, 12, 0, 0),
+        title: 'Title 2',
+        poem: 'Poem 2',
+      ),
+    ];
+
+    await verifier.testWithDataIntegrity(
+      oldVersion: 5,
+      newVersion: 6,
+      createOld: v5.DatabaseAtV5.new,
+      createNew: v6.DatabaseAtV6.new,
+      openTestedDatabase: Database.new,
+      createItems: (batch, oldDb) {
+        batch.insertAll(oldDb.poem, oldPoemData);
+      },
+      validateItems: (newDb) async {
+        final db = Database(newDb.executor);
+        final poems = await db.getPoems();
+        expect(poems.length, 2);
+
+        // Verify poemRich is populated with converted rich-text delta JSON
+        expect(poems.firstWhere((p) => p.id == 1).poemRich.toJson(), [
+          {'insert': 'Poem 1\n'},
+        ]);
+        expect(poems.firstWhere((p) => p.id == 2).poemRich.toJson(), [
+          {'insert': 'Poem 2\n'},
+        ]);
+
+        // Verify we can update and retrieve poemRich with rich text
+        final updatedPoem = poems.first.copyWith(
+          poemRich: Delta()..insert('Hello\n'),
+        );
+        await db.updatePoem(updatedPoem);
+
+        final readPoems = await db.getPoems();
+        final firstRead = readPoems.firstWhere((p) => p.id == updatedPoem.id);
+        expect(firstRead.poemRich.toJson(), [
+          {'insert': 'Hello\n'},
+        ]);
       },
     );
   });

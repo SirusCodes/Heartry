@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
+import 'package:flutter_quill/quill_delta.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:heartry/database/database.dart';
 
@@ -19,7 +20,12 @@ void main() {
 
   test('FTS5 Search with special characters does not crash', () async {
     // Insert a poem
-    final poem = PoemModel(id: 1, title: 'చందమామ', poem: 'మామా. చందమామ రావే');
+    final poem = PoemModel(
+      id: 1,
+      title: 'చందమామ',
+      poem: 'మామా. చందమామ రావే',
+      poemRich: Delta()..insert('మామా. చందమామ రావే\n'),
+    );
     await db.insertPoem(poem);
 
     // This search should not throw a SqliteException
@@ -35,14 +41,24 @@ void main() {
   });
 
   test('FTS5 table keeps in sync after update and delete', () async {
-    final poem = PoemModel(id: 1, title: 'Title', poem: 'Original body');
+    final poem = PoemModel(
+      id: 1,
+      title: 'Title',
+      poem: 'Original body',
+      poemRich: Delta()..insert('Original body\n'),
+    );
     await db.insertPoem(poem);
 
     var results = await db.searchPoems('Original');
     expect(results.length, 1);
 
     await db.updatePoem(
-      PoemModel(id: 1, title: 'Updated Title', poem: 'Updated body'),
+      PoemModel(
+        id: 1,
+        title: 'Updated Title',
+        poem: 'Updated body',
+        poemRich: Delta()..insert('Updated body\n'),
+      ),
     );
 
     results = await db.searchPoems('Original');
@@ -52,7 +68,12 @@ void main() {
     expect(results.length, 1);
 
     await db.deletePoem(
-      PoemModel(id: 1, title: 'Updated Title', poem: 'Updated body'),
+      PoemModel(
+        id: 1,
+        title: 'Updated Title',
+        poem: 'Updated body',
+        poemRich: Delta()..insert('Updated body\n'),
+      ),
     );
 
     results = await db.searchPoems('Updated');
@@ -73,7 +94,12 @@ void main() {
       await dbToSetup.select(dbToSetup.poem).get();
 
       // Insert a poem
-      final poem = PoemModel(id: 1, title: 'Title', poem: 'Original body');
+      final poem = PoemModel(
+        id: 1,
+        title: 'Title',
+        poem: 'Original body',
+        poemRich: Delta()..insert('Original body\n'),
+      );
       await dbToSetup.insertPoem(poem);
 
       // 2. Force-replace triggers with the legacy malformed triggers
@@ -99,7 +125,12 @@ void main() {
       // (reproducing the legacy crash)
       expect(
         () => dbToSetup.updatePoem(
-          PoemModel(id: 1, title: 'Updated Title', poem: 'Updated body'),
+          PoemModel(
+            id: 1,
+            title: 'Updated Title',
+            poem: 'Updated body',
+            poemRich: Delta()..insert('Updated body\n'),
+          ),
         ),
         throwsA(isA<SqliteException>()),
       );
@@ -116,14 +147,24 @@ void main() {
 
       // 4. Verify the triggers were corrected and update/delete now work perfectly without crashing
       await dbToVerify.updatePoem(
-        PoemModel(id: 1, title: 'Updated Title', poem: 'Updated body'),
+        PoemModel(
+          id: 1,
+          title: 'Updated Title',
+          poem: 'Updated body',
+          poemRich: Delta()..insert('Updated body\n'),
+        ),
       );
 
       final results = await dbToVerify.searchPoems('Updated');
       expect(results.length, 1);
 
       await dbToVerify.deletePoem(
-        PoemModel(id: 1, title: 'Updated Title', poem: 'Updated body'),
+        PoemModel(
+          id: 1,
+          title: 'Updated Title',
+          poem: 'Updated body',
+          poemRich: Delta()..insert('Updated body\n'),
+        ),
       );
 
       await dbToVerify.close();

@@ -8,6 +8,8 @@ import 'package:heartry/screens/image_screen/custom_template_creator.dart';
 import 'package:heartry/database/database.dart';
 import 'package:heartry/init_get_it.dart';
 import 'package:drift/native.dart';
+import 'package:heartry/screens/reader_screen/reader_screen.dart';
+import 'package:flutter_quill/quill_delta.dart';
 
 Future<void> setupTestDatabase() async {
   if (locator.isRegistered<Database>()) {
@@ -33,10 +35,10 @@ Verify custom template flow: configure, save, load, and delete''',
         routes: [
           GoRoute(
             path: '/',
-            builder: (_, __) => const ImageScreen(
+            builder: (_, __) => ImageScreen(
               title: "Test Poem",
               poet: "Test Author",
-              poem: "Line 1 of poem\nLine 2 of poem",
+              poem: Delta()..insert("Line 1 of poem\nLine 2 of poem"),
             ),
           ),
           GoRoute(
@@ -147,10 +149,10 @@ Verify custom template flow: configure, save, load, and delete''',
         routes: [
           GoRoute(
             path: '/',
-            builder: (_, __) => const ImageScreen(
+            builder: (_, __) => ImageScreen(
               title: "Test Poem",
               poet: "Test Author",
-              poem: "Line 1 of poem\nLine 2 of poem",
+              poem: Delta()..insert("Line 1 of poem\nLine 2 of poem"),
             ),
           ),
           GoRoute(
@@ -240,6 +242,53 @@ Verify custom template flow: configure, save, load, and delete''',
       // Verify custom template is deleted
       // and no longer visible in selector list
       expect(find.text("My Super Custom Style"), findsNothing);
+    },
+  );
+
+  testWidgets(
+    'Verify share as text flow: open reader screen, tap share, check options',
+    (WidgetTester tester) async {
+      await setupTestDatabase();
+
+      final poem = PoemModel(
+        id: 1,
+        title: "Test Share Title",
+        poem: "Hello World",
+        poemRich: Delta()..insert("Hello World\n"),
+        lastEdit: DateTime.now(),
+      );
+
+      final router = GoRouter(
+        initialLocation: '/',
+        routes: [
+          GoRoute(
+            path: '/',
+            builder: (_, __) => ReaderScreen(model: poem),
+          ),
+        ],
+      );
+
+      await tester.pumpWidget(
+        ProviderScope(child: MaterialApp.router(routerConfig: router)),
+      );
+
+      await tester.pumpAndSettle();
+
+      // Find share button
+      final shareButton = find.byIcon(Icons.share);
+      expect(shareButton, findsOneWidget);
+
+      // Tap share button
+      await tester.tap(shareButton);
+      await tester.pumpAndSettle();
+
+      // Verify bottom sheet shows share options
+      expect(find.text("Share as Text"), findsOneWidget);
+      expect(find.text("Share as Image"), findsOneWidget);
+
+      // Tap "Share as Text"
+      await tester.tap(find.text("Share as Text"));
+      await tester.pumpAndSettle();
     },
   );
 }

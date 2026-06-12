@@ -1,4 +1,5 @@
 import 'package:flutter/widgets.dart';
+import 'package:flutter_quill/quill_delta.dart';
 
 import 'text_spliting_service.dart';
 
@@ -15,14 +16,17 @@ class ImageController extends ChangeNotifier {
   }) : _textSizeFactor = textSizeFactor,
        _constraints = constraints,
        _padding = padding,
-       _textStyle = DefaultTextStyle.of(context).style.merge(textStyle);
+       _textStyle = DefaultTextStyle.of(context).style.merge(textStyle) {
+    _updatePoemSeparated();
+  }
 
-  final String author, poem;
+  final String author;
+  final Delta poem;
   final String? title;
   final BuildContext context;
 
-  List<List<String>> _poemSeparated = [];
-  List<List<String>> get poemSeparated => _poemSeparated;
+  List<Delta> _poemSeparated = [];
+  List<Delta> get poemSeparated => _poemSeparated;
 
   BoxConstraints _constraints;
   set constraints(BoxConstraints value) {
@@ -65,12 +69,14 @@ class ImageController extends ChangeNotifier {
   EdgeInsetsGeometry get padding => _padding;
 
   void _updatePoemSeparated() {
+    if (constraints.maxWidth == 0 || constraints.maxHeight == 0) return;
+
     final textSplittingService = TextSplittingService(
       context: context,
       constraints: constraints,
       title: title,
       poet: author,
-      poem: poem.split('\n'),
+      poem: poem,
       contentPadding: padding,
       textStyle: textStyle,
     );

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_quill/quill_delta.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -94,11 +95,11 @@ final GoRouter goRouter = GoRouter(
     GoRoute(
       path: ImageScreen.routePath,
       builder: (context, state) {
-        final params = state.extra as Map<String, String?>;
+        final params = state.extra as Map<String, dynamic>;
         return ImageScreen(
-          title: params['title'],
-          poet: params['poet'],
-          poem: params['poem'] ?? "",
+          title: params['title'] as String?,
+          poet: params['poet'] as String?,
+          poem: params['poem'] as Delta,
         );
       },
     ),
