@@ -19,10 +19,7 @@ class ConstrainedWidthContainer extends StatelessWidget {
   Widget build(BuildContext context) {
     Widget current = child;
     if (padding != EdgeInsets.zero) {
-      current = Padding(
-        padding: padding,
-        child: current,
-      );
+      current = Padding(padding: padding, child: current);
     }
     return Center(
       child: ConstrainedBox(

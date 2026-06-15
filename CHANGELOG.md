@@ -1,3 +1,7 @@
+## 2.9.1 - 15/06/2026
+
+Fix bugs with searching poems for some users.
+
 ## 2.9.0 - 01/06/2026
 
 - Create your own templates for image generation!

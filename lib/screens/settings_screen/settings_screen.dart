@@ -26,44 +26,42 @@ class SettingsScreen extends StatelessWidget {
           child: ListView(
             children: [
               const CScreenTitle(title: "Settings"),
-                ListTile(
-                  leading: const CircleAvatar(child: Icon(Icons.person)),
-                  title: const Text("Profile"),
-                  subtitle: const Text("Name and picture"),
-                  onTap: () => context.push(ProfileScreen.routePath),
+              ListTile(
+                leading: const CircleAvatar(child: Icon(Icons.person)),
+                title: const Text("Profile"),
+                subtitle: const Text("Name and picture"),
+                onTap: () => context.push(ProfileScreen.routePath),
+              ),
+              ListTile(
+                leading: const CircleAvatar(child: Icon(Icons.palette)),
+                title: const Text("Personalize"),
+                subtitle: const Text("Theme and defaults"),
+                onTap: () => context.push(PersonalizeScreen.routePath),
+              ),
+              ListTile(
+                leading: const CircleAvatar(child: Icon(Icons.cloud_sync)),
+                title: const Text("Backup and Restore"),
+                subtitle: const Text("Info on your Google Drive backup"),
+                onTap: () => context.push(BackupSettingScreen.routePath),
+              ),
+              ListTile(
+                leading: const CircleAvatar(
+                  child: Icon(Symbols.delete_rounded),
                 ),
-                ListTile(
-                  leading: const CircleAvatar(child: Icon(Icons.palette)),
-                  title: const Text("Personalize"),
-                  subtitle: const Text("Theme and defaults"),
-                  onTap: () => context.push(PersonalizeScreen.routePath),
-                ),
-                ListTile(
-                  leading: const CircleAvatar(child: Icon(Icons.cloud_sync)),
-                  title: const Text("Backup and Restore"),
-                  subtitle: const Text("Info on your Google Drive backup"),
-                  onTap: () => context.push(BackupSettingScreen.routePath),
-                ),
-                ListTile(
-                  leading: const CircleAvatar(
-                    child: Icon(Symbols.delete_rounded),
-                  ),
-                  title: const Text("Bin"),
-                  subtitle: const Text(
-                    "Restore from bin or delete permanently",
-                  ),
-                  onTap: () => context.push(BinScreen.routePath),
-                ),
-                ListTile(
-                  leading: const CircleAvatar(child: Icon(Icons.info)),
-                  title: const Text("About"),
-                  subtitle: const Text("App info and development"),
-                  onTap: () => context.push(AboutScreen.routePath),
-                ),
-              ],
-            ),
+                title: const Text("Bin"),
+                subtitle: const Text("Restore from bin or delete permanently"),
+                onTap: () => context.push(BinScreen.routePath),
+              ),
+              ListTile(
+                leading: const CircleAvatar(child: Icon(Icons.info)),
+                title: const Text("About"),
+                subtitle: const Text("App info and development"),
+                onTap: () => context.push(AboutScreen.routePath),
+              ),
+            ],
           ),
         ),
+      ),
       bottomNavigationBar: isIOS ? const OnlyBackButtonBottomAppBar() : null,
     );
   }

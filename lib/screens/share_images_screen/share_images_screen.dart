@@ -32,12 +32,26 @@ class ShareImagesScreen extends StatelessWidget {
                 children: images
                     .map(
                       (path) => InkWell(
-                        onTap: () {
-                          SharePlus.instance.share(
-                            ShareParams(
-                              files: [XFile(path, mimeType: "image/png")],
-                            ),
-                          );
+                        onTap: () async {
+                          try {
+                            await SharePlus.instance.share(
+                              ShareParams(
+                                files: [XFile(path, mimeType: "image/png")],
+                              ),
+                            );
+                          } catch (e) {
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    "Sharing failed: ${e.toString()}",
+                                  ),
+                                ),
+                              );
+                            }
+
+                            rethrow;
+                          }
                         },
                         child: Card(child: Image.file(File(path))),
                       ),

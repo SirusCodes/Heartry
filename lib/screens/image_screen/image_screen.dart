@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:material_symbols_icons/symbols.dart';
-import 'package:path/path.dart';
+import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:share_plus/share_plus.dart';
@@ -118,7 +118,7 @@ class _ImageScreenState extends State<ImageScreen> {
       await _loadTemplates();
 
       if (mounted) {
-        ScaffoldMessenger.of(this.context).showSnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
               'Template "${selectedTemplate!.name}" updated successfully!',
@@ -380,14 +380,26 @@ class _ImageScreenState extends State<ImageScreen> {
   }
 
   Future<void> _shareAll(List<String> images) async {
-    await SharePlus.instance.share(
-      ShareParams(
-        text:
-            "Made using Heartry 💜\n"
-            "Download at https://play.google.com/store/apps/details?id=com.darshan.heartry",
-        files: images.map((img) => XFile(img, mimeType: "image/png")).toList(),
-      ),
-    );
+    try {
+      await SharePlus.instance.share(
+        ShareParams(
+          text:
+              "Made using Heartry 💜\n"
+              "Download at https://play.google.com/store/apps/details?id=com.darshan.heartry",
+          files: images
+              .map((img) => XFile(img, mimeType: "image/png"))
+              .toList(),
+        ),
+      );
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Sharing failed: ${e.toString()}")),
+        );
+      }
+
+      rethrow;
+    }
   }
 
   void _showProgressDialog(BuildContext context) {
@@ -410,14 +422,14 @@ class _ImageScreenState extends State<ImageScreen> {
 
     final time = DateTime.now().toIso8601String();
 
-    final path = join(tmpDir.path, "${widget.title}-$time-$index.png");
+    final p = path.join(tmpDir.path, "${widget.title}-$time-$index.png");
 
     final imgBytes = await _screenshot.capture(
-      pixelRatio: 3,
+      pixelRatio: 2,
       delay: const Duration(milliseconds: 100),
     );
 
-    final imgFile = File(path)..writeAsBytes(imgBytes!);
+    final imgFile = File(p)..writeAsBytes(imgBytes!);
 
     return imgFile.path;
   }

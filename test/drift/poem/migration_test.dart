@@ -132,7 +132,16 @@ void main() {
             .customSelect('SELECT * FROM poem;')
             .map((row) => PoemModel.fromJson(row.data))
             .get();
-        final ftsPeom = await db.searchPoems("Update");
+        final ftsPeom = await db
+            .customSelect(
+              'SELECT p.* FROM poem as p JOIN poem_fts '
+              'as fts ON p.id = fts.rowid '
+              'WHERE poem_fts MATCH ? ORDER BY rank LIMIT 10',
+              variables: [Variable<String>('Update*')],
+              readsFrom: {db.poem},
+            )
+            .map((row) => PoemModel.fromJson(row.data))
+            .get();
 
         expect(
           allPoems

@@ -35,12 +35,27 @@ class Database extends _$Database {
     onCreate: (m) async {
       await m.createAll();
 
-      // Create the FTS table and triggers on a fwresh install so search works
+      // Create the FTS table and triggers on a fresh install so search works
       await _createFTS5();
       await _prepopulateDefaultTemplates();
     },
     beforeOpen: (details) async {
       await customStatement('PRAGMA foreign_keys = ON');
+      // Only recreate triggers and rebuild if the legacy triggers
+      // (using direct UPDATE) are found.
+      // This ensures we only run the expensive FTS rebuild
+      // once to repair corrupted databases.
+      final triggerRow = await customSelect(
+        "SELECT sql FROM sqlite_master WHERE type='trigger' "
+        "AND name='poem_fts_update';",
+      ).getSingleOrNull();
+
+      if (triggerRow != null) {
+        final triggerSql = triggerRow.read<String>('sql');
+        if (triggerSql.contains('UPDATE poem_fts')) {
+          await _recreateTriggersAndRebuildFTS();
+        }
+      }
     },
     onUpgrade: stepByStep(
       from1To2: (m, schema) async {
@@ -69,24 +84,22 @@ class Database extends _$Database {
   );
 
   Future<List<PoemModel>> searchPoems(String query) async {
-    final ftsQuery = '$query*';
-    final hasDeletedAt = await _poemHasDeletedAt();
-
-    final whereClause = hasDeletedAt
-        ? 'WHERE p.deleted_at IS NULL AND poem_fts MATCH ?'
-        : 'WHERE poem_fts MATCH ?';
+    String sanitized = query.trim();
+    if (sanitized.endsWith('*')) {
+      sanitized = sanitized.substring(0, sanitized.length - 1).trim();
+    }
+    if (sanitized.isEmpty) {
+      return [];
+    }
+    final escapedQuery = sanitized.replaceAll('"', '""');
+    final ftsQuery = '"$escapedQuery"*';
 
     return customSelect(
       'SELECT p.* FROM poem as p JOIN poem_fts as fts ON p.id = fts.rowid '
-      '$whereClause ORDER BY rank LIMIT 10',
+      'WHERE p.deleted_at IS NULL AND poem_fts MATCH ? ORDER BY rank LIMIT 10',
       variables: [Variable<String>(ftsQuery)],
       readsFrom: {poem},
     ).map((row) => PoemModel.fromJson(row.data)).get();
-  }
-
-  Future<bool> _poemHasDeletedAt() async {
-    final columns = await customSelect('PRAGMA table_info(poem);').get();
-    return columns.any((row) => row.data['name'] == 'deleted_at');
   }
 
   Stream<List<PoemModel>> get getPoemStream =>
@@ -197,17 +210,55 @@ class Database extends _$Database {
       // Trigger to sync FTS table on UPDATE
       await customStatement('''
           CREATE TRIGGER poem_fts_update AFTER UPDATE ON poem BEGIN
-            UPDATE poem_fts SET title = new.title, poem = new.poem
-            WHERE rowid = new.id;
+            INSERT INTO poem_fts(poem_fts, rowid, title, poem)
+            VALUES ('delete', old.id, old.title, old.poem);
+            INSERT INTO poem_fts(rowid, title, poem)
+            VALUES (new.id, new.title, new.poem);
           END;
         ''');
 
       // Trigger to sync FTS table on DELETE
       await customStatement('''
           CREATE TRIGGER poem_fts_delete AFTER DELETE ON poem BEGIN
-            DELETE FROM poem_fts WHERE rowid = old.id;
+            INSERT INTO poem_fts(poem_fts, rowid, title, poem)
+            VALUES ('delete', old.id, old.title, old.poem);
           END;
         ''');
+    });
+  }
+
+  Future<void> _recreateTriggersAndRebuildFTS() async {
+    await transaction(() async {
+      await customStatement('DROP TRIGGER IF EXISTS poem_fts_insert;');
+      await customStatement('DROP TRIGGER IF EXISTS poem_fts_update;');
+      await customStatement('DROP TRIGGER IF EXISTS poem_fts_delete;');
+
+      await customStatement('''
+          CREATE TRIGGER poem_fts_insert AFTER INSERT ON poem BEGIN
+            INSERT INTO poem_fts(rowid, title, poem)
+            VALUES (new.id, new.title, new.poem);
+          END;
+        ''');
+
+      await customStatement('''
+          CREATE TRIGGER poem_fts_update AFTER UPDATE ON poem BEGIN
+            INSERT INTO poem_fts(poem_fts, rowid, title, poem)
+            VALUES ('delete', old.id, old.title, old.poem);
+            INSERT INTO poem_fts(rowid, title, poem)
+            VALUES (new.id, new.title, new.poem);
+          END;
+        ''');
+
+      await customStatement('''
+          CREATE TRIGGER poem_fts_delete AFTER DELETE ON poem BEGIN
+            INSERT INTO poem_fts(poem_fts, rowid, title, poem)
+            VALUES ('delete', old.id, old.title, old.poem);
+          END;
+        ''');
+
+      await customStatement(
+        'INSERT INTO poem_fts(poem_fts) VALUES(\'rebuild\');',
+      );
     });
   }
 
@@ -246,7 +297,11 @@ class Database extends _$Database {
     ];
 
     await batch((batch) {
-      batch.insertAll(templates, defaultTemplates);
+      batch.insertAll(
+        templates,
+        defaultTemplates,
+        mode: InsertMode.insertOrReplace,
+      );
     });
   }
 

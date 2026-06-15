@@ -52,65 +52,60 @@ Click to login to Google and enable drive backup."""),
                     );
                   }
 
-                    return BaseInfoWidget(
-                      title: "BACKUP",
-                      children: [
-                        ListTile(
-                          title: const Text("Backup Email"),
-                          subtitle: Text(model.backupEmail!),
-                          trailing: TextButton(
-                            child: const Text("Sign Out"),
-                            onPressed: () {
-                              ref.read(authProvider.notifier).signOut();
-                            },
-                          ),
-                        ),
-                        SwitchListTile(
-                          value: model.isAutoBackupEnabled,
-                          title: const Text(
-                            "Enable Auto backup to Google Drive",
-                          ),
-                          subtitle: const Text(
-                            "Enable auto backup your data to Google Drive. "
-                            "You can restore your data on another device.",
-                          ),
-                          onChanged: (value) {
-                            ref
-                                    .read(configProvider.notifier)
-                                    .isAutoBackupEnabled =
-                                value;
+                  return BaseInfoWidget(
+                    title: "BACKUP",
+                    children: [
+                      ListTile(
+                        title: const Text("Backup Email"),
+                        subtitle: Text(model.backupEmail!),
+                        trailing: TextButton(
+                          child: const Text("Sign Out"),
+                          onPressed: () {
+                            ref.read(authProvider.notifier).signOut();
                           },
                         ),
-                        const Divider(),
-                        ListTile(
-                          title: const Text("Backup Now"),
-                          subtitle: const Text(
-                            "Backup your data to Google Drive immediately.",
-                          ),
-                          enabled: model.backupEmail != null,
-                          onTap: () =>
-                              ref //
-                                  .read(backupManagerProvider.notifier)
-                                  .backup(forceBackup: true),
+                      ),
+                      SwitchListTile(
+                        value: model.isAutoBackupEnabled,
+                        title: const Text("Enable Auto backup to Google Drive"),
+                        subtitle: const Text(
+                          "Enable auto backup your data to Google Drive. "
+                          "You can restore your data on another device.",
                         ),
-                        ListTile(
-                          title: const Text("Last Backup"),
-                          subtitle: model.lastBackup == null
-                              ? const Text("Have no backup yet.")
-                              : Text(
-                                  dateTimeFormatter.format(model.lastBackup!),
-                                ),
+                        onChanged: (value) {
+                          ref
+                                  .read(configProvider.notifier)
+                                  .isAutoBackupEnabled =
+                              value;
+                        },
+                      ),
+                      const Divider(),
+                      ListTile(
+                        title: const Text("Backup Now"),
+                        subtitle: const Text(
+                          "Backup your data to Google Drive immediately.",
                         ),
-                      ],
-                    );
-                  },
-                  loading: () =>
-                      const Center(child: CircularProgressIndicator()),
-                  error: (e, s) => Center(child: Text("Error: $e\n$s")),
-                ),
-              ],
-            ),
+                        enabled: model.backupEmail != null,
+                        onTap: () =>
+                            ref //
+                                .read(backupManagerProvider.notifier)
+                                .backup(forceBackup: true),
+                      ),
+                      ListTile(
+                        title: const Text("Last Backup"),
+                        subtitle: model.lastBackup == null
+                            ? const Text("Have no backup yet.")
+                            : Text(dateTimeFormatter.format(model.lastBackup!)),
+                      ),
+                    ],
+                  );
+                },
+                loading: () => const Center(child: CircularProgressIndicator()),
+                error: (e, s) => Center(child: Text("Error: $e\n$s")),
+              ),
+            ],
           ),
+        ),
         bottomNavigationBar: isIOS ? const OnlyBackButtonBottomAppBar() : null,
       ),
     );
