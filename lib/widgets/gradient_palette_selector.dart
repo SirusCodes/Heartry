@@ -39,7 +39,7 @@ class GradientPaletteSelector extends StatelessWidget {
             ],
           ),
         ),
-        onReorder: (oldIndex, newIndex) {
+        onReorderItem: (oldIndex, newIndex) {
           if (oldIndex != newIndex) {
             final newList = List<Color>.from(gradient);
             newList.insert(newIndex, newList.removeAt(oldIndex));

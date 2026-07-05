@@ -62,6 +62,7 @@ class Database extends _$Database {
         await customStatement('PRAGMA foreign_keys = OFF');
 
         // To update default type of lastEdit column
+        // ignore: experimental_member_use
         await m.alterTable(TableMigration(schema.poem));
 
         await _createFTS5();
