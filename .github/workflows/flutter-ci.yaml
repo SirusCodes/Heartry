@@ -36,8 +36,8 @@ jobs:
           dart format --set-exit-if-changed .
           flutter analyze lib
 
-      # - name: Run Tests
-      #   run: flutter test
+      - name: Run Tests
+        run: flutter test
 
       - name: Build debug apk
         run: |
