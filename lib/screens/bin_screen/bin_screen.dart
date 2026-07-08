@@ -22,7 +22,7 @@ class BinScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return ProviderScope(
       overrides: [
-        selectedPoemsProvider.overrideWith((_) => SelectedPoems()),
+        selectedPoemsProvider.overrideWith(() => SelectedPoems()),
         multiSelectEnabledProvider.overrideWith(
           (ref) => ref.watch(selectedPoemsProvider).isNotEmpty,
         ),
@@ -32,7 +32,7 @@ class BinScreen extends StatelessWidget {
           child: ConstrainedWidthContainer(
             child: NestedScrollView(
               floatHeaderSlivers: true,
-              headerSliverBuilder: (_, __) => [
+              headerSliverBuilder: (_, _) => [
                 const SliverToBoxAdapter(child: _CAppBar()),
               ],
               body: const _CBody(),
@@ -85,9 +85,7 @@ class _DefaultAppBar extends ConsumerWidget {
           const Spacer(),
           IconButton(
             onPressed: () {
-              ref.read(listGridProvider.notifier).state = !ref.read(
-                listGridProvider,
-              );
+              ref.read(listGridProvider.notifier).toggle();
             },
             icon: isGrid
                 ? const Icon(Icons.list_alt_rounded)

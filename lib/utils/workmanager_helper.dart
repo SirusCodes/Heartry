@@ -68,18 +68,22 @@ void callbackDispatcher() {
       backupManager.setBackupHash(backupHash);
 
       final dateFomatter = DateFormat.yMMMEd().add_jm();
-      FlutterLocalNotificationsPlugin().show(
-        0,
-        "Your data is safe! 🎉",
-        "Backup successful at ${dateFomatter.format(DateTime.now())}",
-        const NotificationDetails(android: androidNotificationDetails),
+      await FlutterLocalNotificationsPlugin().show(
+        id: 0,
+        title: "Your data is safe! 🎉",
+        body: "Backup successful at ${dateFomatter.format(DateTime.now())}",
+        notificationDetails: const NotificationDetails(
+          android: androidNotificationDetails,
+        ),
       );
     } catch (e, st) {
-      FlutterLocalNotificationsPlugin().show(
-        0,
-        e.toString(),
-        st.toString(),
-        const NotificationDetails(android: androidNotificationDetails),
+      await FlutterLocalNotificationsPlugin().show(
+        id: 0,
+        title: e.toString(),
+        body: st.toString(),
+        notificationDetails: const NotificationDetails(
+          android: androidNotificationDetails,
+        ),
       );
 
       log("Backup failed: $e", error: e, stackTrace: st);

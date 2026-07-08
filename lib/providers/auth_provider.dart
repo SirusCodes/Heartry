@@ -11,13 +11,7 @@ const _accessScopes = [DriveApi.driveAppdataScope];
 
 typedef AsyncAccount = AsyncValue<GoogleSignInAccount?>;
 
-final _googleSignInProvider = Provider(
-  (_) => GoogleSignIn(
-    scopes: _accessScopes,
-    forceCodeForRefreshToken: true,
-    serverClientId: const String.fromEnvironment('GOOGLE_CLIENT_ID'),
-  ),
-);
+final _googleSignInProvider = Provider((_) => GoogleSignIn.instance);
 
 final authProvider = AsyncNotifierProvider<AuthProvider, GoogleSignInAccount?>(
   AuthProvider.new,
@@ -26,22 +20,25 @@ final authProvider = AsyncNotifierProvider<AuthProvider, GoogleSignInAccount?>(
 class AuthProvider extends AsyncNotifier<GoogleSignInAccount?> {
   GoogleSignIn get _googleSignIn => ref.read(_googleSignInProvider);
 
-  GoogleSignInAccount? getAccount() {
-    return _googleSignIn.currentUser;
-  }
-
   Future<void> signIn() async {
     try {
-      final account = await _googleSignIn.signIn();
-      final canAccess = await _googleSignIn.requestScopes(_accessScopes);
-      if (account == null || !canAccess) {
-        state = AsyncAccount.error('Access denied', StackTrace.current);
+      final account = await _googleSignIn.authenticate();
+
+      final serverAuth = await account.authorizationClient.authorizeServer(
+        _accessScopes,
+      );
+      if (serverAuth == null) {
+        state = AsyncAccount.error(
+          'Failed to get server auth',
+          StackTrace.current,
+        );
         return;
       }
+      final serverAuthCode = serverAuth.serverAuthCode;
 
       await ref
           .read(tokenManagerProvider)
-          .getAndSaveTokensFromAuthCode(account.serverAuthCode!);
+          .getAndSaveTokensFromAuthCode(serverAuthCode);
       ref.read(configProvider.notifier)
         ..backupEmail = account.email
         ..isAutoBackupEnabled = true;
@@ -69,7 +66,14 @@ class AuthProvider extends AsyncNotifier<GoogleSignInAccount?> {
   }
 
   @override
-  FutureOr<GoogleSignInAccount?> build() {
-    return getAccount();
+  FutureOr<GoogleSignInAccount?> build() async {
+    await _googleSignIn.initialize(
+      serverClientId: const String.fromEnvironment('GOOGLE_CLIENT_ID'),
+    );
+    final result = _googleSignIn.attemptLightweightAuthentication();
+    if (result is Future<GoogleSignInAccount?>) {
+      return await result;
+    }
+    return result;
   }
 }

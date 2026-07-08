@@ -33,7 +33,7 @@ Verify custom template flow: configure, save, load, and delete''',
         routes: [
           GoRoute(
             path: '/',
-            builder: (_, __) => const ImageScreen(
+            builder: (_, _) => const ImageScreen(
               title: "Test Poem",
               poet: "Test Author",
               poem: "Line 1 of poem\nLine 2 of poem",
@@ -41,7 +41,7 @@ Verify custom template flow: configure, save, load, and delete''',
           ),
           GoRoute(
             path: '/create-template',
-            builder: (_, __) => const CustomTemplateCreator(),
+            builder: (_, _) => const CustomTemplateCreator(),
           ),
         ],
       );
@@ -147,7 +147,7 @@ Verify custom template flow: configure, save, load, and delete''',
         routes: [
           GoRoute(
             path: '/',
-            builder: (_, __) => const ImageScreen(
+            builder: (_, _) => const ImageScreen(
               title: "Test Poem",
               poet: "Test Author",
               poem: "Line 1 of poem\nLine 2 of poem",
@@ -155,7 +155,7 @@ Verify custom template flow: configure, save, load, and delete''',
           ),
           GoRoute(
             path: '/create-template',
-            builder: (_, __) => const CustomTemplateCreator(),
+            builder: (_, _) => const CustomTemplateCreator(),
           ),
         ],
       );

@@ -26,18 +26,19 @@ enum BackupRestoreState {
 }
 
 final backupManagerProvider =
-    StateNotifierProvider<BackupManagerProvider, BackupRestoreState>(
+    NotifierProvider<BackupManagerProvider, BackupRestoreState>(
       BackupManagerProvider.new,
     );
 
-class BackupManagerProvider extends StateNotifier<BackupRestoreState> {
-  BackupManagerProvider(Ref ref) : _ref = ref, super(BackupRestoreState.idle);
-
-  final Ref _ref;
+class BackupManagerProvider extends Notifier<BackupRestoreState> {
+  @override
+  BackupRestoreState build() {
+    return BackupRestoreState.idle;
+  }
 
   Future<void> backup({bool forceBackup = false}) async {
     state = BackupRestoreState.backingUp;
-    final manager = _ref.read(backupRestoreManagerProvider);
+    final manager = ref.read(backupRestoreManagerProvider);
     try {
       final file = await manager.createBackupFile();
       final backupHash = await manager.getBackupFileHash(file);
@@ -52,7 +53,7 @@ class BackupManagerProvider extends StateNotifier<BackupRestoreState> {
       state = BackupRestoreState.success;
 
       await manager.setBackupHash(backupHash);
-      _ref.read(configProvider.notifier).lastBackup = dateTime;
+      ref.read(configProvider.notifier).lastBackup = dateTime;
     } catch (e) {
       state = BackupRestoreState.error;
     }
@@ -137,7 +138,7 @@ class BackupRestoreManagerProvider {
     return files.files?.map((e) => (e.id!, _getDateFromName(e.name!))).toList();
   }
 
-  removeBackup(String id) async {
+  Future<void> removeBackup(String id) async {
     final drive = await _getDrive();
     await drive.files.delete(id);
   }

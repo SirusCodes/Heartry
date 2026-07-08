@@ -79,7 +79,7 @@ class _IntroScreenState extends State<IntroScreen> {
   ) async {
     final scaffoldMessenger = ScaffoldMessenger.of(context);
 
-    if (next.asData?.valueOrNull != null) {
+    if (next.asData?.value != null) {
       final name = next.value!.displayName ?? "User";
       ref.read(configProvider.notifier).name = name;
 

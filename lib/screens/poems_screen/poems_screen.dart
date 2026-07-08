@@ -75,7 +75,7 @@ class _PoemScreenState extends ConsumerState<PoemScreen> {
           maxWidth: 1000,
           child: NestedScrollView(
             floatHeaderSlivers: true,
-            headerSliverBuilder: (_, __) => [
+            headerSliverBuilder: (_, _) => [
               const SliverToBoxAdapter(child: _CAppBar()),
             ],
             body: const _CBody(),
@@ -88,8 +88,8 @@ class _PoemScreenState extends ConsumerState<PoemScreen> {
         closedShape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(15),
         ),
-        openBuilder: (_, __) => const WritingScreen(),
-        closedBuilder: (_, __) => AbsorbPointer(
+        openBuilder: (_, _) => const WritingScreen(),
+        closedBuilder: (_, _) => AbsorbPointer(
           child: FloatingActionButton(
             onPressed: () {},
             child: const Icon(Icons.add),
@@ -237,9 +237,7 @@ class _DefaultAppBar extends ConsumerWidget {
 
           IconButton(
             onPressed: () {
-              ref.read(listGridProvider.notifier).state = !ref.read(
-                listGridProvider,
-              );
+              ref.read(listGridProvider.notifier).toggle();
             },
             icon: isGrid
                 ? const Icon(Icons.list_alt_rounded)

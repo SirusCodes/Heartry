@@ -6,10 +6,13 @@ final multiSelectEnabledProvider = Provider(
   dependencies: [selectedPoemsProvider],
 );
 
-final selectedPoemsProvider = StateNotifierProvider((_) => SelectedPoems());
+final selectedPoemsProvider = NotifierProvider<SelectedPoems, List<PoemModel>>(
+  SelectedPoems.new,
+);
 
-class SelectedPoems extends StateNotifier<List<PoemModel>> {
-  SelectedPoems() : super([]);
+class SelectedPoems extends Notifier<List<PoemModel>> {
+  @override
+  List<PoemModel> build() => [];
 
   void toggle(PoemModel poem) {
     final index = state.indexWhere((t) => t.id == poem.id);

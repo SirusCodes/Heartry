@@ -128,7 +128,7 @@ Click to login to Google and enable drive backup."""),
     }
   }
 
-  _showBackupDialog(BuildContext context) {
+  Future<void> _showBackupDialog(BuildContext context) {
     return showDialog(
       context: context,
       barrierDismissible: false,

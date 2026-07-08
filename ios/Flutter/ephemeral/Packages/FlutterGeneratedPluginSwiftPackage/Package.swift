@@ -16,17 +16,15 @@ let package = Package(
     ],
     dependencies: [
         .package(name: "integration_test", path: "../.packages/integration_test"),
-        .package(name: "flutter_native_splash", path: "../.packages/flutter_native_splash-2.4.7"),
         .package(name: "url_launcher_ios", path: "../.packages/url_launcher_ios-6.4.1"),
-        .package(name: "sqlite3_flutter_libs", path: "../.packages/sqlite3_flutter_libs-0.5.42"),
         .package(name: "shared_preferences_foundation", path: "../.packages/shared_preferences_foundation-2.5.6"),
-        .package(name: "share_plus", path: "../.packages/share_plus-13.1.0"),
-        .package(name: "sentry_flutter", path: "../.packages/sentry_flutter-9.21.0"),
-        .package(name: "package_info_plus", path: "../.packages/package_info_plus-10.1.0"),
+        .package(name: "share_plus", path: "../.packages/share_plus-13.2.0"),
+        .package(name: "sentry_flutter", path: "../.packages/sentry_flutter-9.23.0"),
+        .package(name: "package_info_plus", path: "../.packages/package_info_plus-10.2.0"),
         .package(name: "image_picker_ios", path: "../.packages/image_picker_ios-0.8.13+6"),
-        .package(name: "google_sign_in_ios", path: "../.packages/google_sign_in_ios-5.9.0"),
+        .package(name: "google_sign_in_ios", path: "../.packages/google_sign_in_ios-6.3.0"),
         .package(name: "flutter_secure_storage_darwin", path: "../.packages/flutter_secure_storage_darwin-0.3.2"),
-        .package(name: "flutter_local_notifications", path: "../.packages/flutter_local_notifications-19.5.0"),
+        .package(name: "flutter_local_notifications", path: "../.packages/flutter_local_notifications-22.0.1"),
         .package(name: "FlutterFramework", path: "../.packages/FlutterFramework")
     ],
     targets: [
@@ -34,9 +32,7 @@ let package = Package(
             name: "FlutterGeneratedPluginSwiftPackage",
             dependencies: [
                 .product(name: "integration-test", package: "integration_test"),
-                .product(name: "flutter-native-splash", package: "flutter_native_splash"),
                 .product(name: "url-launcher-ios", package: "url_launcher_ios"),
-                .product(name: "sqlite3-flutter-libs", package: "sqlite3_flutter_libs"),
                 .product(name: "shared-preferences-foundation", package: "shared_preferences_foundation"),
                 .product(name: "share-plus", package: "share_plus"),
                 .product(name: "sentry-flutter", package: "sentry_flutter"),

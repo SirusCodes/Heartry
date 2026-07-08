@@ -109,7 +109,7 @@ class _WritingScreenState extends State<WritingScreen>
     }
     return Scaffold(
       body: PopScope(
-        onPopInvokedWithResult: (_, __) {
+        onPopInvokedWithResult: (_, _) {
           if (_isEmpty && widget.model != null)
             poemDB.softDeletePoem(widget.model!);
         },
