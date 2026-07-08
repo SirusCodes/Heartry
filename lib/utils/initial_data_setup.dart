@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../database/config.dart';
 import '../database/database.dart';
 import '../init_get_it.dart';
+import 'poem_utils.dart';
 
 class InitialDataSetup {
   static Future<void> addDefaultData(String name, WidgetRef ref) async {
@@ -32,8 +33,11 @@ You can share poem in 2 ways.
 1. As Text 🆎 (For Messages)
 2. As Photos 📷 (For Stories)""");
 
+    final poemText = buffer.toString();
+    final poemDelta = stringToDelta(poemText);
+
     await db.insertPoem(
-      PoemModel(title: "Welcome!!🎉", poem: buffer.toString()),
+      PoemModel(title: "Welcome!!🎉", poem: poemText, poemRich: poemDelta),
     );
   }
 }

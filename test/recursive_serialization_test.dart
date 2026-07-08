@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_quill/quill_delta.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:heartry/image_builder/core/image_controller.dart';
 import 'package:heartry/image_builder/core/image_layer.dart';
@@ -16,7 +17,7 @@ void main() {
               context: context,
               title: "My Title",
               author: "My Poet",
-              poem: "Line 1\nLine 2",
+              poem: Delta()..insert("Line 1\nLine 2"),
             );
 
             final solidJson = {
@@ -64,7 +65,7 @@ void main() {
               context: context,
               title: 'My Title',
               author: 'My Poet',
-              poem: 'Line 1\nLine 2',
+              poem: Delta()..insert("Line 1\nLine 2"),
             );
 
             final imageJson = {
@@ -104,7 +105,7 @@ Updating image background value using type mutates target layer and serializes c
                 context: context,
                 title: 'My Title',
                 author: 'My Poet',
-                poem: 'Line 1\nLine 2',
+                poem: Delta()..insert("Line 1\nLine 2"),
               );
 
               final imageJson = {

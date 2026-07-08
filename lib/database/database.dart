@@ -1,9 +1,17 @@
+import 'dart:convert';
+import 'dart:developer';
 import 'package:drift/drift.dart';
+import 'package:flutter_quill/quill_delta.dart';
 
 import 'database.steps.dart';
 import 'open_connection.dart';
 
 part 'database.g.dart';
+
+final poemRichConverter = TypeConverter.jsonb<Delta>(
+  fromJson: (json) => Delta.fromJson(json as List<dynamic>),
+  toJson: (delta) => delta.toJson(),
+);
 
 @DataClassName("PoemModel")
 class Poem extends Table {
@@ -13,6 +21,9 @@ class Poem extends Table {
   TextColumn get title => text().withDefault(const Constant(""))();
   TextColumn get poem => text()();
   DateTimeColumn get deletedAt => dateTime().nullable()();
+  BlobColumn get poemRich => blob()
+      .withDefault(Constant(Uint8List.fromList([11])))
+      .map(poemRichConverter)();
 }
 
 @DataClassName("TemplateModel")
@@ -28,7 +39,7 @@ class Database extends _$Database {
   Database([QueryExecutor? e]) : super(e ?? openConnection());
 
   @override
-  int get schemaVersion => 5;
+  int get schemaVersion => 6;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -40,6 +51,12 @@ class Database extends _$Database {
       await _prepopulateDefaultTemplates();
     },
     beforeOpen: (details) async {
+      log(
+        'BEFORE OPEN: WAS CREATED: ${details.wasCreated}, '
+        'HAD UPGRADE: ${details.hadUpgrade}, FROM: ${details.versionBefore}, '
+        'TO: ${details.versionNow}',
+        name: 'Database',
+      );
       await customStatement('PRAGMA foreign_keys = ON');
       // Only recreate triggers and rebuild if the legacy triggers
       // (using direct UPDATE) are found.
@@ -57,31 +74,59 @@ class Database extends _$Database {
         }
       }
     },
-    onUpgrade: stepByStep(
-      from1To2: (m, schema) async {
-        await customStatement('PRAGMA foreign_keys = OFF');
+    onUpgrade: (m, from, to) async {
+      log('ON UPGRADE CALLED: FROM $from TO $to', name: 'Database');
+      final upgrade = stepByStep(
+        from1To2: (m, schema) async {
+          await customStatement('PRAGMA foreign_keys = OFF');
 
-        // To update default type of lastEdit column
-        // ignore: experimental_member_use
-        await m.alterTable(TableMigration(schema.poem));
+          // To update default type of lastEdit column
+          // ignore: experimental_member_use
+          await m.alterTable(TableMigration(schema.poem));
 
-        await _createFTS5();
+          await _createFTS5();
 
-        await customStatement('PRAGMA foreign_keys = ON');
-      },
-      from2To3: (m, schema) async {
-        await _createFTSTableIfNotExist();
-      },
-      from3To4: (m, schema) async {
-        await _createFTSTableIfNotExist();
+          await customStatement('PRAGMA foreign_keys = ON');
+        },
+        from2To3: (m, schema) async {
+          log('RUNNING MIGRATION from2To3', name: 'Database');
+          await _createFTSTableIfNotExist();
+        },
+        from3To4: (m, schema) async {
+          log('RUNNING MIGRATION from3To4', name: 'Database');
+          await _createFTSTableIfNotExist();
 
-        await m.addColumn(poem, poem.deletedAt);
-      },
-      from4To5: (m, schema) async {
-        await m.createTable(schema.templates);
-        await _prepopulateDefaultTemplates();
-      },
-    ),
+          await m.addColumn(poem, poem.deletedAt);
+        },
+        from4To5: (m, schema) async {
+          log('RUNNING MIGRATION from4To5', name: 'Database');
+          await m.createTable(schema.templates);
+          await _prepopulateDefaultTemplates();
+        },
+        from5To6: (m, schema) async {
+          log('RUNNING MIGRATION from5To6', name: 'Database');
+          await m.addColumn(schema.poem, schema.poem.poemRich);
+
+          // Migrate existing rows in Dart
+          final rows = await customSelect('SELECT id, poem FROM poem').get();
+          for (final row in rows) {
+            final id = row.read<int>('id');
+            final rawPoem = row.read<String>('poem');
+            log('MIGRATED id: $id', name: 'Database');
+
+            final deltaJson = jsonEncode([
+              {'insert': rawPoem.endsWith('\n') ? rawPoem : '$rawPoem\n'},
+            ]);
+
+            await customStatement(
+              'UPDATE poem SET poem_rich = jsonb(?) WHERE id = ?',
+              [deltaJson, id],
+            );
+          }
+        },
+      );
+      await upgrade(m, from, to);
+    },
   );
 
   Future<List<PoemModel>> searchPoems(String query) async {
@@ -100,7 +145,7 @@ class Database extends _$Database {
       'WHERE p.deleted_at IS NULL AND poem_fts MATCH ? ORDER BY rank LIMIT 10',
       variables: [Variable<String>(ftsQuery)],
       readsFrom: {poem},
-    ).map((row) => PoemModel.fromJson(row.data)).get();
+    ).map((row) => poem.map(row.data)).get();
   }
 
   Stream<List<PoemModel>> get getPoemStream =>

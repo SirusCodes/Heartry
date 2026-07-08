@@ -1,11 +1,14 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_quill/flutter_quill.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../database/config.dart';
 import '../../database/database.dart';
 import '../../init_get_it.dart';
 import '../../utils/share_helper.dart';
+import '../../utils/poem_utils.dart';
 import '../../widgets/c_screen_title.dart';
 import '../../widgets/share_option_list.dart';
 
@@ -37,6 +40,7 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
   PoemModel? _poemModel;
   bool _isLoading = false;
   bool _error = false;
+  QuillController? _quillController;
 
   final Database poemDB = locator<Database>();
 
@@ -52,6 +56,48 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
       } else {
         _error = true;
       }
+    } else {
+      _initializeQuill();
+    }
+  }
+
+  void _initializeQuill() {
+    final richText = _poemModel?.poemRich;
+    final plainText = _poemModel?.poem ?? "";
+
+    if (richText != null && richText.isNotEmpty) {
+      try {
+        _quillController = QuillController(
+          document: Document.fromDelta(richText),
+          selection: const TextSelection.collapsed(offset: 0),
+          readOnly: true,
+        );
+        return;
+      } catch (_) {}
+    }
+
+    if (plainText.isNotEmpty) {
+      try {
+        final docJson = jsonDecode(plainText);
+        _quillController = QuillController(
+          document: Document.fromJson(docJson),
+          selection: const TextSelection.collapsed(offset: 0),
+          readOnly: true,
+        );
+      } catch (e) {
+        // Not a JSON delta, treat as plain text
+        _quillController = QuillController(
+          document: Document()..insert(0, plainText),
+          selection: const TextSelection.collapsed(offset: 0),
+          readOnly: true,
+        );
+      }
+    } else {
+      _quillController = QuillController(
+        document: Document(),
+        selection: const TextSelection.collapsed(offset: 0),
+        readOnly: true,
+      );
     }
   }
 
@@ -70,7 +116,14 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
     setState(() {
       _poemModel = poem;
       _isLoading = false;
+      _initializeQuill();
     });
+  }
+
+  @override
+  void dispose() {
+    _quillController?.dispose();
+    super.dispose();
   }
 
   @override
@@ -120,10 +173,15 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
             CScreenTitle(title: model.title == "" ? "No title" : model.title),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 15.0),
-              child: Text(
-                model.poem,
-                style: Theme.of(context).textTheme.headlineSmall,
-              ),
+              child: _quillController != null
+                  ? QuillEditor.basic(
+                      controller: _quillController!,
+                      config: const QuillEditorConfig(
+                        showCursor: false,
+                        enableInteractiveSelection: true,
+                      ),
+                    )
+                  : const SizedBox(),
             ),
           ],
         ),
@@ -225,12 +283,12 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
             onShareAsImage: () => ShareHelper.shareAsImage(
               context,
               title: model.title,
-              poem: model.poem,
+              poem: model.poemRich,
               poet: poet ?? "Unknown",
             ),
             onShareAsText: () => ShareHelper.shareAsText(
               title: model.title,
-              poem: model.poem,
+              poem: model.poemRich.toMarkdown(),
               poet: poet ?? "Unknown",
             ),
           );

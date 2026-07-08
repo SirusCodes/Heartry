@@ -1,12 +1,15 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:drift/drift.dart' show Value;
 import 'package:go_router/go_router.dart';
+import 'package:flutter_quill/flutter_quill.dart';
 
 import '../../database/config.dart';
 import '../../database/database.dart';
 import '../../init_get_it.dart';
 import '../../utils/share_helper.dart';
+import '../../utils/poem_utils.dart';
 import '../../widgets/share_option_list.dart';
 import '../../widgets/constrained_width_container.dart';
 
@@ -29,13 +32,12 @@ class _WritingScreenState extends State<WritingScreen>
   late FocusNode titleNode, poemNode;
 
   final Database poemDB = locator<Database>();
-  final UndoHistoryController _undoController = UndoHistoryController();
 
   PoemModel? _poemModel;
   bool _isLoading = false;
 
   late TextEditingController _titleTextController;
-  late TextEditingController _poemTextController;
+  late QuillController _quillController;
 
   @override
   void initState() {
@@ -44,7 +46,6 @@ class _WritingScreenState extends State<WritingScreen>
     poemNode = FocusNode();
 
     _titleTextController = TextEditingController();
-    _poemTextController = TextEditingController();
 
     _poemModel = widget.model;
 
@@ -60,7 +61,36 @@ class _WritingScreenState extends State<WritingScreen>
 
   void _initializeControllers() {
     _titleTextController.text = _poemModel?.title ?? "";
-    _poemTextController.text = _poemModel?.poem ?? "";
+    final richText = _poemModel?.poemRich;
+    final plainText = _poemModel?.poem ?? "";
+
+    if (richText != null && richText.isNotEmpty) {
+      try {
+        _quillController = QuillController(
+          document: Document.fromDelta(richText),
+          selection: const TextSelection.collapsed(offset: 0),
+        );
+        return;
+      } catch (_) {}
+    }
+
+    if (plainText.isNotEmpty) {
+      try {
+        final docJson = jsonDecode(plainText);
+        _quillController = QuillController(
+          document: Document.fromJson(docJson),
+          selection: const TextSelection.collapsed(offset: 0),
+        );
+      } catch (e) {
+        // Not a JSON delta, treat as plain text
+        _quillController = QuillController(
+          document: Document()..insert(0, plainText),
+          selection: const TextSelection.collapsed(offset: 0),
+        );
+      }
+    } else {
+      _quillController = QuillController.basic();
+    }
   }
 
   Future<void> _loadPoemFromDb() async {
@@ -87,10 +117,9 @@ class _WritingScreenState extends State<WritingScreen>
   void dispose() {
     titleNode.dispose();
     poemNode.dispose();
-    _undoController.dispose();
+    _quillController.dispose();
 
     _titleTextController.dispose();
-    _poemTextController.dispose();
 
     _handleDBChanges();
     WidgetsBinding.instance.removeObserver(this);
@@ -108,6 +137,12 @@ class _WritingScreenState extends State<WritingScreen>
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
     return Scaffold(
+      appBar: AppBar(
+        actions: [
+          IconButton(onPressed: _showSharePanel, icon: const Icon(Icons.share)),
+        ],
+      ),
+
       body: PopScope(
         onPopInvokedWithResult: (_, _) {
           if (_isEmpty && widget.model != null)
@@ -119,12 +154,8 @@ class _WritingScreenState extends State<WritingScreen>
             child: Stack(
               children: [
                 Positioned.fill(
-                  child: ListView(
-                    padding: const EdgeInsets.only(
-                      top: 15.0,
-                      bottom: kBottomNavigationBarHeight + 20,
-                    ),
-                    children: <Widget>[
+                  child: Column(
+                    children: [
                       TextFormField(
                         textCapitalization: TextCapitalization.sentences,
                         textInputAction: TextInputAction.next,
@@ -144,54 +175,42 @@ class _WritingScreenState extends State<WritingScreen>
                         },
                         style: const TextStyle(fontSize: 24),
                       ),
-                      TextFormField(
-                        textCapitalization: TextCapitalization.sentences,
-                        controller: _poemTextController,
-                        undoController: _undoController,
-                        scrollPadding: const EdgeInsets.only(bottom: 100),
-                        focusNode: poemNode,
-                        maxLines: null,
-                        minLines: 25,
-                        decoration: const InputDecoration(
-                          hintText: "Start writing your heart out....",
-                          border: InputBorder.none,
+                      const SizedBox(height: 10),
+                      Expanded(
+                        child: QuillEditor.basic(
+                          controller: _quillController,
+                          focusNode: poemNode,
+                          config: const QuillEditorConfig(
+                            placeholder: "Start writing your heart out....",
+                            scrollable: true,
+                            autoFocus: false,
+                            expands: true,
+                          ),
                         ),
-                        style: const TextStyle(fontSize: 20),
                       ),
-                      const SizedBox(height: kBottomNavigationBarHeight),
+                      QuillSimpleToolbar(
+                        controller: _quillController,
+                        config: const QuillSimpleToolbarConfig(
+                          multiRowsDisplay: false,
+                          showFontFamily: false,
+                          showFontSize: false,
+                          showAlignmentButtons: false,
+                          showInlineCode: false,
+                          showSearchButton: false,
+                          showSubscript: false,
+                          showSuperscript: false,
+                          showColorButton: false,
+                          showBackgroundColorButton: false,
+                          showLink: false,
+                          showIndent: false,
+                          showCodeBlock: false,
+                          showListNumbers: false,
+                          showListBullets: false,
+                          showListCheck: false,
+                          showQuote: false,
+                        ),
+                      ),
                     ],
-                  ),
-                ),
-                Positioned(
-                  bottom: 0,
-                  left: 0,
-                  right: 0,
-                  child: Consumer(
-                    builder: (context, ref, child) {
-                      final poet = ref
-                          .watch(configProvider)
-                          .whenOrNull(data: (data) => data.name);
-                      return _WritingBottomAppBar(
-                        onShareAsText: () {
-                          ShareHelper.shareAsText(
-                            title: _titleTextController.text,
-                            poem: _poemTextController.text,
-                            poet: poet ?? "Anonymous",
-                          );
-                          _handleDBChanges();
-                        },
-                        onShareAsImage: () {
-                          ShareHelper.shareAsImage(
-                            context,
-                            title: _titleTextController.text,
-                            poem: _poemTextController.text,
-                            poet: poet ?? "Anonymous",
-                          );
-                          _handleDBChanges();
-                        },
-                        undoController: _undoController,
-                      );
-                    },
                   ),
                 ),
               ],
@@ -204,12 +223,12 @@ class _WritingScreenState extends State<WritingScreen>
 
   bool get _hasChanged {
     return _poemModel?.title != _titleTextController.text ||
-        _poemModel?.poem != _poemTextController.text;
+        _poemModel?.poemRich != _quillController.document.toDelta();
   }
 
   bool get _isNotEmpty =>
-      (_titleTextController.text).isNotEmpty ||
-      (_poemTextController.text).isNotEmpty;
+      _titleTextController.text.isNotEmpty ||
+      _quillController.document.toPlainText().trim().isNotEmpty;
 
   bool get _isEmpty => !_isNotEmpty;
 
@@ -223,84 +242,63 @@ class _WritingScreenState extends State<WritingScreen>
   }
 
   Future<void> _save() async {
+    final plainText = _quillController.document.toPlainText();
     _poemModel = PoemModel(
       title: _titleTextController.text.trim(),
-      poem: _poemTextController.text.trim(),
+      poem: plainText.trim(),
+      poemRich: _quillController.document.toDelta(),
     );
     final id = await poemDB.insertPoem(_poemModel!);
     _poemModel = _poemModel!.copyWith(id: Value(id));
   }
 
   void _update() {
+    final plainText = _quillController.document.toPlainText();
     _poemModel = _poemModel!.copyWith(
       lastEdit: Value(DateTime.now()),
       title: _titleTextController.text.trim(),
-      poem: _poemTextController.text.trim(),
+      poem: plainText.trim(),
+      poemRich: _quillController.document.toDelta(),
     );
     poemDB.updatePoem(_poemModel!);
   }
-}
 
-class _WritingBottomAppBar extends StatelessWidget {
-  const _WritingBottomAppBar({
-    required this.onShareAsImage,
-    required this.onShareAsText,
-    required this.undoController,
-  });
-
-  final VoidCallback onShareAsImage, onShareAsText;
-  final UndoHistoryController undoController;
-
-  @override
-  Widget build(BuildContext context) {
-    final isIOS = Theme.of(context).platform == TargetPlatform.iOS;
-    return BottomAppBar(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          ValueListenableBuilder<UndoHistoryValue>(
-            valueListenable: undoController,
-            builder: (context, undoState, child) {
-              return Row(
-                children: <Widget>[
-                  IconButton(
-                    icon: Icon(
-                      isIOS
-                          ? Icons.arrow_back_ios_rounded
-                          : Icons.arrow_back_rounded,
-                    ),
-                    onPressed: () => context.pop(),
-                  ),
-                  const Spacer(),
-                  IconButton(
-                    icon: const Icon(Icons.undo_rounded),
-                    onPressed: undoState.canUndo ? undoController.undo : null,
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.redo_rounded),
-                    onPressed: undoState.canRedo ? undoController.redo : null,
-                  ),
-                  const Spacer(),
-                  IconButton(
-                    onPressed: () => _showSharePanel(context),
-                    icon: const Icon(Icons.share),
-                  ),
-                ],
-              );
-            },
-          ),
-        ],
-      ),
-    );
-  }
-
-  Future<void> _showSharePanel(BuildContext context) {
+  Future<void> _showSharePanel() {
     return showModalBottomSheet(
       context: context,
       builder: (context) {
-        return ShareOptionList(
-          onShareAsImage: onShareAsImage,
-          onShareAsText: onShareAsText,
+        return Consumer(
+          builder: (context, ref, _) {
+            return SafeArea(
+              child: ShareOptionList(
+                onShareAsText: () async {
+                  final poet = await ref.read(
+                    configProvider.selectAsync((model) => model.name),
+                  );
+                  ShareHelper.shareAsText(
+                    title: _titleTextController.text,
+                    poem: _quillController.document.toDelta().toMarkdown(),
+                    poet: poet ?? "Anonymous",
+                  );
+                  _handleDBChanges();
+                },
+                onShareAsImage: () async {
+                  final poet = await ref.read(
+                    configProvider.selectAsync((model) => model.name),
+                  );
+
+                  if (!context.mounted) return;
+                  ShareHelper.shareAsImage(
+                    context,
+                    title: _titleTextController.text,
+                    poem: _quillController.document.toDelta(),
+                    poet: poet ?? "Anonymous",
+                  );
+                  _handleDBChanges();
+                },
+              ),
+            );
+          },
         );
       },
     );

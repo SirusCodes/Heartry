@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_quill/quill_delta.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:path/path.dart' as path;
@@ -32,7 +33,7 @@ class ImageScreen extends StatefulWidget {
   static const String routePath = '/image';
 
   final String? title, poet;
-  final String poem;
+  final Delta poem;
 
   @override
   State<ImageScreen> createState() => _ImageScreenState();

@@ -1,25 +1,76 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility that Flutter provides. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
+import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_quill/quill_delta.dart';
+import 'package:heartry/utils/poem_utils.dart';
 
 void main() {
-  // testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-  //   // Build our app and trigger a frame.
-  //   await tester.pumpWidget(MyApp());
+  group('Delta to Markdown conversion tests', () {
+    test('converts plain text correctly', () {
+      final delta = Delta()..insert('Hello World\n');
+      expect(delta.toMarkdown(), 'Hello World\n\n');
+    });
 
-  //   // Verify that our counter starts at 0.
-  //   expect(find.text('0'), findsOneWidget);
-  //   expect(find.text('1'), findsNothing);
+    test('converts bold text correctly', () {
+      final delta = Delta()
+        ..insert('Hello ')
+        ..insert('Bold', {'bold': true})
+        ..insert(' World\n');
+      expect(delta.toMarkdown(), 'Hello **Bold** World\n\n');
+    });
 
-  //   // Tap the '+' icon and trigger a frame.
-  //   await tester.tap(find.byIcon(Icons.add));
-  //   await tester.pump();
+    test('converts italic text correctly', () {
+      final delta = Delta()
+        ..insert('Hello ')
+        ..insert('Italic', {'italic': true})
+        ..insert(' World\n');
+      expect(delta.toMarkdown(), 'Hello _Italic_ World\n\n');
+    });
 
-  //   // Verify that our counter has incremented.
-  //   expect(find.text('0'), findsNothing);
-  //   expect(find.text('1'), findsOneWidget);
-  // });
+    test('converts strikethrough text correctly', () {
+      final delta = Delta()
+        ..insert('Hello ')
+        ..insert('Strike', {'strike': true})
+        ..insert(' World\n');
+      expect(delta.toMarkdown(), 'Hello ~~Strike~~ World\n\n');
+    });
+
+    test('converts underline text correctly', () {
+      final delta = Delta()
+        ..insert('Hello ')
+        ..insert('Underline', {'underline': true})
+        ..insert(' World\n');
+      expect(delta.toMarkdown(), 'Hello Underline World\n\n');
+    });
+
+    test('converts combined styles correctly', () {
+      final delta = Delta()
+        ..insert('Hello ')
+        ..insert('BoldItalic', {'bold': true, 'italic': true})
+        ..insert(' World\n');
+      expect(delta.toMarkdown(), 'Hello **_BoldItalic_** World\n\n');
+    });
+
+    test(
+      'handles leading/trailing whitespaces correctly inside formatted runs',
+      () {
+        final delta = Delta()
+          ..insert('Hello ')
+          ..insert('  Formatted  ', {'bold': true})
+          ..insert(' World\n');
+        expect(delta.toMarkdown(), 'Hello **  Formatted  ** World\n\n');
+      },
+    );
+
+    test('adds package-default extra trailing newline', () {
+      final delta = Delta()..insert('Hello World\n');
+      final markdown = delta.toMarkdown();
+
+      expect(markdown.endsWith('\n\n'), isTrue);
+      expect(markdown, 'Hello World\n\n');
+    });
+
+    test('preserves intentional blank lines in content', () {
+      final delta = Delta()..insert('Line 1\n\nLine 3\n');
+      expect(delta.toMarkdown(), 'Line 1\n\n\n\nLine 3\n\n');
+    });
+  });
 }

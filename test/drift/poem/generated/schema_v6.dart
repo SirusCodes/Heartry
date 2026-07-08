@@ -1,4 +1,5 @@
 // dart format width=80
+import 'dart:typed_data' as i2;
 // GENERATED CODE, DO NOT EDIT BY HAND.
 // ignore_for_file: type=lint
 import 'package:drift/drift.dart';
@@ -51,8 +52,24 @@ class Poem extends Table with TableInfo<Poem, PoemData> {
     type: DriftSqlType.dateTime,
     requiredDuringInsert: false,
   );
+  late final GeneratedColumn<i2.Uint8List> poemRich =
+      GeneratedColumn<i2.Uint8List>(
+        'poem_rich',
+        aliasedName,
+        false,
+        type: DriftSqlType.blob,
+        requiredDuringInsert: false,
+        defaultValue: const CustomExpression('X\'0b\''),
+      );
   @override
-  List<GeneratedColumn> get $columns => [id, lastEdit, title, poem, deletedAt];
+  List<GeneratedColumn> get $columns => [
+    id,
+    lastEdit,
+    title,
+    poem,
+    deletedAt,
+    poemRich,
+  ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -84,6 +101,10 @@ class Poem extends Table with TableInfo<Poem, PoemData> {
         DriftSqlType.dateTime,
         data['${effectivePrefix}deleted_at'],
       ),
+      poemRich: attachedDatabase.typeMapping.read(
+        DriftSqlType.blob,
+        data['${effectivePrefix}poem_rich'],
+      )!,
     );
   }
 
@@ -99,12 +120,14 @@ class PoemData extends DataClass implements Insertable<PoemData> {
   final String title;
   final String poem;
   final DateTime? deletedAt;
+  final i2.Uint8List poemRich;
   const PoemData({
     this.id,
     this.lastEdit,
     required this.title,
     required this.poem,
     this.deletedAt,
+    required this.poemRich,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -120,6 +143,7 @@ class PoemData extends DataClass implements Insertable<PoemData> {
     if (!nullToAbsent || deletedAt != null) {
       map['deleted_at'] = Variable<DateTime>(deletedAt);
     }
+    map['poem_rich'] = Variable<i2.Uint8List>(poemRich);
     return map;
   }
 
@@ -134,6 +158,7 @@ class PoemData extends DataClass implements Insertable<PoemData> {
       deletedAt: deletedAt == null && nullToAbsent
           ? const Value.absent()
           : Value(deletedAt),
+      poemRich: Value(poemRich),
     );
   }
 
@@ -148,6 +173,7 @@ class PoemData extends DataClass implements Insertable<PoemData> {
       title: serializer.fromJson<String>(json['title']),
       poem: serializer.fromJson<String>(json['poem']),
       deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
+      poemRich: serializer.fromJson<i2.Uint8List>(json['poemRich']),
     );
   }
   @override
@@ -159,6 +185,7 @@ class PoemData extends DataClass implements Insertable<PoemData> {
       'title': serializer.toJson<String>(title),
       'poem': serializer.toJson<String>(poem),
       'deletedAt': serializer.toJson<DateTime?>(deletedAt),
+      'poemRich': serializer.toJson<i2.Uint8List>(poemRich),
     };
   }
 
@@ -168,12 +195,14 @@ class PoemData extends DataClass implements Insertable<PoemData> {
     String? title,
     String? poem,
     Value<DateTime?> deletedAt = const Value.absent(),
+    i2.Uint8List? poemRich,
   }) => PoemData(
     id: id.present ? id.value : this.id,
     lastEdit: lastEdit.present ? lastEdit.value : this.lastEdit,
     title: title ?? this.title,
     poem: poem ?? this.poem,
     deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
+    poemRich: poemRich ?? this.poemRich,
   );
   PoemData copyWithCompanion(PoemCompanion data) {
     return PoemData(
@@ -182,6 +211,7 @@ class PoemData extends DataClass implements Insertable<PoemData> {
       title: data.title.present ? data.title.value : this.title,
       poem: data.poem.present ? data.poem.value : this.poem,
       deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
+      poemRich: data.poemRich.present ? data.poemRich.value : this.poemRich,
     );
   }
 
@@ -192,13 +222,21 @@ class PoemData extends DataClass implements Insertable<PoemData> {
           ..write('lastEdit: $lastEdit, ')
           ..write('title: $title, ')
           ..write('poem: $poem, ')
-          ..write('deletedAt: $deletedAt')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('poemRich: $poemRich')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, lastEdit, title, poem, deletedAt);
+  int get hashCode => Object.hash(
+    id,
+    lastEdit,
+    title,
+    poem,
+    deletedAt,
+    $driftBlobEquality.hash(poemRich),
+  );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -207,7 +245,8 @@ class PoemData extends DataClass implements Insertable<PoemData> {
           other.lastEdit == this.lastEdit &&
           other.title == this.title &&
           other.poem == this.poem &&
-          other.deletedAt == this.deletedAt);
+          other.deletedAt == this.deletedAt &&
+          $driftBlobEquality.equals(other.poemRich, this.poemRich));
 }
 
 class PoemCompanion extends UpdateCompanion<PoemData> {
@@ -216,12 +255,14 @@ class PoemCompanion extends UpdateCompanion<PoemData> {
   final Value<String> title;
   final Value<String> poem;
   final Value<DateTime?> deletedAt;
+  final Value<i2.Uint8List> poemRich;
   const PoemCompanion({
     this.id = const Value.absent(),
     this.lastEdit = const Value.absent(),
     this.title = const Value.absent(),
     this.poem = const Value.absent(),
     this.deletedAt = const Value.absent(),
+    this.poemRich = const Value.absent(),
   });
   PoemCompanion.insert({
     this.id = const Value.absent(),
@@ -229,6 +270,7 @@ class PoemCompanion extends UpdateCompanion<PoemData> {
     this.title = const Value.absent(),
     required String poem,
     this.deletedAt = const Value.absent(),
+    this.poemRich = const Value.absent(),
   }) : poem = Value(poem);
   static Insertable<PoemData> custom({
     Expression<int>? id,
@@ -236,6 +278,7 @@ class PoemCompanion extends UpdateCompanion<PoemData> {
     Expression<String>? title,
     Expression<String>? poem,
     Expression<DateTime>? deletedAt,
+    Expression<i2.Uint8List>? poemRich,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -243,6 +286,7 @@ class PoemCompanion extends UpdateCompanion<PoemData> {
       if (title != null) 'title': title,
       if (poem != null) 'poem': poem,
       if (deletedAt != null) 'deleted_at': deletedAt,
+      if (poemRich != null) 'poem_rich': poemRich,
     });
   }
 
@@ -252,6 +296,7 @@ class PoemCompanion extends UpdateCompanion<PoemData> {
     Value<String>? title,
     Value<String>? poem,
     Value<DateTime?>? deletedAt,
+    Value<i2.Uint8List>? poemRich,
   }) {
     return PoemCompanion(
       id: id ?? this.id,
@@ -259,6 +304,7 @@ class PoemCompanion extends UpdateCompanion<PoemData> {
       title: title ?? this.title,
       poem: poem ?? this.poem,
       deletedAt: deletedAt ?? this.deletedAt,
+      poemRich: poemRich ?? this.poemRich,
     );
   }
 
@@ -280,6 +326,9 @@ class PoemCompanion extends UpdateCompanion<PoemData> {
     if (deletedAt.present) {
       map['deleted_at'] = Variable<DateTime>(deletedAt.value);
     }
+    if (poemRich.present) {
+      map['poem_rich'] = Variable<i2.Uint8List>(poemRich.value);
+    }
     return map;
   }
 
@@ -290,7 +339,8 @@ class PoemCompanion extends UpdateCompanion<PoemData> {
           ..write('lastEdit: $lastEdit, ')
           ..write('title: $title, ')
           ..write('poem: $poem, ')
-          ..write('deletedAt: $deletedAt')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('poemRich: $poemRich')
           ..write(')'))
         .toString();
   }
@@ -549,8 +599,8 @@ class TemplatesCompanion extends UpdateCompanion<TemplatesData> {
   }
 }
 
-class DatabaseAtV5 extends GeneratedDatabase {
-  DatabaseAtV5(QueryExecutor e) : super(e);
+class DatabaseAtV6 extends GeneratedDatabase {
+  DatabaseAtV6(QueryExecutor e) : super(e);
   late final Poem poem = Poem(this);
   late final Templates templates = Templates(this);
   @override
@@ -559,5 +609,5 @@ class DatabaseAtV5 extends GeneratedDatabase {
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities => [poem, templates];
   @override
-  int get schemaVersion => 5;
+  int get schemaVersion => 6;
 }

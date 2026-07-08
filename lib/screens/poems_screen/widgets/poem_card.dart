@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../database/database.dart';
 import '../../../utils/theme.dart';
+import '../../../utils/poem_utils.dart';
 
 extension on ThemeData {
   PoemCardTheme get poemCardTheme => extension<PoemCardTheme>()!;
@@ -62,7 +63,7 @@ class PoemCard extends StatelessWidget {
             const SizedBox(height: 5),
             if (model.poem.isNotEmpty)
               Text(
-                model.poem,
+                model.poemRich.toPlainText(),
                 overflow: TextOverflow.ellipsis,
                 maxLines: 10,
                 textAlign: TextAlign.start,
