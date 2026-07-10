@@ -6,7 +6,7 @@ void main() {
   group('Delta to Markdown conversion tests', () {
     test('converts plain text correctly', () {
       final delta = Delta()..insert('Hello World\n');
-      expect(delta.toMarkdown(), 'Hello World\n\n');
+      expect(delta.toMarkdown(), 'Hello World\n');
     });
 
     test('converts bold text correctly', () {
@@ -14,7 +14,7 @@ void main() {
         ..insert('Hello ')
         ..insert('Bold', {'bold': true})
         ..insert(' World\n');
-      expect(delta.toMarkdown(), 'Hello **Bold** World\n\n');
+      expect(delta.toMarkdown(), 'Hello **Bold** World\n');
     });
 
     test('converts italic text correctly', () {
@@ -22,7 +22,7 @@ void main() {
         ..insert('Hello ')
         ..insert('Italic', {'italic': true})
         ..insert(' World\n');
-      expect(delta.toMarkdown(), 'Hello _Italic_ World\n\n');
+      expect(delta.toMarkdown(), 'Hello _Italic_ World\n');
     });
 
     test('converts strikethrough text correctly', () {
@@ -30,7 +30,7 @@ void main() {
         ..insert('Hello ')
         ..insert('Strike', {'strike': true})
         ..insert(' World\n');
-      expect(delta.toMarkdown(), 'Hello ~~Strike~~ World\n\n');
+      expect(delta.toMarkdown(), 'Hello ~~Strike~~ World\n');
     });
 
     test('converts underline text correctly', () {
@@ -38,7 +38,7 @@ void main() {
         ..insert('Hello ')
         ..insert('Underline', {'underline': true})
         ..insert(' World\n');
-      expect(delta.toMarkdown(), 'Hello Underline World\n\n');
+      expect(delta.toMarkdown(), 'Hello Underline World\n');
     });
 
     test('converts combined styles correctly', () {
@@ -46,7 +46,7 @@ void main() {
         ..insert('Hello ')
         ..insert('BoldItalic', {'bold': true, 'italic': true})
         ..insert(' World\n');
-      expect(delta.toMarkdown(), 'Hello **_BoldItalic_** World\n\n');
+      expect(delta.toMarkdown(), 'Hello **_BoldItalic_** World\n');
     });
 
     test(
@@ -56,21 +56,38 @@ void main() {
           ..insert('Hello ')
           ..insert('  Formatted  ', {'bold': true})
           ..insert(' World\n');
-        expect(delta.toMarkdown(), 'Hello **  Formatted  ** World\n\n');
+        expect(delta.toMarkdown(), 'Hello **  Formatted  ** World\n');
       },
     );
 
-    test('adds package-default extra trailing newline', () {
+    test('adds custom single trailing newline', () {
       final delta = Delta()..insert('Hello World\n');
       final markdown = delta.toMarkdown();
 
-      expect(markdown.endsWith('\n\n'), isTrue);
-      expect(markdown, 'Hello World\n\n');
+      expect(markdown.endsWith('\n'), isTrue);
+      expect(markdown.endsWith('\n\n'), isFalse);
+      expect(markdown, 'Hello World\n');
     });
 
     test('preserves intentional blank lines in content', () {
       final delta = Delta()..insert('Line 1\n\nLine 3\n');
-      expect(delta.toMarkdown(), 'Line 1\n\n\n\nLine 3\n\n');
+      expect(delta.toMarkdown(), 'Line 1\n\nLine 3\n');
+    });
+
+    test('does not escape any special characters (regression test)', () {
+      final delta = Delta()
+        ..insert('Hey Darshan, thanks for using Heartry. 🤗\n')
+        ..insert('Press and hold this card to access toolbar. 😊\n')
+        ..insert('**Reader Mode**\n')
+        ..insert('1. As Text 🆎 (For Messages)\n')
+        ..insert('2. As Photos 📷 (For Stories)\n');
+      
+      final expected = 'Hey Darshan, thanks for using Heartry. 🤗\n'
+          'Press and hold this card to access toolbar. 😊\n'
+          '**Reader Mode**\n'
+          '1. As Text 🆎 (For Messages)\n'
+          '2. As Photos 📷 (For Stories)\n';
+      expect(delta.toMarkdown(), expected);
     });
   });
 }

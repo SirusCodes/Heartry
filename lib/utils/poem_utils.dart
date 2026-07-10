@@ -19,7 +19,14 @@ extension PoemDeltaExt on Delta {
 }
 
 String deltaToMarkdown(Delta delta) {
-  return DeltaToMarkdown().convert(delta);
+  return DeltaToMarkdown(
+    visitLineHandleNewLine: (style, out) {
+      out.writeln();
+    },
+    customContentHandler: (text, out) {
+      out.write(text.value);
+    },
+  ).convert(delta);
 }
 
 Delta stringToDelta(String value) {
