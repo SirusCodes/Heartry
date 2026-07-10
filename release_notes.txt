@@ -1,1 +1,1 @@
-Fix bugs with searching poems for some users.
+Add support for Rich Text Editor ✍️

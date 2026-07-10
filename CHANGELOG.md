@@ -1,3 +1,7 @@
+## 2.10.0 - 10/07/2026
+
+Add support for Rich Text Editor ✍️
+
 ## 2.9.1 - 15/06/2026
 
 Fix bugs with searching poems for some users.
