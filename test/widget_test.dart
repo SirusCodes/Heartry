@@ -81,8 +81,9 @@ void main() {
         ..insert('**Reader Mode**\n')
         ..insert('1. As Text 🆎 (For Messages)\n')
         ..insert('2. As Photos 📷 (For Stories)\n');
-      
-      final expected = 'Hey Darshan, thanks for using Heartry. 🤗\n'
+
+      final expected =
+          'Hey Darshan, thanks for using Heartry. 🤗\n'
           'Press and hold this card to access toolbar. 😊\n'
           '**Reader Mode**\n'
           '1. As Text 🆎 (For Messages)\n'
