@@ -27,7 +27,7 @@ dependencies:
   animated_icon_button: ^1.0.2
   animations: ^2.0.7
   badges: ^3.1.1
-  drift: ^2.29.0
+  drift: 2.34.0
   flex_color_picker: ^3.0.0
   flutter_markdown: ^0.7.7
   flutter_riverpod: ^3.3.2
@@ -48,7 +48,7 @@ dependencies:
   flutter_staggered_grid_view: ^0.7.0
   dynamic_color: ^1.6.2
   http: ^1.1.0
-  json_annotation: ^4.9.0
+  json_annotation: ^4.12.0
   intl: ^0.20.2
   workmanager:
     git:
@@ -70,7 +70,7 @@ dev_dependencies:
   integration_test:
     sdk: flutter
   build_runner: null
-  drift_dev: ^2.29.0
+  drift_dev: 2.34.0
   flutter_native_splash: ^2.4.7
   flutter_lints: ^6.0.0
   riverpod_lint: ^3.1.4
@@ -142,4 +142,3 @@ sentry:
   upload_source_maps: true
   project: flutter
   org: heartry
-
