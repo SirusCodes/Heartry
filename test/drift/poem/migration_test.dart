@@ -272,4 +272,53 @@ void main() {
       },
     );
   });
+
+  test(
+    'migration from v5 to v6 succeeds if poem_rich column already exists',
+    () async {
+      final schema = await verifier.schemaAt(5);
+
+      // Setup: open connection as v5 database, insert data,
+      // and manually alter schema
+      {
+        final connection = schema.newConnection();
+        final oldDb = v5.DatabaseAtV5(connection);
+
+        // Insert some data in v5 db
+        await oldDb
+            .into(oldDb.poem)
+            .insert(
+              v5.PoemData(
+                id: 1,
+                lastEdit: DateTime(2025, 11, 13, 12, 0, 0),
+                title: 'Title 1',
+                poem: 'Poem 1',
+              ),
+            );
+
+        // Manually add the column to simulate a partially completed/crashed migration
+        await oldDb.customStatement(
+          'ALTER TABLE "poem" ADD COLUMN "poem_rich" '
+          'BLOB NOT NULL DEFAULT (X\'0b\');',
+        );
+
+        await oldDb.close();
+      }
+
+      // Migration and verification: open latest Database with a
+      // new connection to the same file
+      {
+        final connection = schema.newConnection();
+        final db = Database(connection);
+        final poems = await db.getPoems();
+        expect(poems.length, 1);
+
+        // Verify poemRich is populated with converted rich-text delta JSON
+        expect(poems.first.poemRich.toJson(), [
+          {'insert': 'Poem 1\n'},
+        ]);
+        await db.close();
+      }
+    },
+  );
 }

@@ -84,7 +84,7 @@ class Database extends _$Database {
           // ignore: experimental_member_use
           await m.alterTable(TableMigration(schema.poem));
 
-          await _createFTS5();
+          await _createFTSTableIfNotExist();
 
           await customStatement('PRAGMA foreign_keys = ON');
         },
@@ -96,16 +96,27 @@ class Database extends _$Database {
           log('RUNNING MIGRATION from3To4', name: 'Database');
           await _createFTSTableIfNotExist();
 
-          await m.addColumn(poem, poem.deletedAt);
+          if (!await _columnExists('poem', 'deleted_at')) {
+            await m.addColumn(poem, poem.deletedAt);
+          }
         },
         from4To5: (m, schema) async {
           log('RUNNING MIGRATION from4To5', name: 'Database');
-          await m.createTable(schema.templates);
-          await _prepopulateDefaultTemplates();
+          if (!await _tableExists('templates')) {
+            await m.createTable(schema.templates);
+            await _prepopulateDefaultTemplates();
+          }
         },
         from5To6: (m, schema) async {
           log('RUNNING MIGRATION from5To6', name: 'Database');
-          await m.addColumn(schema.poem, schema.poem.poemRich);
+          if (!await _columnExists('poem', 'poem_rich')) {
+            await m.addColumn(schema.poem, schema.poem.poemRich);
+          } else {
+            log(
+              'poem_rich column already exists, skipping addColumn',
+              name: 'Database',
+            );
+          }
 
           // Migrate existing rows in Dart
           final rows = await customSelect('SELECT id, poem FROM poem').get();
@@ -119,7 +130,8 @@ class Database extends _$Database {
             ]);
 
             await customStatement(
-              'UPDATE poem SET poem_rich = jsonb(?) WHERE id = ?',
+              'UPDATE poem SET poem_rich = jsonb(?) WHERE id = ?'
+              ' AND (poem_rich IS NULL OR poem_rich = X\'0b\')',
               [deltaJson, id],
             );
           }
@@ -220,6 +232,19 @@ class Database extends _$Database {
     )..where((tbl) => tbl.id.isIn(models.map((e) => e.id!)))).go();
   }
 
+  Future<bool> _columnExists(String tableName, String columnName) async {
+    final result = await customSelect("PRAGMA table_info('$tableName')").get();
+    return result.any((row) => row.read<String>('name') == columnName);
+  }
+
+  Future<bool> _tableExists(String tableName) async {
+    final result = await customSelect(
+      "SELECT name FROM sqlite_master WHERE type='table' AND name=?;",
+      variables: [Variable<String>(tableName)],
+    ).get();
+    return result.isNotEmpty;
+  }
+
   Future<void> _createFTSTableIfNotExist() async {
     final ftsExists = await customSelect(
       "SELECT name FROM sqlite_master WHERE type='table' AND name='poem_fts';",
@@ -233,7 +258,7 @@ class Database extends _$Database {
   Future<void> _createFTS5() async {
     await transaction(() async {
       await customStatement('''
-          CREATE VIRTUAL TABLE poem_fts USING fts5(
+          CREATE VIRTUAL TABLE IF NOT EXISTS poem_fts USING fts5(
             title,
             poem,
             content='poem',
@@ -247,7 +272,7 @@ class Database extends _$Database {
 
       // Trigger to sync FTS table on INSERT
       await customStatement('''
-          CREATE TRIGGER poem_fts_insert AFTER INSERT ON poem BEGIN
+          CREATE TRIGGER IF NOT EXISTS poem_fts_insert AFTER INSERT ON poem BEGIN
             INSERT INTO poem_fts(rowid, title, poem)
             VALUES (new.id, new.title, new.poem);
           END;
@@ -255,7 +280,7 @@ class Database extends _$Database {
 
       // Trigger to sync FTS table on UPDATE
       await customStatement('''
-          CREATE TRIGGER poem_fts_update AFTER UPDATE ON poem BEGIN
+          CREATE TRIGGER IF NOT EXISTS poem_fts_update AFTER UPDATE ON poem BEGIN
             INSERT INTO poem_fts(poem_fts, rowid, title, poem)
             VALUES ('delete', old.id, old.title, old.poem);
             INSERT INTO poem_fts(rowid, title, poem)
@@ -265,7 +290,7 @@ class Database extends _$Database {
 
       // Trigger to sync FTS table on DELETE
       await customStatement('''
-          CREATE TRIGGER poem_fts_delete AFTER DELETE ON poem BEGIN
+          CREATE TRIGGER IF NOT EXISTS poem_fts_delete AFTER DELETE ON poem BEGIN
             INSERT INTO poem_fts(poem_fts, rowid, title, poem)
             VALUES ('delete', old.id, old.title, old.poem);
           END;
@@ -280,14 +305,14 @@ class Database extends _$Database {
       await customStatement('DROP TRIGGER IF EXISTS poem_fts_delete;');
 
       await customStatement('''
-          CREATE TRIGGER poem_fts_insert AFTER INSERT ON poem BEGIN
+          CREATE TRIGGER IF NOT EXISTS poem_fts_insert AFTER INSERT ON poem BEGIN
             INSERT INTO poem_fts(rowid, title, poem)
             VALUES (new.id, new.title, new.poem);
           END;
         ''');
 
       await customStatement('''
-          CREATE TRIGGER poem_fts_update AFTER UPDATE ON poem BEGIN
+          CREATE TRIGGER IF NOT EXISTS poem_fts_update AFTER UPDATE ON poem BEGIN
             INSERT INTO poem_fts(poem_fts, rowid, title, poem)
             VALUES ('delete', old.id, old.title, old.poem);
             INSERT INTO poem_fts(rowid, title, poem)
@@ -296,7 +321,7 @@ class Database extends _$Database {
         ''');
 
       await customStatement('''
-          CREATE TRIGGER poem_fts_delete AFTER DELETE ON poem BEGIN
+          CREATE TRIGGER IF NOT EXISTS poem_fts_delete AFTER DELETE ON poem BEGIN
             INSERT INTO poem_fts(poem_fts, rowid, title, poem)
             VALUES ('delete', old.id, old.title, old.poem);
           END;
