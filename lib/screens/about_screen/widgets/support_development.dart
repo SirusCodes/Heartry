@@ -34,24 +34,14 @@ class SupportDevelopment extends StatelessWidget {
           ),
         ),
         ListTile(
-          title: const Text("Join Telegram Group"),
+          title: const Text("Join Reddit Community"),
           subtitle: const Text("Help us by saying what's important to you."),
           leading: const CircleAvatar(child: Icon(Icons.groups_2_rounded)),
           onTap: () => launchUrlString(
-            "https://t.me/heartry",
+            "https://www.reddit.com/r/Heartry/",
             mode: LaunchMode.externalApplication,
           ),
         ),
-        // ListTile(
-        //   title: const Text("Donate"),
-        //   subtitle: const Text(
-        //     "If you think that we deserve some money for our work," +
-        //         " you can leave some amount here.",
-        //   ),
-        // ignore: lines_longer_than_80_chars
-        // leading: const CircleAvatar(child: Icon(Icons.card_giftcard_rounded)),
-        //   onTap: () {},
-        // ),
         ListTile(
           title: const Text("Send us Feature request"),
           subtitle: const Text(

@@ -174,10 +174,10 @@ class _ChangelogDialog extends StatelessWidget {
               ),
               FilledButton(
                 onPressed: () => launchUrlString(
-                  "https://t.me/heartry",
+                  "https://www.reddit.com/r/Heartry/",
                   mode: LaunchMode.externalApplication,
                 ),
-                child: const Text("Join Telegram Group"),
+                child: const Text("Join Reddit Community"),
               ),
             ],
           ),
