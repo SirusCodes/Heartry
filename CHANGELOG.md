@@ -1,3 +1,8 @@
+## 2.10.1 - 14/07/2026
+
+- Minor bug fix
+- Add Reddit community link
+
 ## 2.10.0 - 10/07/2026
 
 Add support for Rich Text Editor ✍️
