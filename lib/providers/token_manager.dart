@@ -79,7 +79,7 @@ class TokenManager {
 
   Future<bool> _isTokenExpired() async {
     final expireDateString = await storage.read(key: _expireDate);
-    if (expireDateString == null) return false;
+    if (expireDateString == null) return true;
 
     final expireDate = DateTime.parse(expireDateString);
     return expireDate.isBefore(DateTime.now());
