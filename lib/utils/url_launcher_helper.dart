@@ -19,9 +19,7 @@ extension URLLauncherExtension on BuildContext {
       await Clipboard.setData(ClipboardData(text: url));
       if (mounted) {
         ScaffoldMessenger.of(this).showSnackBar(
-          SnackBar(
-            content: Text("Link to ${name ?? url} is copied"),
-          ),
+          SnackBar(content: Text("Link to ${name ?? url} is copied")),
         );
       }
     }
