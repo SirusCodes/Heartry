@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
+import '../../../utils/url_launcher_helper.dart';
 import 'base_info_widget.dart';
 
 const _profileURL = "https://darshanrander.com/darshan-min.jpg";
@@ -25,7 +26,11 @@ class _ContributorsState extends State<Contributors> {
         InkWell(
           borderRadius: BorderRadius.circular(15),
           onTap: () {
-            _launchURL("https://darshanrander.com");
+            context.safeLaunchURL(
+              "https://darshanrander.com",
+              name: "Darshan Rander",
+              mode: LaunchMode.externalApplication,
+            );
           },
           child: Padding(
             padding: const EdgeInsets.all(10),
@@ -34,14 +39,6 @@ class _ContributorsState extends State<Contributors> {
         ),
       ],
     );
-  }
-
-  Future<void> _launchURL(String url) async {
-    if (await canLaunchUrlString(url)) {
-      await launchUrlString(url, mode: LaunchMode.externalApplication);
-    } else {
-      throw 'Could not launch $url';
-    }
   }
 
   Column darshanInfo(BuildContext context) {

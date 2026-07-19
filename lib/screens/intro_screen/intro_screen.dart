@@ -9,7 +9,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:liquid_swipe/liquid_swipe.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
-import 'package:url_launcher/url_launcher_string.dart';
+import '../../utils/url_launcher_helper.dart';
 
 import '../../database/config.dart';
 import '../../providers/auth_provider.dart';
@@ -197,8 +197,9 @@ class _NamePageState extends ConsumerState<_NamePage> {
                     ),
                     recognizer: TapGestureRecognizer()
                       ..onTap = () {
-                        launchUrlString(
+                        context.safeLaunchURL(
                           "https://heartry.darshanrander.com/policy",
+                          name: "Privacy Statement",
                         );
                       },
                   ),

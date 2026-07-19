@@ -13,6 +13,7 @@ import '../../database/database.dart';
 import '../../init_get_it.dart';
 import '../../utils/poem_utils.dart';
 import 'package:url_launcher/url_launcher_string.dart';
+import '../../utils/url_launcher_helper.dart';
 
 import '../../database/config.dart';
 import '../../providers/app_version_manager_provider.dart';
@@ -154,7 +155,10 @@ class _ChangelogDialog extends StatelessWidget {
                         onPressed: () {
                           const githubChangelogUrl =
                               "https://github.com/SirusCodes/Heartry/blob/main/CHANGELOG.md";
-                          launchUrlString(githubChangelogUrl);
+                          context.safeLaunchURL(
+                            githubChangelogUrl,
+                            name: "Changelogs",
+                          );
                         },
                         child: const Text("Open changelogs in browser"),
                       ),
@@ -173,8 +177,9 @@ class _ChangelogDialog extends StatelessWidget {
                 child: const Text("Close"),
               ),
               FilledButton(
-                onPressed: () => launchUrlString(
+                onPressed: () => context.safeLaunchURL(
                   "https://www.reddit.com/r/Heartry/",
+                  name: "Reddit Community",
                   mode: LaunchMode.externalApplication,
                 ),
                 child: const Text("Join Reddit Community"),

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:url_launcher/url_launcher_string.dart';
 
+import '../../../utils/url_launcher_helper.dart';
 import 'base_info_widget.dart';
 
 class Others extends StatelessWidget {
@@ -18,8 +18,9 @@ class Others extends StatelessWidget {
               title: const Text("Change log"),
               subtitle: const Text("Changes made to the project."),
               leading: const CircleAvatar(child: Icon(Icons.sticky_note_2)),
-              onTap: () => _launchURL(
+              onTap: () => context.safeLaunchURL(
                 "https://github.com/SirusCodes/Heartry/blob/main/CHANGELOG.md",
+                name: "Changelogs",
               ),
             ),
             ListTile(
@@ -27,7 +28,10 @@ class Others extends StatelessWidget {
               subtitle: const Text("Our commitment towards privacy."),
               leading: const CircleAvatar(child: Icon(Icons.book)),
               onTap: () {
-                _launchURL("https://heartry.darshanrander.com/policy");
+                context.safeLaunchURL(
+                  "https://heartry.darshanrander.com/policy",
+                  name: "Privacy Statement",
+                );
               },
             ),
             FutureBuilder<PackageInfo>(
@@ -53,13 +57,5 @@ class Others extends StatelessWidget {
         const SizedBox(height: 10),
       ],
     );
-  }
-
-  Future<void> _launchURL(String url) async {
-    if (await canLaunchUrlString(url)) {
-      await launchUrlString(url);
-    } else {
-      throw 'Could not launch $url';
-    }
   }
 }
