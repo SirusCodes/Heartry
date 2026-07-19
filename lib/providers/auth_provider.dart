@@ -36,9 +36,14 @@ class AuthProvider extends AsyncNotifier<GoogleSignInAccount?> {
       }
       final serverAuthCode = serverAuth.serverAuthCode;
 
-      await ref
-          .read(tokenManagerProvider)
-          .getAndSaveTokensFromAuthCode(serverAuthCode);
+      try {
+        await ref
+            .read(tokenManagerProvider)
+            .getAndSaveTokensFromAuthCode(serverAuthCode);
+      } catch (e) {
+        await _googleSignIn.disconnect();
+        rethrow;
+      }
       ref.read(configProvider.notifier)
         ..backupEmail = account.email
         ..isAutoBackupEnabled = true;
@@ -52,7 +57,7 @@ class AuthProvider extends AsyncNotifier<GoogleSignInAccount?> {
   Future<void> signOut() async {
     try {
       await Future.wait([
-        _googleSignIn.signOut(),
+        _googleSignIn.disconnect(),
         ref.read(tokenManagerProvider).clearTokens(),
       ]);
       ref.read(configProvider.notifier)

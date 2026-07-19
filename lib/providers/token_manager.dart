@@ -43,7 +43,7 @@ class TokenManager {
     }
 
     final json = jsonDecode(response.body);
-    final refreshToken = json['refresh_token'];
+
     final accessToken = json['access_token'];
     final expireDate = DateTime.now().add(
       Duration(seconds: json['expires_in']),
@@ -51,6 +51,13 @@ class TokenManager {
 
     if (!json['scope'].toString().contains(DriveApi.driveAppdataScope)) {
       throw Exception('Invalid scope');
+    }
+
+    final refreshToken =
+        json['refresh_token'] ?? await storage.read(key: _refreshToken);
+
+    if (refreshToken == null) {
+      throw Exception('Refresh token is null');
     }
 
     await _saveTokensAndExpireDate(
