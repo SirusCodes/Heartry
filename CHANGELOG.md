@@ -1,3 +1,7 @@
+## 2.10.3 - 22/07/2026
+
+Bug fixes in the restore flow.
+
 ## 2.10.2 - 19/07/2026
 
 Minor bug fixes
