@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:googleapis/drive/v3.dart' as gapis;
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../database/config.dart';
@@ -54,7 +55,8 @@ class BackupManagerProvider extends Notifier<BackupRestoreState> {
 
       await manager.setBackupHash(backupHash);
       ref.read(configProvider.notifier).lastBackup = dateTime;
-    } catch (e) {
+    } catch (e, st) {
+      unawaited(Sentry.captureException(e, stackTrace: st));
       state = BackupRestoreState.error;
     }
   }
@@ -303,16 +305,22 @@ class BackupRestoreManagerProvider {
     return prefs;
   }
 
-  Future<void> _setAllSharedPrefs(Map<String, dynamic> prefs) async {
+  Future<void> _setAllSharedPrefs(Map<String, dynamic>? prefs) async {
+    if (prefs == null) return;
     final sharedPrefs = await SharedPreferences.getInstance();
     for (final key in prefs.keys) {
-      final _ = switch (prefs[key]) {
-        int() => sharedPrefs.setInt(key, prefs[key]),
-        double() => sharedPrefs.setDouble(key, prefs[key]),
-        String() => sharedPrefs.setString(key, prefs[key]),
-        bool() => sharedPrefs.setBool(key, prefs[key]),
-        List<String>() => sharedPrefs.setStringList(key, prefs[key]),
-        _ => throw BackupRestoreException('Unknown type'),
+      final value = prefs[key];
+      if (value == null) continue;
+      final _ = switch (value) {
+        int() => sharedPrefs.setInt(key, value),
+        double() => sharedPrefs.setDouble(key, value),
+        String() => sharedPrefs.setString(key, value),
+        bool() => sharedPrefs.setBool(key, value),
+        List() => sharedPrefs.setStringList(
+            key,
+            value.map((e) => e.toString()).toList(),
+          ),
+        _ => null,
       };
     }
   }

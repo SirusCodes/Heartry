@@ -9,7 +9,12 @@ import 'open_connection.dart';
 part 'database.g.dart';
 
 final poemRichConverter = TypeConverter.jsonb<Delta>(
-  fromJson: (json) => Delta.fromJson(json as List<dynamic>),
+  fromJson: (json) {
+    if (json is List) {
+      return Delta.fromJson(json);
+    }
+    return Delta();
+  },
   toJson: (delta) => delta.toJson(),
 );
 

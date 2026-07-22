@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 
 import 'backup_restore_manager_provider.dart';
 
@@ -25,7 +26,8 @@ class RestoreManagerProvider extends Notifier<RestoreState> {
       }
 
       state = FoundBackupRestoreState(date);
-    } catch (e) {
+    } catch (e, st) {
+      unawaited(Sentry.captureException(e, stackTrace: st));
       state = ErrorRestoreState(e);
     }
   }
@@ -35,7 +37,8 @@ class RestoreManagerProvider extends Notifier<RestoreState> {
     try {
       await ref.read(backupRestoreManagerProvider).restore();
       state = const SuccessRestoreState();
-    } catch (e) {
+    } catch (e, st) {
+      unawaited(Sentry.captureException(e, stackTrace: st));
       state = ErrorRestoreState(e);
     }
   }

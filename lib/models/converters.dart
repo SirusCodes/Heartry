@@ -23,11 +23,12 @@ class NullableColorConverter extends JsonConverter<Color?, int?> {
   int? toJson(Color? object) => object?.toARGB32();
 }
 
-class PoemModelConverter extends JsonConverter<List<PoemModel>, List> {
+class PoemModelConverter extends JsonConverter<List<PoemModel>, List?> {
   const PoemModelConverter();
 
   @override
-  List<PoemModel> fromJson(List json) {
+  List<PoemModel> fromJson(List? json) {
+    if (json == null) return [];
     return json.map((e) => PoemModel.fromJson(e)).toList();
   }
 
