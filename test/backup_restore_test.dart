@@ -15,7 +15,7 @@ void main() {
       expect(resultInvalid, isA<Delta>());
 
       final validList = [
-        {'insert': 'Hello World\n'}
+        {'insert': 'Hello World\n'},
       ];
       final resultValid = poemRichConverter.fromJson(validList);
       expect(resultValid.isNotEmpty, true);
@@ -38,7 +38,7 @@ void main() {
             "poem": "Content here",
             "deletedAt": null,
             "poemRich": null,
-          }
+          },
         ],
         "prefs": {
           "theme": "dark",
@@ -64,7 +64,7 @@ void main() {
             "title": "Poem without poemRich key",
             "poem": "Another poem content",
             "deletedAt": null,
-          }
+          },
         ],
         "prefs": <String, dynamic>{},
         "image": null,

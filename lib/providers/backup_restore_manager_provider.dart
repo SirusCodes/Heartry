@@ -317,9 +317,9 @@ class BackupRestoreManagerProvider {
         String() => sharedPrefs.setString(key, value),
         bool() => sharedPrefs.setBool(key, value),
         List() => sharedPrefs.setStringList(
-            key,
-            value.map((e) => e.toString()).toList(),
-          ),
+          key,
+          value.map((e) => e.toString()).toList(),
+        ),
         _ => null,
       };
     }
