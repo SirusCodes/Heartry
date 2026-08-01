@@ -307,8 +307,8 @@ class BackupRestoreManagerProvider {
       return;
     }
     for (int i = 0; i < backupFiles.length; i++) {
-      // Don't delete the latest 3 backups
-      if (i >= 3) {
+      // Don't delete the latest 5 backups
+      if (i >= 5) {
         drive.files.delete(backupFiles[i].id!);
       }
     }

@@ -1,6 +1,7 @@
 ## 2.11.0 - 01/08/2026
 
 - Update restore flow to let user select a backup file and restore from it so you can control what to restore and not just restore the latest backup.
+- Keep the latest 5 backups instead of 3 backups in Google Drive to avoid accidental deletion of backups.
 
 ## 2.10.3 - 22/07/2026
 

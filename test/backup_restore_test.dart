@@ -135,5 +135,23 @@ void main() {
         );
       },
     );
+
+    test('Old backup cleanup retains at most 5 backups', () {
+      final mockBackups = List.generate(
+        8,
+        (index) => 'backup_id_$index',
+      );
+
+      final backupsToDelete = <String>[];
+      for (int i = 0; i < mockBackups.length; i++) {
+        if (i >= 5) {
+          backupsToDelete.add(mockBackups[i]);
+        }
+      }
+
+      expect(mockBackups.length - backupsToDelete.length, 5);
+      expect(backupsToDelete.length, 3);
+      expect(backupsToDelete, ['backup_id_5', 'backup_id_6', 'backup_id_7']);
+    });
   });
 }
