@@ -1,1 +1,1 @@
-Bug fixes in the restore flow.
+Update restore flow to let user select a backup file and restore from it so you can control what to restore and not just restore the latest backup.

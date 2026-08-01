@@ -1,3 +1,7 @@
+## 2.11.0 - 01/08/2026
+
+- Update restore flow to let user select a backup file and restore from it so you can control what to restore and not just restore the latest backup.
+
 ## 2.10.3 - 22/07/2026
 
 Bug fixes in the restore flow.
