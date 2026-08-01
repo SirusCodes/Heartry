@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../database/config.dart';
 import '../../providers/restore_manager_provider.dart';
 import '../poems_screen/poems_screen.dart';
+import 'restore_backups_screen.dart';
 
 class RestoreScreen extends ConsumerWidget {
   const RestoreScreen({super.key});
@@ -15,103 +16,186 @@ class RestoreScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final restoreState = ref.watch(restoreManagerProvider);
 
+    ref.listen<RestoreState>(restoreManagerProvider, (prev, next) {
+      if (next is FoundBackupsRestoreState &&
+          prev is SearchingBackupRestoreState) {
+        context.push(RestoreBackupsScreen.routePath);
+      }
+    });
+
     return Scaffold(
       body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            const Spacer(),
-            Text(
-              restoreState.message,
-              style: Theme.of(context).textTheme.displaySmall,
-              textAlign: TextAlign.center,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+          child: switch (restoreState) {
+            SearchingBackupRestoreState() => const RestoreLoadingWidget(
+              message: "Searching for backups...",
             ),
-            const Spacer(),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: _buildButtonBar(
-                restoreState: restoreState,
-                context: context,
-                ref: ref,
-              ),
+            NotFoundBackupRestoreState() => _RestoreNotFoundView(
+              state: restoreState,
             ),
-          ],
+            ErrorRestoreState() => _RestoreErrorView(state: restoreState),
+            _ => _RestoreIdleView(
+              state: restoreState is IdleRestoreState
+                  ? restoreState
+                  : const IdleRestoreState(),
+            ),
+          },
         ),
       ),
     );
   }
+}
 
-  Widget _buildButtonBar({
-    required RestoreState restoreState,
-    required BuildContext context,
-    required WidgetRef ref,
-  }) {
-    return switch (restoreState) {
-      IdleRestoreState() => _buildIdle(context, ref),
-      SearchingBackupRestoreState() ||
-      RestoringRestoreState() => const SizedBox.shrink(),
-      FoundBackupRestoreState() => _buildFoundRestoreButtons(context, ref),
-      NotFoundBackupRestoreState() ||
-      SuccessRestoreState() ||
-      ErrorRestoreState() => _buildNextButton(context, ref),
-    };
-  }
+class RestoreLoadingWidget extends StatelessWidget {
+  const RestoreLoadingWidget({super.key, required this.message});
 
-  Widget _buildNextButton(BuildContext context, WidgetRef ref) {
-    return FilledButton(
-      onPressed: () {
-        ref.read(configProvider.notifier).hasCompletedOnboarding = true;
-        context.go(PoemScreen.routePath);
-      },
-      child: const Text("Next"),
+  final String message;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const CircularProgressIndicator(),
+          const SizedBox(height: 16),
+          Text(message),
+        ],
+      ),
     );
   }
+}
 
-  Widget _buildFoundRestoreButtons(BuildContext context, WidgetRef ref) {
-    return Row(
-      mainAxisSize: MainAxisSize.max,
-      children: [
-        Expanded(child: _skipButton(context, ref)),
-        const SizedBox(width: 8),
-        Expanded(
-          child: FilledButton(
-            onPressed: () =>
-                ref //
-                    .read(restoreManagerProvider.notifier)
-                    .restore(),
-            child: const Text('Restore'),
-          ),
-        ),
-      ],
-    );
-  }
+class RestoreSkipButton extends ConsumerWidget {
+  const RestoreSkipButton({super.key});
 
-  Widget _buildIdle(BuildContext context, WidgetRef ref) {
-    return Row(
-      mainAxisSize: MainAxisSize.max,
-      children: [
-        Expanded(child: _skipButton(context, ref)),
-        const SizedBox(width: 8),
-        Expanded(
-          child: FilledButton(
-            onPressed: () =>
-                ref //
-                    .read(restoreManagerProvider.notifier)
-                    .checkBackup(),
-            child: const Text('Check backup'),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _skipButton(BuildContext context, WidgetRef ref) {
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
     return FilledButton.tonal(
       onPressed: () {
         ref.read(configProvider.notifier).hasCompletedOnboarding = true;
         context.replace(PoemScreen.routePath);
       },
       child: const Text("Skip"),
+    );
+  }
+}
+
+class RestoreNextButton extends ConsumerWidget {
+  const RestoreNextButton({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return SizedBox(
+      width: double.infinity,
+      child: FilledButton(
+        onPressed: () {
+          ref.read(configProvider.notifier).hasCompletedOnboarding = true;
+          context.go(PoemScreen.routePath);
+        },
+        child: const Text("Next"),
+      ),
+    );
+  }
+}
+
+class _RestoreIdleView extends ConsumerWidget {
+  const _RestoreIdleView({required this.state});
+
+  final IdleRestoreState state;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final textTheme = theme.textTheme;
+    final colorScheme = theme.colorScheme;
+
+    return Column(
+      children: [
+        const Spacer(),
+        Icon(
+          Icons.cloud_download_outlined,
+          size: 64,
+          color: colorScheme.primary,
+        ),
+        const SizedBox(height: 16),
+        Text(
+          state.message,
+          style: textTheme.headlineSmall,
+          textAlign: TextAlign.center,
+        ),
+        const Spacer(),
+        Row(
+          children: [
+            const Expanded(child: RestoreSkipButton()),
+            const SizedBox(width: 8),
+            Expanded(
+              child: FilledButton(
+                onPressed: () =>
+                    ref.read(restoreManagerProvider.notifier).checkBackup(),
+                child: const Text('Check backups'),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+class _RestoreNotFoundView extends ConsumerWidget {
+  const _RestoreNotFoundView({required this.state});
+
+  final NotFoundBackupRestoreState state;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final textTheme = theme.textTheme;
+    final colorScheme = theme.colorScheme;
+
+    return Column(
+      children: [
+        const Spacer(),
+        Icon(Icons.cloud_off_outlined, size: 64, color: colorScheme.outline),
+        const SizedBox(height: 16),
+        Text(
+          state.message,
+          style: textTheme.headlineSmall,
+          textAlign: TextAlign.center,
+        ),
+        const Spacer(),
+        const RestoreNextButton(),
+      ],
+    );
+  }
+}
+
+class _RestoreErrorView extends ConsumerWidget {
+  const _RestoreErrorView({required this.state});
+
+  final ErrorRestoreState state;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final textTheme = theme.textTheme;
+    final colorScheme = theme.colorScheme;
+
+    return Column(
+      children: [
+        const Spacer(),
+        Icon(Icons.error_outline, size: 64, color: colorScheme.error),
+        const SizedBox(height: 16),
+        Text(
+          state.message,
+          style: textTheme.headlineSmall,
+          textAlign: TextAlign.center,
+        ),
+        const Spacer(),
+        const RestoreNextButton(),
+      ],
     );
   }
 }

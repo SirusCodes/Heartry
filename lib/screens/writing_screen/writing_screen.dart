@@ -46,6 +46,7 @@ class _WritingScreenState extends State<WritingScreen>
     poemNode = FocusNode();
 
     _titleTextController = TextEditingController();
+    _quillController = QuillController.basic();
 
     _poemModel = widget.model;
 
@@ -233,6 +234,7 @@ class _WritingScreenState extends State<WritingScreen>
   bool get _isEmpty => !_isNotEmpty;
 
   void _handleDBChanges() {
+    if (_isLoading) return;
     if (_hasChanged && _isNotEmpty) {
       if (_poemModel == null)
         _save();

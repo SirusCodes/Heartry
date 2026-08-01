@@ -96,13 +96,6 @@ class _IntroScreenState extends State<IntroScreen> {
       );
       return;
     }
-
-    scaffoldMessenger.showSnackBar(
-      const SnackBar(
-        content: Text("Authentication failed"),
-        duration: Duration(seconds: 3),
-      ),
-    );
   }
 }
 

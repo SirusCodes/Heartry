@@ -101,5 +101,39 @@ void main() {
         expect(backup.prefs["categories"], isA<List>());
       },
     );
+
+    test(
+      'Empty poemRich is normalized from plain text poem at restore level',
+      () {
+        final legacyPoem = PoemModel(
+          id: 100,
+          title: "Legacy Plain Text Poem",
+          poem: "Line 1\nLine 2",
+          poemRich: Delta(),
+        );
+
+        final isRichEmpty =
+            legacyPoem.poemRich.isEmpty ||
+            legacyPoem.poemRich.operations.isEmpty ||
+            legacyPoem.poemRich.operations.every(
+              (op) => op.data.toString().trim().isEmpty,
+            );
+
+        expect(isRichEmpty, true);
+
+        final text = legacyPoem.poem.endsWith('\n')
+            ? legacyPoem.poem
+            : '${legacyPoem.poem}\n';
+        final normalizedPoem = legacyPoem.copyWith(
+          poemRich: Delta()..insert(text),
+        );
+
+        expect(normalizedPoem.poemRich.isEmpty, false);
+        expect(
+          normalizedPoem.poemRich.operations.first.data,
+          "Line 1\nLine 2\n",
+        );
+      },
+    );
   });
 }

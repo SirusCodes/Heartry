@@ -2,12 +2,23 @@ import 'package:flutter/material.dart';
 
 import '../../../database/database.dart';
 import '../../../utils/theme.dart';
-import '../../../utils/poem_utils.dart';
 
 extension on ThemeData {
-  PoemCardTheme get poemCardTheme => extension<PoemCardTheme>()!;
+  PoemCardTheme get poemCardTheme =>
+      extension<PoemCardTheme>() ??
+      PoemCardTheme(
+        backgroundColor: colorScheme.surfaceContainerHigh,
+        borderColor: colorScheme.outlineVariant,
+        textColor: colorScheme.onSurface,
+      );
+
   SelectedPoemCardTheme get selectedPoemCardTheme =>
-      extension<SelectedPoemCardTheme>()!;
+      extension<SelectedPoemCardTheme>() ??
+      SelectedPoemCardTheme(
+        backgroundColor: colorScheme.primaryContainer,
+        borderColor: colorScheme.primary,
+        textColor: colorScheme.onPrimaryContainer,
+      );
 }
 
 class PoemCard extends StatelessWidget {
@@ -63,7 +74,7 @@ class PoemCard extends StatelessWidget {
             const SizedBox(height: 5),
             if (model.poem.isNotEmpty)
               Text(
-                model.poemRich.toPlainText(),
+                model.poem,
                 overflow: TextOverflow.ellipsis,
                 maxLines: 10,
                 textAlign: TextAlign.start,

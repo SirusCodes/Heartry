@@ -15,7 +15,10 @@ import '../screens/personalize_theme/personalize_theme.dart';
 import '../screens/poems_screen/poems_screen.dart';
 import '../screens/profile_screen/profile_screen.dart';
 import '../screens/reader_screen/reader_screen.dart';
+import '../screens/restore_screen/restore_backups_screen.dart';
+import '../screens/restore_screen/restore_preview_screen.dart';
 import '../screens/restore_screen/restore_screen.dart';
+import '../screens/restore_screen/restore_success_screen.dart';
 import '../screens/settings_screen/settings_screen.dart';
 import '../screens/share_images_screen/share_images_screen.dart';
 import '../screens/writing_screen/writing_screen.dart';
@@ -60,6 +63,18 @@ final GoRouter goRouter = GoRouter(
     GoRoute(
       path: RestoreScreen.routePath,
       builder: (context, state) => const RestoreScreen(),
+    ),
+    GoRoute(
+      path: RestoreBackupsScreen.routePath,
+      builder: (context, state) => const RestoreBackupsScreen(),
+    ),
+    GoRoute(
+      path: RestorePreviewScreen.routePath,
+      builder: (context, state) => const RestorePreviewScreen(),
+    ),
+    GoRoute(
+      path: RestoreSuccessScreen.routePath,
+      builder: (context, state) => const RestoreSuccessScreen(),
     ),
     GoRoute(
       path: PoemScreen.routePath,

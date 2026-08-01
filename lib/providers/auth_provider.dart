@@ -21,34 +21,19 @@ class AuthProvider extends AsyncNotifier<GoogleSignInAccount?> {
   GoogleSignIn get _googleSignIn => ref.read(_googleSignInProvider);
 
   Future<void> signIn() async {
+    state = const AsyncLoading();
     try {
-      final account = await _googleSignIn.authenticate();
-
-      final serverAuth = await account.authorizationClient.authorizeServer(
-        _accessScopes,
+      final account = await _googleSignIn.authenticate(
+        scopeHint: _accessScopes,
       );
-      if (serverAuth == null) {
-        state = AsyncAccount.error(
-          'Failed to get server auth',
-          StackTrace.current,
-        );
-        return;
-      }
-      final serverAuthCode = serverAuth.serverAuthCode;
-
-      try {
-        await ref
-            .read(tokenManagerProvider)
-            .getAndSaveTokensFromAuthCode(serverAuthCode);
-      } catch (e) {
-        await _googleSignIn.disconnect();
-        rethrow;
-      }
-      ref.read(configProvider.notifier)
-        ..backupEmail = account.email
-        ..isAutoBackupEnabled = true;
-
+      await _saveAuthTokensAndConfig(account);
       state = AsyncAccount.data(account);
+    } on GoogleSignInException catch (e, st) {
+      if (e.code == GoogleSignInExceptionCode.canceled) {
+        state = const AsyncAccount.data(null);
+      } else {
+        state = AsyncAccount.error(e, st);
+      }
     } catch (e, st) {
       state = AsyncAccount.error(e, st);
     }
@@ -72,13 +57,40 @@ class AuthProvider extends AsyncNotifier<GoogleSignInAccount?> {
 
   @override
   FutureOr<GoogleSignInAccount?> build() async {
+    const serverClientId = String.fromEnvironment('GOOGLE_CLIENT_ID');
     await _googleSignIn.initialize(
-      serverClientId: const String.fromEnvironment('GOOGLE_CLIENT_ID'),
+      serverClientId: serverClientId.isEmpty ? null : serverClientId,
     );
-    final result = _googleSignIn.attemptLightweightAuthentication();
-    if (result is Future<GoogleSignInAccount?>) {
-      return await result;
+    try {
+      final account = await _googleSignIn.attemptLightweightAuthentication();
+
+      if (account != null) {
+        await _saveAuthTokensAndConfig(account);
+      }
+
+      return account;
+    } catch (_) {
+      return null;
     }
-    return result;
+  }
+
+  Future<void> _saveAuthTokensAndConfig(GoogleSignInAccount account) async {
+    final serverAuth = await account.authorizationClient.authorizeServer(
+      _accessScopes,
+    );
+    if (serverAuth == null) {
+      throw Exception('Failed to get server auth');
+    }
+    try {
+      await ref
+          .read(tokenManagerProvider)
+          .getAndSaveTokensFromAuthCode(serverAuth.serverAuthCode);
+    } catch (e) {
+      await _googleSignIn.disconnect();
+      rethrow;
+    }
+    ref.read(configProvider.notifier)
+      ..backupEmail = account.email
+      ..isAutoBackupEnabled = true;
   }
 }

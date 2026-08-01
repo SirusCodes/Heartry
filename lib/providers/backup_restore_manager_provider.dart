@@ -3,8 +3,10 @@ import 'dart:convert';
 import 'dart:io' as io;
 
 import 'package:crypto/crypto.dart';
+import 'package:flutter_quill/quill_delta.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:googleapis/drive/v3.dart' as gapis;
+import 'package:heartry/utils/poem_utils.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
@@ -80,8 +82,8 @@ class BackupRestoreManagerProvider {
     return DateTime.now();
   }
 
-  Future<DateTime> restore() async {
-    final downloadedFile = await _downloadFromDrive();
+  Future<DateTime> restore(String backupId) async {
+    final downloadedFile = await _downloadFromDrive(backupId);
 
     final data = downloadedFile.readAsStringSync();
 
@@ -90,8 +92,10 @@ class BackupRestoreManagerProvider {
     final db = locator.get<Database>();
     final config = ref.read(configProvider.notifier);
 
+    final normalizedPoems = _normalizePoems(backup.poems);
+
     await db.deleteAllPoems();
-    await db.insertBatchPoems(backup.poems);
+    await db.insertBatchPoems(normalizedPoems);
 
     if (backup.templates != null) {
       await db.transaction(() async {
@@ -121,6 +125,32 @@ class BackupRestoreManagerProvider {
     ref.invalidate(themeProvider);
 
     return DateTime.now();
+  }
+
+  Future<BackupModel> getBackupModel(String backupId) async {
+    final downloadedFile = await _downloadFromDrive(backupId);
+    final data = downloadedFile.readAsStringSync();
+    downloadedFile.deleteSync();
+    final backup = BackupModel.fromJson(json.decode(data));
+    return BackupModel(
+      poems: _normalizePoems(backup.poems),
+      prefs: backup.prefs,
+      image: backup.image,
+      templates: backup.templates,
+    );
+  }
+
+  List<PoemModel> _normalizePoems(List<PoemModel> poems) {
+    return poems.map((p) {
+      final isRichEmpty = p.poemRich.toPlainText().trim().isEmpty;
+      var isPoemNotEmpty = p.poem.trim().isNotEmpty;
+      if (isRichEmpty && isPoemNotEmpty) {
+        final text = p.poem.endsWith('\n') ? p.poem : '${p.poem}\n';
+        final newRich = Delta()..insert(text);
+        return p.copyWith(poemRich: newRich);
+      }
+      return p;
+    }).toList();
   }
 
   Future<bool> hasBackup() async {
@@ -212,27 +242,21 @@ class BackupRestoreManagerProvider {
     return DateTime.parse(date);
   }
 
-  Future<io.File> _downloadFromDrive() async {
+  Future<io.File> _downloadFromDrive(String backupId) async {
     final drive = await _getDrive();
-    final files = await drive.files.list(
-      orderBy: "createdTime desc",
-      q: "name contains 'backup-'",
-      spaces: "appDataFolder",
-    );
-    final backup = files.files?.first;
-    if (backup == null) {
-      throw BackupRestoreException('No backup found');
-    }
+
+    final fileMetadata = await drive.files.get(backupId) as gapis.File;
+    final targetName = fileMetadata.name ?? 'backup-$backupId.json';
 
     final file =
         (await drive.files.get(
-              backup.id!,
+              backupId,
               downloadOptions: gapis.DownloadOptions.fullMedia,
             ))
             as gapis.Media;
 
     final tempDir = await getTemporaryDirectory();
-    final downloadedFile = io.File('${tempDir.path}/${backup.name}');
+    final downloadedFile = io.File('${tempDir.path}/$targetName');
 
     if (downloadedFile.existsSync()) {
       downloadedFile.deleteSync();
@@ -240,7 +264,10 @@ class BackupRestoreManagerProvider {
 
     downloadedFile.createSync();
 
-    await file.stream.pipe(downloadedFile.openWrite());
+    final sink = downloadedFile.openWrite();
+    await sink.addStream(file.stream);
+    await sink.flush();
+    await sink.close();
     return downloadedFile;
   }
 

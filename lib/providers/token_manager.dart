@@ -57,7 +57,10 @@ class TokenManager {
         json['refresh_token'] ?? await storage.read(key: _refreshToken);
 
     if (refreshToken == null) {
-      throw Exception('Refresh token is null');
+      throw Exception(
+        'Refresh token was not provided by Google. '
+        'Resetting connection—please tap "Continue with Google" again.',
+      );
     }
 
     await _saveTokensAndExpireDate(
@@ -95,7 +98,9 @@ class TokenManager {
   Future<String> _getAccessTokenFromRefreshToken() async {
     final refreshToken = await storage.read(key: _refreshToken);
     if (refreshToken == null) {
-      throw Exception('Refresh token is null');
+      throw Exception(
+        'Not signed in to Google. Please sign in to access backups.',
+      );
     }
 
     final response = await http.post(

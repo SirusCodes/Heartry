@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 
+import '../models/backup_model/backup_model.dart';
 import 'backup_restore_manager_provider.dart';
 
 final restoreManagerProvider =
@@ -12,30 +13,93 @@ final restoreManagerProvider =
     );
 
 class RestoreManagerProvider extends Notifier<RestoreState> {
+  List<(String id, DateTime dateTime)> _cachedBackups = [];
+
   Future<void> checkBackup() async {
     state = const SearchingBackupRestoreState();
     try {
-      final date =
-          await ref //
-              .read(backupRestoreManagerProvider)
-              .getLastestBackupDate();
+      final backups = await ref
+          .read(backupRestoreManagerProvider)
+          .getAllBackups();
 
-      if (date == null) {
+      if (backups == null || backups.isEmpty) {
         state = const NotFoundBackupRestoreState();
         return;
       }
 
-      state = FoundBackupRestoreState(date);
+      _cachedBackups = backups;
+      state = FoundBackupsRestoreState(
+        backups: backups,
+        selectedBackupId: backups.first.$1,
+      );
     } catch (e, st) {
       unawaited(Sentry.captureException(e, stackTrace: st));
       state = ErrorRestoreState(e);
     }
   }
 
-  Future<void> restore() async {
+  void selectBackup(String backupId) {
+    if (state is FoundBackupsRestoreState) {
+      state = FoundBackupsRestoreState(
+        backups: _cachedBackups,
+        selectedBackupId: backupId,
+      );
+    }
+  }
+
+  Future<void> selectBackupForPreview(String backupId) async {
+    final backupTuple = _cachedBackups.firstWhere(
+      (b) => b.$1 == backupId,
+      orElse: () => (backupId, DateTime.now()),
+    );
+
+    state = PreviewBackupRestoreState(
+      backupId: backupId,
+      dateTime: backupTuple.$2,
+      isLoading: true,
+    );
+
+    try {
+      final backupModel = await ref
+          .read(backupRestoreManagerProvider)
+          .getBackupModel(backupId);
+
+      state = PreviewBackupRestoreState(
+        backupId: backupId,
+        dateTime: backupTuple.$2,
+        backupModel: backupModel,
+        isLoading: false,
+      );
+    } catch (e, st) {
+      unawaited(Sentry.captureException(e, stackTrace: st));
+      state = PreviewBackupRestoreState(
+        backupId: backupId,
+        dateTime: backupTuple.$2,
+        isLoading: false,
+        error: e,
+      );
+    }
+  }
+
+  void backToBackupList() {
+    if (_cachedBackups.isNotEmpty) {
+      String? selectedId;
+      if (state is PreviewBackupRestoreState) {
+        selectedId = (state as PreviewBackupRestoreState).backupId;
+      }
+      state = FoundBackupsRestoreState(
+        backups: _cachedBackups,
+        selectedBackupId: selectedId ?? _cachedBackups.first.$1,
+      );
+    } else {
+      state = const IdleRestoreState();
+    }
+  }
+
+  Future<void> restore(String backupId) async {
     state = const RestoringRestoreState();
     try {
-      await ref.read(backupRestoreManagerProvider).restore();
+      await ref.read(backupRestoreManagerProvider).restore(backupId);
       state = const SuccessRestoreState();
     } catch (e, st) {
       unawaited(Sentry.captureException(e, stackTrace: st));
@@ -69,13 +133,37 @@ class SearchingBackupRestoreState extends RestoreState {
   String get message => "Searching for backups...";
 }
 
-class FoundBackupRestoreState extends RestoreState {
-  const FoundBackupRestoreState(this.date);
+class FoundBackupsRestoreState extends RestoreState {
+  const FoundBackupsRestoreState({
+    required this.backups,
+    this.selectedBackupId,
+  });
 
-  final DateTime date;
+  final List<(String id, DateTime dateTime)> backups;
+  final String? selectedBackupId;
 
   @override
-  String get message => "Found backup from ${DateFormat.yMMMEd().format(date)}";
+  String get message => "Found ${backups.length} available backup(s)";
+}
+
+class PreviewBackupRestoreState extends RestoreState {
+  const PreviewBackupRestoreState({
+    required this.backupId,
+    required this.dateTime,
+    this.backupModel,
+    this.isLoading = false,
+    this.error,
+  });
+
+  final String backupId;
+  final DateTime dateTime;
+  final BackupModel? backupModel;
+  final bool isLoading;
+  final Object? error;
+
+  @override
+  String get message =>
+      "Backup preview for ${DateFormat.yMMMEd().format(dateTime)}";
 }
 
 class NotFoundBackupRestoreState extends RestoreState {
