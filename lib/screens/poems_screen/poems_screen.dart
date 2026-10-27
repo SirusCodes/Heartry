@@ -170,7 +170,12 @@ class _ChangelogDialog extends StatelessWidget {
               },
             ),
           ),
-          Row(
+          const SizedBox(height: 8),
+          OverflowBar(
+            alignment: MainAxisAlignment.end,
+            spacing: 8,
+            overflowAlignment: OverflowBarAlignment.end,
+            overflowSpacing: 8,
             children: [
               TextButton(
                 onPressed: () => context.pop(),
