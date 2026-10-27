@@ -328,14 +328,28 @@ class _ImageScreenState extends State<ImageScreen> {
 
     _showProgressDialog(context);
 
-    for (int pageIndex = 0; pageIndex < numberOfPages; pageIndex++) {
-      _pageController.jumpToPage(pageIndex);
-      final image = await _getImage(pageIndex);
-      images.add(image);
+    try {
+      for (int pageIndex = 0; pageIndex < numberOfPages; pageIndex++) {
+        _pageController.jumpToPage(pageIndex);
+        final image = await _getImage(pageIndex);
+        if (image == null) break;
+        images.add(image);
+      }
+    } finally {
+      if (rootNavigator.canPop()) {
+        rootNavigator.pop();
+      }
     }
 
-    if (rootNavigator.canPop()) {
-      rootNavigator.pop();
+    if (images.length != numberOfPages) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Couldn't create the image, please try again."),
+          ),
+        );
+      }
+      return;
     }
 
     // Give the dialog dismissal a frame before
@@ -418,21 +432,46 @@ class _ImageScreenState extends State<ImageScreen> {
     );
   }
 
-  Future<String> _getImage(int index) async {
-    final tmpDir = await getTemporaryDirectory();
-
-    final time = DateTime.now().toIso8601String();
-
-    final p = path.join(tmpDir.path, "${widget.title}-$time-$index.png");
-
+  /// Captures the current page and writes it to a PNG in the temporary
+  /// directory. Returns the file path, or `null` if the capture failed.
+  Future<String?> _getImage(int index) async {
     final imgBytes = await _screenshot.capture(
       pixelRatio: 2,
       delay: const Duration(milliseconds: 100),
     );
 
-    final imgFile = File(p)..writeAsBytes(imgBytes!);
+    if (imgBytes == null) return null;
+
+    final tmpDir = await getTemporaryDirectory();
+
+    final time = DateTime.now().millisecondsSinceEpoch;
+
+    final p = path.join(
+      tmpDir.path,
+      "${_fileNameFor(widget.title)}-$time-$index.png",
+    );
+
+    // Wait for the bytes to be fully written before the path is handed to
+    // the share sheet, otherwise the receiving app can read a partial file.
+    final imgFile = await File(p).writeAsBytes(imgBytes, flush: true);
 
     return imgFile.path;
+  }
+
+  /// Turns the poem title into something safe to use in a file name.
+  static String _fileNameFor(String? title) {
+    // Drop characters that are not allowed in file names on Android/iOS
+    // (path separators, reserved characters and control characters).
+    final sanitized = (title ?? "")
+        .replaceAll(RegExp(r'\s+'), " ")
+        .replaceAll(RegExp(r'[\\/:*?"<>|\x00-\x1F]'), "")
+        .trim()
+        .replaceAll(" ", "_");
+
+    if (sanitized.isEmpty) return "poem";
+
+    final runes = sanitized.runes;
+    return runes.length > 50 ? String.fromCharCodes(runes.take(50)) : sanitized;
   }
 
   bool _hasImageBackground(Template template, ImageController controller) {
